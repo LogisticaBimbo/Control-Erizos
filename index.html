@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Erizos - La Tablada</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+<style>
+  *{box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+  body{margin:0;background:#f4f6f8;color:#222}
+  header{background:linear-gradient(90deg,#0066b3,#003e7e);color:#fff;
+    padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  header h1{margin:0;font-size:20px;letter-spacing:.3px}
+  header .sub{font-size:12px;opacity:.85}
+  .container{padding:18px 22px;max-width:1250px;margin:0 auto}
+  .tabs{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .tabs button{background:#fff;border:1px solid #d5dbe3;padding:10px 18px;border-radius:8px;
+    cursor:pointer;font-size:14px;font-weight:600;color:#0066b3}
+  .tabs button.active{background:#0066b3;color:#fff;border-color:#0066b3}
+  .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:18px}
+  .card h2{margin:0 0 14px;font-size:16px;color:#003e7e}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+  label{display:block;font-size:12px;font-weight:600;color:#556;margin-bottom:5px}
+  input,select,textarea{width:100%;padding:9px 10px;border:1px solid #cfd6df;border-radius:8px;font-size:14px;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:#0066b3}
+  .section-title{font-size:13px;font-weight:700;color:#0066b3;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.4px;
+    border-bottom:2px solid #e6ebf1;padding-bottom:6px}
+  .btn{background:#0066b3;color:#fff;border:none;padding:12px 26px;border-radius:8px;font-size:15px;
+    font-weight:600;cursor:pointer;margin-top:16px}
+  .btn:hover{background:#004e8c}
+  .btn.sec{background:#eef2f7;color:#0066b3}
+  .msg{padding:12px 16px;border-radius:8px;margin-top:14px;font-size:14px;display:none}
+  .msg.ok{background:#e6f4ea;color:#1b7a37;display:block}
+  .msg.err{background:#fdecea;color:#c0392b;display:block}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+  .kpi{background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+  .kpi .n{font-size:24px;font-weight:800;color:#0066b3}
+  .kpi .l{font-size:12px;color:#667;margin-top:3px}
+  .filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+  .filters > div{flex:1;min-width:130px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 9px;text-align:center;border-bottom:1px solid #eef1f4;white-space:nowrap}
+  th{background:#0066b3;color:#fff;position:sticky;top:0;font-size:12px}
+  tbody tr:hover{background:#f3f7fb}
+  td.left{text-align:left}
+  .diff-neg{color:#c0392b;font-weight:700}
+  .diff-pos{color:#1b7a37;font-weight:700}
+  .diff-zero{color:#999}
+  .est{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+  .est.rev{background:#fff4e0;color:#b26a00}
+  .est.coin{background:#e6f4ea;color:#1b7a37}
+  .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
+  .muted{color:#889;font-size:13px}
+  .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>🦔 Control de Erizos · La Tablada</h1>
+    <div class="sub">Conteo físico vs. declarado HDR</div>
+  </div>
+  <div class="sub" id="conteoTotal">—</div>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar conteo</button>
+    <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
+  </div>
+
+  <!-- ================= CARGA ================= -->
+  <div id="tabCarga">
+    <div class="card">
+      <h2>Nuevo conteo de erizos</h2>
+      <form id="form" onsubmit="return false;">
+
+        <div class="section-title">Datos generales</div>
+        <div class="grid">
+          <div>
+            <label>Fecha *</label>
+            <input type="date" id="fecha" required>
+          </div>
+          <div>
+            <label>Ruta *</label>
+            <select id="ruta" required>
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div>
+            <label>Contador *</label>
+            <input type="text" id="contador" placeholder="Nombre y apellido" required>
+          </div>
+          <div>
+            <label>Turno</label>
+            <select id="turno">
+              <option value="">— Seleccionar —</option>
+              <option>04:00 a 06:00</option>
+              <option>06:00 a 08:00</option>
+            </select>
+          </div>
+          <div>
+            <label>N° de hoja</label>
+            <input type="text" id="hoja" placeholder="Opcional">
+          </div>
+        </div>
+
+        <div class="section-title">Conteo físico</div>
+        <div class="grid">
+          <div><label>Bandejas vacías</label><input type="number" id="fis_vacias" min="0" value="0"></div>
+          <div><label>Bandejas devoluciones</label><input type="number" id="fis_devoluciones" min="0" value="0"></div>
+          <div><label>Bandejas rechazo</label><input type="number" id="fis_rechazo" min="0" value="0"></div>
+          <div><label>Dollys</label><input type="number" id="fis_dollys" min="0" value="0"></div>
+        </div>
+
+        <div class="section-title">Declarado HDR</div>
+        <div class="grid">
+          <div><label>Bandejas vacías</label><input type="number" id="hdr_vacias" min="0" value="0"></div>
+          <div><label>Bandejas devoluciones</label><input type="number" id="hdr_devoluciones" min="0" value="0"></div>
+          <div><label>Bandejas rechazo</label><input type="number" id="hdr_rechazo" min="0" value="0"></div>
+          <div><label>Dollys</label><input type="number" id="hdr_dollys" min="0" value="0"></div>
+        </div>
+
+        <div class="section-title">Observaciones</div>
+        <div>
+          <textarea id="observaciones" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea>
+        </div>
+
+        <button class="btn" onclick="guardar()">💾 Guardar conteo</button>
+        <div id="msg" class="msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= VER ================= -->
+  <div id="tabVer" style="display:none">
+    <div class="kpis" id="kpis"></div>
+
+    <div class="card">
+      <h2>Registros cargados</h2>
+      <div class="filters">
+        <div>
+          <label>Desde</label>
+          <input type="date" id="fDesde" onchange="render()">
+        </div>
+        <div>
+          <label>Hasta</label>
+          <input type="date" id="fHasta" onchange="render()">
+        </div>
+        <div>
+          <label>Ruta</label>
+          <input type="text" id="fRuta" placeholder="Todas" oninput="render()">
+        </div>
+        <div>
+          <label>Estado</label>
+          <select id="fEstado" onchange="render()">
+            <option value="">Todos</option>
+            <option value="COINCIDE">COINCIDE</option>
+            <option value="REVISAR">REVISAR</option>
+          </select>
+        </div>
+        <div style="flex:0">
+          <button class="btn sec" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button>
+        </div>
+        <div style="flex:0">
+          <button class="btn" style="margin-top:0" onclick="exportar()">⬇️ Exportar Excel</button>
+        </div>
+      </div>
+      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Si todas las diferencias son 0, el estado es <b>COINCIDE</b>; si hay alguna diferencia, queda en <b>REVISAR</b>.</p>
+      <div class="table-wrap">
+        <table id="tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Ruta</th><th>Contador</th><th>Turno</th>
+              <th>Vacías Fís</th><th>Vacías HDR</th><th>Dif</th>
+              <th>Devol Fís</th><th>Devol HDR</th><th>Dif</th>
+              <th>Rech Fís</th><th>Rech HDR</th><th>Dif</th>
+              <th>Dollys Fís</th><th>Dollys HDR</th><th>Dif</th>
+              <th>Estado</th><th>Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== Conexión Supabase (mismo proyecto del Dashboard Saldo Primario) ======
+const SUPABASE_URL = 'https://chdteugdydnftkysgfmo.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_yrrkBwZ_N6m1WEKID0AqTg_pZLPFwRX';
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ====== Rutas (hoja "Listas" de la planilla) ======
+const RUTAS = ['116','117','126','127','128','129','130','131','154','157','158','159',
+  '188','189','205','206','207','263','264','266','286','287','324','411'];
+
+let REGISTROS = [];
+
+// ====== Utilidades ======
+function n(id){ return parseInt(document.getElementById(id).value) || 0; }
+function v(id){ return document.getElementById(id).value.trim(); }
+function fmtFecha(f){
+  if(!f) return '';
+  const p = f.split('-');
+  return p.length===3 ? (p[2]+'/'+p[1]+'/'+p[0]) : f;
+}
+function celdaDif(fis, hdr){
+  const d = fis - hdr;
+  const cls = d < 0 ? 'diff-neg' : (d > 0 ? 'diff-pos' : 'diff-zero');
+  const txt = d > 0 ? ('+'+d) : d;
+  return '<td class="'+cls+'">'+txt+'</td>';
+}
+function estado(x){
+  const coincide = (x.fis_vacias===x.hdr_vacias) &&
+                   (x.fis_devoluciones===x.hdr_devoluciones) &&
+                   (x.fis_rechazo===x.hdr_rechazo) &&
+                   (x.fis_dollys===x.hdr_dollys);
+  return coincide ? 'COINCIDE' : 'REVISAR';
+}
+
+// ====== Pestañas ======
+function showTab(t){
+  document.getElementById('tabCarga').style.display = t==='carga' ? 'block' : 'none';
+  document.getElementById('tabVer').style.display   = t==='ver'   ? 'block' : 'none';
+  document.getElementById('tabCargaBtn').classList.toggle('active', t==='carga');
+  document.getElementById('tabVerBtn').classList.toggle('active', t==='ver');
+  if(t==='ver'){ cargarDatos(); }
+}
+
+// ====== Guardar ======
+async function guardar(){
+  const msg = document.getElementById('msg');
+  msg.className = 'msg';
+  if(!v('fecha') || !v('ruta') || !v('contador')){
+    msg.className='msg err';
+    msg.textContent='⚠️ Completá Fecha, Ruta y Contador.';
+    return;
+  }
+  const registro = {
+    fecha: v('fecha'),
+    ruta: v('ruta'),
+    contador: v('contador'),
+    turno: v('turno') || null,
+    hoja: v('hoja') || null,
+    fis_vacias: n('fis_vacias'),
+    fis_devoluciones: n('fis_devoluciones'),
+    fis_rechazo: n('fis_rechazo'),
+    fis_dollys: n('fis_dollys'),
+    hdr_vacias: n('hdr_vacias'),
+    hdr_devoluciones: n('hdr_devoluciones'),
+    hdr_rechazo: n('hdr_rechazo'),
+    hdr_dollys: n('hdr_dollys'),
+    observaciones: v('observaciones') || null
+  };
+  try{
+    const { error } = await supa.from('control_erizos').insert(registro);
+    if(error) throw error;
+    msg.className='msg ok';
+    msg.textContent='✅ Conteo guardado correctamente. ¡Gracias!';
+    document.getElementById('form').reset();
+    document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
+    ['fis_vacias','fis_devoluciones','fis_rechazo','fis_dollys',
+     'hdr_vacias','hdr_devoluciones','hdr_rechazo','hdr_dollys'].forEach(function(id){
+       document.getElementById(id).value = 0;
+     });
+  }catch(e){
+    msg.className='msg err';
+    msg.textContent='❌ No se pudo guardar: '+(e.message||e);
+  }
+}
+
+// ====== Cargar datos ======
+async function cargarDatos(){
+  try{
+    const { data, error } = await supa
+      .from('control_erizos')
+      .select('*')
+      .order('fecha', { ascending:false })
+      .order('created_at', { ascending:false });
+    if(error) throw error;
+    REGISTROS = data || [];
+    render();
+  }catch(e){
+    document.getElementById('tbody').innerHTML =
+      '<tr><td colspan="18" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
+  }
+}
+
+// ====== Render tabla + KPIs ======
+function filtrar(){
+  const d = document.getElementById('fDesde').value;
+  const h = document.getElementById('fHasta').value;
+  const r = document.getElementById('fRuta').value.trim().toLowerCase();
+  const es = document.getElementById('fEstado').value;
+  return REGISTROS.filter(function(x){
+    if(d && x.fecha < d) return false;
+    if(h && x.fecha > h) return false;
+    if(r && !(x.ruta||'').toLowerCase().includes(r)) return false;
+    if(es && estado(x) !== es) return false;
+    return true;
+  });
+}
+
+function render(){
+  const rows = filtrar();
+  const tb = document.getElementById('tbody');
+  if(rows.length===0){
+    tb.innerHTML = '<tr><td colspan="18" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
+  } else {
+    tb.innerHTML = rows.map(function(x){
+      const es = estado(x);
+      const badge = es==='COINCIDE'
+        ? '<span class="est coin">COINCIDE</span>'
+        : '<span class="est rev">REVISAR</span>';
+      return '<tr>'+
+        '<td>'+fmtFecha(x.fecha)+'</td>'+
+        '<td>'+(x.ruta||'')+'</td>'+
+        '<td class="left">'+(x.contador||'')+'</td>'+
+        '<td>'+(x.turno||'')+'</td>'+
+        '<td>'+x.fis_vacias+'</td><td>'+x.hdr_vacias+'</td>'+celdaDif(x.fis_vacias,x.hdr_vacias)+
+        '<td>'+x.fis_devoluciones+'</td><td>'+x.hdr_devoluciones+'</td>'+celdaDif(x.fis_devoluciones,x.hdr_devoluciones)+
+        '<td>'+x.fis_rechazo+'</td><td>'+x.hdr_rechazo+'</td>'+celdaDif(x.fis_rechazo,x.hdr_rechazo)+
+        '<td>'+x.fis_dollys+'</td><td>'+x.hdr_dollys+'</td>'+celdaDif(x.fis_dollys,x.hdr_dollys)+
+        '<td>'+badge+'</td>'+
+        '<td class="left">'+(x.observaciones||'')+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+  // KPIs
+  const totFis = rows.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
+  const totHdr = rows.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
+  const totDollysFis = rows.reduce((a,x)=>a+x.fis_dollys,0);
+  const revisar = rows.filter(x=>estado(x)==='REVISAR').length;
+  document.getElementById('kpis').innerHTML =
+    kpi(rows.length,'Conteos') +
+    kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas') +
+    kpi(totHdr.toLocaleString('es-AR'),'Bandejas HDR') +
+    kpi(totDollysFis.toLocaleString('es-AR'),'Dollys físicos') +
+    kpi(revisar,'En REVISAR');
+  document.getElementById('conteoTotal').textContent = REGISTROS.length+' conteos registrados';
+}
+function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
+
+// ====== Exportar Excel ======
+function exportar(){
+  const rows = filtrar();
+  if(rows.length===0){ alert('No hay registros para exportar.'); return; }
+  const data = rows.map(function(x){
+    return {
+      'Fecha': fmtFecha(x.fecha),
+      'Ruta': x.ruta,
+      'Contador': x.contador,
+      'Turno': x.turno||'',
+      'Hoja': x.hoja||'',
+      'Vacías Físico': x.fis_vacias, 'Vacías HDR': x.hdr_vacias, 'Dif Vacías': x.fis_vacias-x.hdr_vacias,
+      'Devol Físico': x.fis_devoluciones, 'Devol HDR': x.hdr_devoluciones, 'Dif Devol': x.fis_devoluciones-x.hdr_devoluciones,
+      'Rechazo Físico': x.fis_rechazo, 'Rechazo HDR': x.hdr_rechazo, 'Dif Rechazo': x.fis_rechazo-x.hdr_rechazo,
+      'Dollys Físico': x.fis_dollys, 'Dollys HDR': x.hdr_dollys, 'Dif Dollys': x.fis_dollys-x.hdr_dollys,
+      'Estado': estado(x),
+      'Observaciones': x.observaciones||''
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Control Erizos');
+  XLSX.writeFile(wb, 'Control_Erizos_Tablada.xlsx');
+}
+
+// ====== Init ======
+(function(){
+  // Cargar rutas en el desplegable
+  const sel = document.getElementById('ruta');
+  RUTAS.forEach(function(r){
+    const o = document.createElement('option');
+    o.value = r; o.textContent = r;
+    sel.appendChild(o);
+  });
+  document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
+})();
+</script>
+</body>
+</html>
