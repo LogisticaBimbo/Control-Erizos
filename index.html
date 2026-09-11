@@ -71,16 +71,16 @@
   .chip{background:#eef3f9;color:#003e7e;font-weight:700;font-size:14px;padding:6px 12px;border-radius:8px}
   .turno-box.t1 .chip{background:#fdeede;color:#a85a13}
   .turno-box.t2 .chip{background:#e7f0fb;color:#23558f}
-  .plan-config{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;background:#fff8ec;
+  .plan-config{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff8ec;
     border:1px solid #f2d9a8;border-radius:10px;padding:14px 16px;margin-bottom:16px}
   .plan-config label{color:#8a6a20}
   .sem-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-  @media(max-width:900px){.sem-grid{grid-template-columns:1fr}}
   .sem-card{border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
   .sem-card.actual{border:2px solid #0066b3;box-shadow:0 0 0 3px rgba(0,102,179,.12)}
   .sem-head{background:#003e7e;color:#fff;padding:10px 14px;font-weight:800;font-size:14px;
     display:flex;justify-content:space-between;align-items:center}
   .sem-head .tag{background:#ffd166;color:#5a4300;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:800}
+  .plan-scroll{overflow-x:auto}
   table.plan{width:100%;border-collapse:collapse;font-size:12px}
   table.plan th{background:#1f5590;color:#fff;padding:8px 4px;font-size:11px}
   table.plan td{padding:8px 4px;text-align:center;border-bottom:1px solid #eef1f4;vertical-align:top;line-height:1.5}
@@ -93,6 +93,64 @@
   .leyenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:#556}
   .leyenda span{display:inline-flex;align-items:center;gap:6px}
   .sw{width:16px;height:16px;border-radius:4px;display:inline-block}
+
+  /* ============================================================
+     RESPONSIVO · CELULAR
+     ============================================================ */
+  @media (max-width: 900px){
+    .sem-grid{grid-template-columns:1fr}   /* las 4 semanas, una abajo de otra */
+  }
+
+  @media (max-width: 640px){
+    header{padding:14px 16px}
+    header h1{font-size:17px}
+    header .sub{font-size:11px}
+    #conteoTotal{width:100%}
+    .container{padding:14px 12px}
+
+    /* Pestañas: ocupan todo el ancho y se tocan fácil con el dedo */
+    .tabs{gap:8px}
+    .tabs button{flex:1 1 auto;padding:12px 10px;font-size:13px;text-align:center}
+
+    .card{padding:15px 13px;border-radius:10px}
+    .card h2{font-size:15px}
+
+    /* Formulario: un campo por fila para que se vea grande */
+    .grid{grid-template-columns:1fr;gap:12px}
+    input,select,textarea{font-size:16px;padding:11px 12px}  /* 16px evita el zoom automático del celu */
+    .btn{width:100%;padding:14px;font-size:16px}
+
+    /* KPIs: 2 por fila en el celu */
+    .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+    .kpi .n{font-size:20px}
+
+    /* Filtros: apilados y cómodos */
+    .filters{gap:10px}
+    .filters > div{flex:1 1 100%;min-width:0}
+    .filters > div[style*="flex:0"]{flex:1 1 100%}
+    .filters .btn{margin-top:0}
+
+    /* Tabla de registros (18 columnas): scroll lateral con aviso */
+    .table-wrap{max-height:70vh}
+    table{font-size:12px}
+    th,td{padding:7px 6px}
+
+    /* Tarjeta HOY */
+    .hoy-card{padding:18px 16px}
+    .hoy-top .dia{font-size:19px}
+    .turnos-hoy{grid-template-columns:1fr}   /* los dos turnos, uno arriba del otro */
+    .chip{font-size:15px;padding:7px 13px}   /* números de ruta más grandes y legibles */
+
+    /* Cronograma: cada tabla puede scrollear al costado sin romper la pantalla */
+    table.plan{font-size:11px;min-width:520px}
+    table.plan th,table.plan td{padding:7px 3px}
+
+    .plan-config{padding:12px 13px}
+  }
+
+  /* Aviso "deslizá para ver más" solo visible en celular */
+  .scroll-hint{display:none;font-size:11px;color:#8a94a3;margin:0 0 8px;text-align:right}
+  @media (max-width: 640px){ .scroll-hint{display:block} }
 </style>
 </head>
 <body>
@@ -209,6 +267,7 @@
         </div>
       </div>
       <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Si todas las diferencias son 0, el estado es <b>COINCIDE</b>; si hay alguna diferencia, queda en <b>REVISAR</b>.</p>
+      <p class="scroll-hint">👉 Deslizá la tabla hacia el costado para ver todas las columnas</p>
       <div class="table-wrap">
         <table id="tabla">
           <thead>
@@ -473,7 +532,7 @@ function exportar(){
   XLSX.writeFile(wb, 'Control_Erizos_Tablada.xlsx');
 }
 
-// ====== PLAN DE TRABAJO: rotación automática ======
+// ====== PLAN DE TRABAJO: rotación automática por calendario ======
 function lunesDe(fecha){
   const d = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
   const dow = d.getDay();               // 0=Dom ... 6=Sab
@@ -484,6 +543,7 @@ function lunesDe(fecha){
 function semanasEntre(a, b){
   return Math.round((b - a) / (7 * 24 * 60 * 60 * 1000));
 }
+
 // ===== ANCLA FIJA (rotación automática por calendario) =====
 // La semana del lunes 07/09/2026 se considera "Semana 1" del cronograma.
 // A partir de acá la página calcula sola qué semana toca, para siempre.
@@ -491,7 +551,6 @@ function semanasEntre(a, b){
 const ANCHOR_POR_DEFECTO = { mondayISO: '2026-09-07', week: 1 };
 
 function anclaVigente(){
-  // Si la usuaria ajustó manualmente alguna vez, ese override manda; si no, el ancla del código.
   return JSON.parse(localStorage.getItem('erizos_plan_anchor') || 'null') || ANCHOR_POR_DEFECTO;
 }
 function semanaActual(){
@@ -501,7 +560,6 @@ function semanaActual(){
   const diff = semanasEntre(anchorMonday, thisMonday);
   return ((cfg.week - 1 + diff) % 4 + 4) % 4 + 1;
 }
-// Mostrar u ocultar el ajuste discreto
 function toggleAjuste(ev){
   if(ev) ev.preventDefault();
   const box = document.getElementById('ajusteBox');
@@ -510,7 +568,6 @@ function toggleAjuste(ev){
     document.getElementById('selSemana').value = semanaActual();
   }
 }
-// Ajuste sin botón: al cambiar el selector, se guarda solo y se recalcula
 function ajustarSemana(){
   const w = parseInt(document.getElementById('selSemana').value);
   const monday = lunesDe(new Date());
@@ -519,14 +576,13 @@ function ajustarSemana(){
   renderPlan();
 }
 
-function chips(arr, cls){
+function chips(arr){
   if(!arr || arr.length===0) return '<span class="muted">—</span>';
   return '<div class="rutas-chips">' + arr.map(r=>'<span class="chip">'+r+'</span>').join('') + '</div>';
 }
 
 function renderPlan(){
   const cont = document.getElementById('hoyCard');
-  // La semana se calcula sola por calendario (con el ancla del código o el ajuste guardado)
   const w = semanaActual();
 
   // --- Tarjeta HOY ---
@@ -562,26 +618,24 @@ function renderPlan(){
     const esActual = (w===s);
     html += '<div class="sem-card'+(esActual?' actual':'')+'">';
     html += '<div class="sem-head"><span>Semana '+s+'</span>'+(esActual?'<span class="tag">ESTA SEMANA</span>':'')+'</div>';
-    html += '<table class="plan"><thead><tr><th>Turno</th>';
+    html += '<div class="plan-scroll"><table class="plan"><thead><tr><th>Turno</th>';
     DIAS.forEach(d=>{ html += '<th>'+d.n.toUpperCase()+'</th>'; });
     html += '</tr></thead><tbody>';
-    // fila turno 1
     html += '<tr class="t1"><td class="turno">04–06</td>';
     DIAS.forEach(d=>{
-      const hoyCls = (esActual && d.k===kHoy) ? ' hoy-col' : '';
+      const hoyCls = (esActual && d.k===kHoy) ? 'hoy-col' : '';
       const arr = PLAN[s]['04-06'][d.k];
-      html += '<td class="'+hoyCls.trim()+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
+      html += '<td class="'+hoyCls+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
     });
     html += '</tr>';
-    // fila turno 2
     html += '<tr class="t2"><td class="turno">06–08</td>';
     DIAS.forEach(d=>{
-      const hoyCls = (esActual && d.k===kHoy) ? ' hoy-col' : '';
+      const hoyCls = (esActual && d.k===kHoy) ? 'hoy-col' : '';
       const arr = PLAN[s]['06-08'][d.k];
-      html += '<td class="'+hoyCls.trim()+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
+      html += '<td class="'+hoyCls+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
     });
     html += '</tr>';
-    html += '</tbody></table></div>';
+    html += '</tbody></table></div></div>';
   }
   document.getElementById('semGrid').innerHTML = html;
 }
