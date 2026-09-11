@@ -53,6 +53,46 @@
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
+
+  /* ===== Plan de Trabajo ===== */
+  .hoy-card{background:linear-gradient(135deg,#003e7e,#0066b3);color:#fff;border-radius:14px;
+    padding:22px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,60,120,.25)}
+  .hoy-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .hoy-top .dia{font-size:22px;font-weight:800;text-transform:capitalize}
+  .hoy-top .badge{background:rgba(255,255,255,.2);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700}
+  .turnos-hoy{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+  .turno-box{background:#fff;border-radius:12px;padding:14px 16px}
+  .turno-box .th{font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:8px}
+  .turno-box.t1 .th{color:#c56a1a}
+  .turno-box.t2 .th{color:#2f6dbf}
+  .turno-box.t1{border-top:4px solid #f2a565}
+  .turno-box.t2{border-top:4px solid #8fb8e8}
+  .rutas-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{background:#eef3f9;color:#003e7e;font-weight:700;font-size:14px;padding:6px 12px;border-radius:8px}
+  .turno-box.t1 .chip{background:#fdeede;color:#a85a13}
+  .turno-box.t2 .chip{background:#e7f0fb;color:#23558f}
+  .plan-config{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;background:#fff8ec;
+    border:1px solid #f2d9a8;border-radius:10px;padding:14px 16px;margin-bottom:16px}
+  .plan-config label{color:#8a6a20}
+  .sem-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media(max-width:900px){.sem-grid{grid-template-columns:1fr}}
+  .sem-card{border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+  .sem-card.actual{border:2px solid #0066b3;box-shadow:0 0 0 3px rgba(0,102,179,.12)}
+  .sem-head{background:#003e7e;color:#fff;padding:10px 14px;font-weight:800;font-size:14px;
+    display:flex;justify-content:space-between;align-items:center}
+  .sem-head .tag{background:#ffd166;color:#5a4300;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:800}
+  table.plan{width:100%;border-collapse:collapse;font-size:12px}
+  table.plan th{background:#1f5590;color:#fff;padding:8px 4px;font-size:11px}
+  table.plan td{padding:8px 4px;text-align:center;border-bottom:1px solid #eef1f4;vertical-align:top;line-height:1.5}
+  table.plan td.turno{font-weight:800;color:#003e7e;background:#f3f7fb}
+  table.plan tr.t1 td{background:#fbe4cb}
+  table.plan tr.t1 td.turno{background:#f2a565;color:#5a3410}
+  table.plan tr.t2 td{background:#dbe8f8}
+  table.plan tr.t2 td.turno{background:#8fb8e8;color:#1c3c63}
+  table.plan td.hoy-col{outline:2px solid #003e7e;outline-offset:-2px}
+  .leyenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:#556}
+  .leyenda span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:16px;height:16px;border-radius:4px;display:inline-block}
 </style>
 </head>
 <body>
@@ -68,6 +108,7 @@
   <div class="tabs">
     <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar conteo</button>
     <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
+    <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo</button>
   </div>
 
   <!-- ================= CARGA ================= -->
@@ -185,6 +226,41 @@
       </div>
     </div>
   </div>
+
+  <!-- ================= PLAN DE TRABAJO ================= -->
+  <div id="tabPlan" style="display:none">
+
+    <div class="plan-config">
+      <div style="flex:1;min-width:200px">
+        <label>¿Qué semana del cronograma es <b>esta semana</b>?</label>
+        <select id="selSemana">
+          <option value="1">Semana 1</option>
+          <option value="2">Semana 2</option>
+          <option value="3">Semana 3</option>
+          <option value="4">Semana 4</option>
+        </select>
+      </div>
+      <div style="flex:0">
+        <button class="btn" style="margin-top:0" onclick="guardarSemana()">💾 Guardar semana</button>
+      </div>
+      <div style="flex:1;min-width:180px" class="muted">
+        Se guarda una sola vez. Después la rotación avanza sola cada semana. 🔁
+      </div>
+    </div>
+
+    <div id="hoyCard"></div>
+
+    <div class="card">
+      <h2>Cronograma rotativo · 4 semanas · Ventana 04:00 a 08:00</h2>
+      <div class="sem-grid" id="semGrid"></div>
+      <div class="leyenda">
+        <span><i class="sw" style="background:#f2a565"></i> Primer turno · 04:00–06:00</span>
+        <span><i class="sw" style="background:#8fb8e8"></i> Segundo turno · 06:00–08:00</span>
+        <span><i class="sw" style="background:#fff;outline:2px solid #003e7e"></i> Día de hoy</span>
+        <span class="muted">Cada número corresponde a una ruta.</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -196,6 +272,32 @@ const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ====== Rutas (hoja "Listas" de la planilla) ======
 const RUTAS = ['116','117','126','127','128','129','130','131','154','157','158','159',
   '188','189','205','206','207','263','264','266','286','287','324','411'];
+
+// ====== PLAN DE TRABAJO (cronograma rotativo de 4 semanas) ======
+// Días: L=Lunes, M=Martes, X=Miércoles, J=Jueves, V=Viernes, S=Sábado
+const PLAN = {
+  1: {
+    '04-06': { L:[126,127], M:[128,129], X:[205,411], J:[206,287], V:[188,324], S:[130,131] },
+    '06-08': { L:[286,116,117], M:[154,157,158], X:[266,263,264], J:[207,189], V:[159], S:[] }
+  },
+  2: {
+    '04-06': { L:[205,411], M:[126,127], X:[206,287], J:[128,129], V:[130,131], S:[188,324] },
+    '06-08': { L:[154,157,264], M:[266,263,207], X:[286,117], J:[116,159], V:[189], S:[158] }
+  },
+  3: {
+    '04-06': { L:[130,131], M:[206,287], X:[128,129], J:[188,324], V:[126,127], S:[205,411] },
+    '06-08': { L:[266,207], M:[116,189,159], X:[117,158], J:[154,263], V:[286,264], S:[157] }
+  },
+  4: {
+    '04-06': { L:[188,324], M:[205,411], X:[126,127], J:[130,131], V:[206,287], S:[128,129] },
+    '06-08': { L:[263,189,159], M:[117,264], X:[116,157,207], J:[266], V:[154,158], S:[286] }
+  }
+};
+const DIAS = [
+  {k:'L', n:'Lunes'}, {k:'M', n:'Martes'}, {k:'X', n:'Miércoles'},
+  {k:'J', n:'Jueves'}, {k:'V', n:'Viernes'}, {k:'S', n:'Sábado'}
+];
+const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null}; // 0 = Domingo
 
 let REGISTROS = [];
 
@@ -225,12 +327,15 @@ function estado(x){
 function showTab(t){
   document.getElementById('tabCarga').style.display = t==='carga' ? 'block' : 'none';
   document.getElementById('tabVer').style.display   = t==='ver'   ? 'block' : 'none';
+  document.getElementById('tabPlan').style.display  = t==='plan'  ? 'block' : 'none';
   document.getElementById('tabCargaBtn').classList.toggle('active', t==='carga');
   document.getElementById('tabVerBtn').classList.toggle('active', t==='ver');
+  document.getElementById('tabPlanBtn').classList.toggle('active', t==='plan');
   if(t==='ver'){ cargarDatos(); }
+  if(t==='plan'){ renderPlan(); }
 }
 
-// ====== Guardar ======
+// ====== Guardar conteo ======
 async function guardar(){
   const msg = document.getElementById('msg');
   msg.className = 'msg';
@@ -329,7 +434,6 @@ function render(){
       '</tr>';
     }).join('');
   }
-  // KPIs
   const totFis = rows.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
   const totHdr = rows.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
   const totDollysFis = rows.reduce((a,x)=>a+x.fis_dollys,0);
@@ -367,6 +471,108 @@ function exportar(){
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Control Erizos');
   XLSX.writeFile(wb, 'Control_Erizos_Tablada.xlsx');
+}
+
+// ====== PLAN DE TRABAJO: rotación automática ======
+function lunesDe(fecha){
+  const d = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+  const dow = d.getDay();               // 0=Dom ... 6=Sab
+  const delta = (dow === 0) ? -6 : (1 - dow);
+  d.setDate(d.getDate() + delta);
+  return d;
+}
+function semanasEntre(a, b){
+  return Math.round((b - a) / (7 * 24 * 60 * 60 * 1000));
+}
+function semanaActual(){
+  const cfg = JSON.parse(localStorage.getItem('erizos_plan_anchor') || 'null');
+  if(!cfg) return null;                  // todavía no configurada
+  const anchorMonday = new Date(cfg.mondayISO + 'T00:00:00');
+  const thisMonday = lunesDe(new Date());
+  const diff = semanasEntre(anchorMonday, thisMonday);
+  let w = ((cfg.week - 1 + diff) % 4 + 4) % 4 + 1;
+  return w;
+}
+function guardarSemana(){
+  const w = parseInt(document.getElementById('selSemana').value);
+  const monday = lunesDe(new Date());
+  const iso = monday.toISOString().slice(0,10);
+  localStorage.setItem('erizos_plan_anchor', JSON.stringify({ mondayISO: iso, week: w }));
+  renderPlan();
+}
+
+function chips(arr, cls){
+  if(!arr || arr.length===0) return '<span class="muted">—</span>';
+  return '<div class="rutas-chips">' + arr.map(r=>'<span class="chip">'+r+'</span>').join('') + '</div>';
+}
+
+function renderPlan(){
+  const cont = document.getElementById('hoyCard');
+  const w = semanaActual();
+
+  // Preseleccionar el selector con la semana calculada (si existe)
+  if(w){ document.getElementById('selSemana').value = w; }
+
+  // --- Tarjeta HOY ---
+  const hoy = new Date();
+  const kHoy = JS_DAY_TO_K[hoy.getDay()];
+  const diaNombre = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
+  const fechaTxt = ('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
+
+  if(!w){
+    cont.innerHTML =
+      '<div class="hoy-card"><div class="hoy-top"><div class="dia">Configurá la semana ⤴</div></div>'+
+      '<p style="margin:12px 0 0;opacity:.9">Elegí arriba qué semana del cronograma es <b>esta semana</b> y tocá <b>Guardar semana</b>. '+
+      'Después la página calcula sola qué rutas tocan cada día. 🔁</p></div>';
+  } else if(!kHoy){
+    cont.innerHTML =
+      '<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
+      '<div class="badge">Semana '+w+'</div></div>'+
+      '<p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
+  } else {
+    const t1 = PLAN[w]['04-06'][kHoy];
+    const t2 = PLAN[w]['06-08'][kHoy];
+    cont.innerHTML =
+      '<div class="hoy-card">'+
+        '<div class="hoy-top">'+
+          '<div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
+          '<div class="badge">🔁 Semana '+w+' del cronograma</div>'+
+        '</div>'+
+        '<div class="turnos-hoy">'+
+          '<div class="turno-box t1"><div class="th">🟠 Primer turno · 04:00–06:00</div>'+chips(t1)+'</div>'+
+          '<div class="turno-box t2"><div class="th">🔵 Segundo turno · 06:00–08:00</div>'+chips(t2)+'</div>'+
+        '</div>'+
+      '</div>';
+  }
+
+  // --- Grilla completa de 4 semanas ---
+  let html = '';
+  for(let s=1; s<=4; s++){
+    const esActual = (w===s);
+    html += '<div class="sem-card'+(esActual?' actual':'')+'">';
+    html += '<div class="sem-head"><span>Semana '+s+'</span>'+(esActual?'<span class="tag">ESTA SEMANA</span>':'')+'</div>';
+    html += '<table class="plan"><thead><tr><th>Turno</th>';
+    DIAS.forEach(d=>{ html += '<th>'+d.n.toUpperCase()+'</th>'; });
+    html += '</tr></thead><tbody>';
+    // fila turno 1
+    html += '<tr class="t1"><td class="turno">04–06</td>';
+    DIAS.forEach(d=>{
+      const hoyCls = (esActual && d.k===kHoy) ? ' hoy-col' : '';
+      const arr = PLAN[s]['04-06'][d.k];
+      html += '<td class="'+hoyCls.trim()+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
+    });
+    html += '</tr>';
+    // fila turno 2
+    html += '<tr class="t2"><td class="turno">06–08</td>';
+    DIAS.forEach(d=>{
+      const hoyCls = (esActual && d.k===kHoy) ? ' hoy-col' : '';
+      const arr = PLAN[s]['06-08'][d.k];
+      html += '<td class="'+hoyCls.trim()+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
+    });
+    html += '</tr>';
+    html += '</tbody></table></div>';
+  }
+  document.getElementById('semGrid').innerHTML = html;
 }
 
 // ====== Init ======
