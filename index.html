@@ -233,7 +233,7 @@
     <div class="plan-config">
       <div style="flex:1;min-width:200px">
         <label>¿Qué semana del cronograma es <b>esta semana</b>?</label>
-        <select id="selSemana">
+        <select id="selSemana" onchange="previewSemana()">
           <option value="1">Semana 1</option>
           <option value="2">Semana 2</option>
           <option value="3">Semana 3</option>
@@ -506,12 +506,19 @@ function chips(arr, cls){
   return '<div class="rutas-chips">' + arr.map(r=>'<span class="chip">'+r+'</span>').join('') + '</div>';
 }
 
-function renderPlan(){
-  const cont = document.getElementById('hoyCard');
-  const w = semanaActual();
+// Vista previa en vivo: al cambiar el selector, actualiza la tarjeta HOY al instante
+function previewSemana(){
+  const w = parseInt(document.getElementById('selSemana').value);
+  renderPlan(w, true);
+}
 
-  // Preseleccionar el selector con la semana calculada (si existe)
-  if(w){ document.getElementById('selSemana').value = w; }
+function renderPlan(forceWeek, esPreview){
+  const cont = document.getElementById('hoyCard');
+  // Si viene una semana forzada (desde el selector) la usamos; si no, calculamos la guardada
+  const w = forceWeek ? forceWeek : semanaActual();
+
+  // Preseleccionar el selector con la semana calculada (solo si no es preview)
+  if(w && !esPreview){ document.getElementById('selSemana').value = w; }
 
   // --- Tarjeta HOY ---
   const hoy = new Date();
