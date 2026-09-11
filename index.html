@@ -231,20 +231,20 @@
   <div id="tabPlan" style="display:none">
 
     <div class="plan-config">
-      <div style="flex:1;min-width:200px">
-        <label>¿Qué semana del cronograma es <b>esta semana</b>?</label>
-        <select id="selSemana" onchange="previewSemana()">
+      <div style="flex:1;min-width:240px">
+        🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma es hoy, según el calendario. No hay que configurar nada.
+      </div>
+      <div style="flex:0">
+        <a href="#" id="linkAjustar" onclick="toggleAjuste(event)" style="color:#8a6a20;font-weight:700;text-decoration:underline;font-size:13px;white-space:nowrap">⚙️ ¿No coincide? Ajustar</a>
+      </div>
+      <div id="ajusteBox" style="display:none;flex-basis:100%;margin-top:6px;border-top:1px dashed #e0c68a;padding-top:12px">
+        <label>Si la semana marcada abajo no es la real, elegí acá cuál es <b>esta semana</b> (se ajusta al instante, sin botón):</label>
+        <select id="selSemana" onchange="ajustarSemana()" style="max-width:260px">
           <option value="1">Semana 1</option>
           <option value="2">Semana 2</option>
           <option value="3">Semana 3</option>
           <option value="4">Semana 4</option>
         </select>
-      </div>
-      <div style="flex:0">
-        <button class="btn" style="margin-top:0" onclick="guardarSemana()">💾 Guardar semana</button>
-      </div>
-      <div style="flex:1;min-width:180px" class="muted">
-        Se guarda una sola vez. Después la rotación avanza sola cada semana. 🔁
       </div>
     </div>
 
@@ -484,16 +484,34 @@ function lunesDe(fecha){
 function semanasEntre(a, b){
   return Math.round((b - a) / (7 * 24 * 60 * 60 * 1000));
 }
+// ===== ANCLA FIJA (rotación automática por calendario) =====
+// La semana del lunes 07/09/2026 se considera "Semana 1" del cronograma.
+// A partir de acá la página calcula sola qué semana toca, para siempre.
+// Si alguna vez hay que corregir, el ajuste discreto guarda un override en el navegador.
+const ANCHOR_POR_DEFECTO = { mondayISO: '2026-09-07', week: 1 };
+
+function anclaVigente(){
+  // Si la usuaria ajustó manualmente alguna vez, ese override manda; si no, el ancla del código.
+  return JSON.parse(localStorage.getItem('erizos_plan_anchor') || 'null') || ANCHOR_POR_DEFECTO;
+}
 function semanaActual(){
-  const cfg = JSON.parse(localStorage.getItem('erizos_plan_anchor') || 'null');
-  if(!cfg) return null;                  // todavía no configurada
+  const cfg = anclaVigente();
   const anchorMonday = new Date(cfg.mondayISO + 'T00:00:00');
   const thisMonday = lunesDe(new Date());
   const diff = semanasEntre(anchorMonday, thisMonday);
-  let w = ((cfg.week - 1 + diff) % 4 + 4) % 4 + 1;
-  return w;
+  return ((cfg.week - 1 + diff) % 4 + 4) % 4 + 1;
 }
-function guardarSemana(){
+// Mostrar u ocultar el ajuste discreto
+function toggleAjuste(ev){
+  if(ev) ev.preventDefault();
+  const box = document.getElementById('ajusteBox');
+  box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+  if(box.style.display === 'block'){
+    document.getElementById('selSemana').value = semanaActual();
+  }
+}
+// Ajuste sin botón: al cambiar el selector, se guarda solo y se recalcula
+function ajustarSemana(){
   const w = parseInt(document.getElementById('selSemana').value);
   const monday = lunesDe(new Date());
   const iso = monday.toISOString().slice(0,10);
@@ -506,19 +524,10 @@ function chips(arr, cls){
   return '<div class="rutas-chips">' + arr.map(r=>'<span class="chip">'+r+'</span>').join('') + '</div>';
 }
 
-// Vista previa en vivo: al cambiar el selector, actualiza la tarjeta HOY al instante
-function previewSemana(){
-  const w = parseInt(document.getElementById('selSemana').value);
-  renderPlan(w, true);
-}
-
-function renderPlan(forceWeek, esPreview){
+function renderPlan(){
   const cont = document.getElementById('hoyCard');
-  // Si viene una semana forzada (desde el selector) la usamos; si no, calculamos la guardada
-  const w = forceWeek ? forceWeek : semanaActual();
-
-  // Preseleccionar el selector con la semana calculada (solo si no es preview)
-  if(w && !esPreview){ document.getElementById('selSemana').value = w; }
+  // La semana se calcula sola por calendario (con el ancla del código o el ajuste guardado)
+  const w = semanaActual();
 
   // --- Tarjeta HOY ---
   const hoy = new Date();
@@ -526,12 +535,7 @@ function renderPlan(forceWeek, esPreview){
   const diaNombre = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
   const fechaTxt = ('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
 
-  if(!w){
-    cont.innerHTML =
-      '<div class="hoy-card"><div class="hoy-top"><div class="dia">Configurá la semana ⤴</div></div>'+
-      '<p style="margin:12px 0 0;opacity:.9">Elegí arriba qué semana del cronograma es <b>esta semana</b> y tocá <b>Guardar semana</b>. '+
-      'Después la página calcula sola qué rutas tocan cada día. 🔁</p></div>';
-  } else if(!kHoy){
+  if(!kHoy){
     cont.innerHTML =
       '<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
       '<div class="badge">Semana '+w+'</div></div>'+
