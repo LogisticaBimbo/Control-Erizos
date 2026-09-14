@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control de Erizos - La Tablada</title>
+<title>Control Vuelta Reparto - La Tablada</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <style>
@@ -33,6 +33,10 @@
   .msg{padding:12px 16px;border-radius:8px;margin-top:14px;font-size:14px;display:none}
   .msg.ok{background:#e6f4ea;color:#1b7a37;display:block}
   .msg.err{background:#fdecea;color:#c0392b;display:block}
+  .canal-badge{display:inline-block;margin-top:8px;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:700}
+  .canal-badge.erizo{background:#fdeede;color:#a85a13}
+  .canal-badge.otro{background:#e7f0fb;color:#23558f}
+  .canal-badge.desc{background:#fdecea;color:#c0392b}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
   .kpi{background:#fff;border-radius:10px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)}
   .kpi .n{font-size:24px;font-weight:800;color:#0066b3}
@@ -50,11 +54,14 @@
   .est{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
   .est.rev{background:#fff4e0;color:#b26a00}
   .est.coin{background:#e6f4ea;color:#1b7a37}
+  .canal-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
+  .canal-tag.erizo{background:#fdeede;color:#a85a13}
+  .canal-tag.otro{background:#e7f0fb;color:#23558f}
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
 
-  /* ===== Plan de Trabajo ===== */
+  /* ===== Plan de Trabajo Erizo ===== */
   .hoy-card{background:linear-gradient(135deg,#003e7e,#0066b3);color:#fff;border-radius:14px;
     padding:22px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,60,120,.25)}
   .hoy-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -98,57 +105,38 @@
      RESPONSIVO · CELULAR
      ============================================================ */
   @media (max-width: 900px){
-    .sem-grid{grid-template-columns:1fr}   /* las 4 semanas, una abajo de otra */
+    .sem-grid{grid-template-columns:1fr}
   }
-
   @media (max-width: 640px){
     header{padding:14px 16px}
     header h1{font-size:17px}
     header .sub{font-size:11px}
     #conteoTotal{width:100%}
     .container{padding:14px 12px}
-
-    /* Pestañas: ocupan todo el ancho y se tocan fácil con el dedo */
     .tabs{gap:8px}
     .tabs button{flex:1 1 auto;padding:12px 10px;font-size:13px;text-align:center}
-
     .card{padding:15px 13px;border-radius:10px}
     .card h2{font-size:15px}
-
-    /* Formulario: un campo por fila para que se vea grande */
     .grid{grid-template-columns:1fr;gap:12px}
-    input,select,textarea{font-size:16px;padding:11px 12px}  /* 16px evita el zoom automático del celu */
+    input,select,textarea{font-size:16px;padding:11px 12px}
     .btn{width:100%;padding:14px;font-size:16px}
-
-    /* KPIs: 2 por fila en el celu */
     .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
     .kpi .n{font-size:20px}
-
-    /* Filtros: apilados y cómodos */
     .filters{gap:10px}
     .filters > div{flex:1 1 100%;min-width:0}
     .filters > div[style*="flex:0"]{flex:1 1 100%}
     .filters .btn{margin-top:0}
-
-    /* Tabla de registros (18 columnas): scroll lateral con aviso */
     .table-wrap{max-height:70vh}
     table{font-size:12px}
     th,td{padding:7px 6px}
-
-    /* Tarjeta HOY */
     .hoy-card{padding:18px 16px}
     .hoy-top .dia{font-size:19px}
-    .turnos-hoy{grid-template-columns:1fr}   /* los dos turnos, uno arriba del otro */
-    .chip{font-size:15px;padding:7px 13px}   /* números de ruta más grandes y legibles */
-
-    /* Cronograma: cada tabla puede scrollear al costado sin romper la pantalla */
+    .turnos-hoy{grid-template-columns:1fr}
+    .chip{font-size:15px;padding:7px 13px}
     table.plan{font-size:11px;min-width:520px}
     table.plan th,table.plan td{padding:7px 3px}
-
     .plan-config{padding:12px 13px}
   }
-
-  /* Aviso "deslizá para ver más" solo visible en celular */
   .scroll-hint{display:none;font-size:11px;color:#8a94a3;margin:0 0 8px;text-align:right}
   @media (max-width: 640px){ .scroll-hint{display:block} }
 </style>
@@ -156,7 +144,7 @@
 <body>
 <header>
   <div>
-    <h1>🦔 Control de Erizos · La Tablada</h1>
+    <h1>🔄 Control Vuelta Reparto · La Tablada</h1>
     <div class="sub">Conteo físico vs. declarado HDR</div>
   </div>
   <div class="sub" id="conteoTotal">—</div>
@@ -166,13 +154,13 @@
   <div class="tabs">
     <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar conteo</button>
     <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
-    <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo</button>
+    <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo Erizo</button>
   </div>
 
   <!-- ================= CARGA ================= -->
   <div id="tabCarga">
     <div class="card">
-      <h2>Nuevo conteo de erizos</h2>
+      <h2>Nuevo conteo · Vuelta de reparto</h2>
       <form id="form" onsubmit="return false;">
 
         <div class="section-title">Datos generales</div>
@@ -182,10 +170,11 @@
             <input type="date" id="fecha" required>
           </div>
           <div>
-            <label>Ruta *</label>
-            <select id="ruta" required>
+            <label>Ruta entregadora *</label>
+            <select id="ruta" required onchange="mostrarCanal()">
               <option value="">— Seleccionar —</option>
             </select>
+            <div id="canalBadge" class="canal-badge" style="display:none"></div>
           </div>
           <div>
             <label>Contador *</label>
@@ -197,6 +186,7 @@
               <option value="">— Seleccionar —</option>
               <option>04:00 a 06:00</option>
               <option>06:00 a 08:00</option>
+              <option>Turno día</option>
             </select>
           </div>
           <div>
@@ -252,6 +242,18 @@
           <input type="text" id="fRuta" placeholder="Todas" oninput="render()">
         </div>
         <div>
+          <label>Canal</label>
+          <select id="fCanal" onchange="render()">
+            <option value="">Todos</option>
+            <option value="Erizo">Erizo</option>
+            <option value="Autoservicio">Autoservicio</option>
+            <option value="Mayorista">Mayorista</option>
+            <option value="QSR">QSR</option>
+            <option value="Tradicional">Tradicional</option>
+            <option value="Cripa">Cripa</option>
+          </select>
+        </div>
+        <div>
           <label>Estado</label>
           <select id="fEstado" onchange="render()">
             <option value="">Todos</option>
@@ -272,7 +274,7 @@
         <table id="tabla">
           <thead>
             <tr>
-              <th>Fecha</th><th>Ruta</th><th>Contador</th><th>Turno</th>
+              <th>Fecha</th><th>Ruta</th><th>Canal</th><th>Contador</th><th>Turno</th>
               <th>Vacías Fís</th><th>Vacías HDR</th><th>Dif</th>
               <th>Devol Fís</th><th>Devol HDR</th><th>Dif</th>
               <th>Rech Fís</th><th>Rech HDR</th><th>Dif</th>
@@ -286,12 +288,12 @@
     </div>
   </div>
 
-  <!-- ================= PLAN DE TRABAJO ================= -->
+  <!-- ================= PLAN DE TRABAJO ERIZO ================= -->
   <div id="tabPlan" style="display:none">
 
     <div class="plan-config">
       <div style="flex:1;min-width:240px">
-        🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma es hoy, según el calendario. No hay que configurar nada.
+        🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario. No hay que configurar nada.
       </div>
       <div style="flex:0">
         <a href="#" id="linkAjustar" onclick="toggleAjuste(event)" style="color:#8a6a20;font-weight:700;text-decoration:underline;font-size:13px;white-space:nowrap">⚙️ ¿No coincide? Ajustar</a>
@@ -310,7 +312,7 @@
     <div id="hoyCard"></div>
 
     <div class="card">
-      <h2>Cronograma rotativo · 4 semanas · Ventana 04:00 a 08:00</h2>
+      <h2>Cronograma rotativo Erizo · 4 semanas · Ventana 04:00 a 08:00</h2>
       <div class="sem-grid" id="semGrid"></div>
       <div class="leyenda">
         <span><i class="sw" style="background:#f2a565"></i> Primer turno · 04:00–06:00</span>
@@ -328,11 +330,63 @@ const SUPABASE_URL = 'https://chdteugdydnftkysgfmo.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_yrrkBwZ_N6m1WEKID0AqTg_pZLPFwRX';
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ====== Rutas (hoja "Listas" de la planilla) ======
-const RUTAS = ['116','117','126','127','128','129','130','131','154','157','158','159',
-  '188','189','205','206','207','263','264','266','286','287','324','411'];
+// ====== Rutas entregadoras y su CANAL (de la Grilla de Venta Tablada) ======
+// Se toma la Ruta Entregadora (col H) sin el prefijo 14117 (ultimos 4 digitos)
+// y el Canal (col G). Erizo queda marcado como Erizo (ya esta en su dashboard,
+// pero se incluye para que el controlador vea el tipo al anotar la ruta).
+const RUTAS_CANAL = {
+  // --- Erizo (incluye 189, 207 y 209 por pedido) ---
+  '116':'Erizo','117':'Erizo','126':'Erizo','127':'Erizo','128':'Erizo','129':'Erizo',
+  '130':'Erizo','131':'Erizo','154':'Erizo','157':'Erizo','158':'Erizo','159':'Erizo',
+  '188':'Erizo','189':'Erizo','205':'Erizo','206':'Erizo','207':'Erizo','209':'Erizo',
+  '228':'Erizo','229':'Erizo','263':'Erizo','264':'Erizo','266':'Erizo','286':'Erizo',
+  '287':'Erizo','324':'Erizo','411':'Erizo','464':'Erizo',
+  // --- Autoservicio / Mayorista / QSR / Tradicional / Cripa ---
+  '023':'Autoservicio / Mayorista / QSR',
+  '065':'Autoservicio / Mayorista',
+  '124':'Autoservicio',
+  '125':'Autoservicio',
+  '140':'Autoservicio / Mayorista',
+  '141':'Autoservicio',
+  '156':'Autoservicio',
+  '172':'Tradicional',
+  '175':'Mayorista',
+  '190':'Autoservicio',
+  '191':'Autoservicio',
+  '194':'Autoservicio',
+  '195':'Autoservicio',
+  '196':'Autoservicio',
+  '198':'Autoservicio',
+  '199':'Autoservicio',
+  '204':'Mayorista / QSR / Autoservicio',
+  '208':'Autoservicio',
+  '210':'Autoservicio',
+  '211':'Mayorista / Tradicional',
+  '217':'Autoservicio / Mayorista',
+  '219':'Autoservicio',
+  '220':'Autoservicio / Mayorista',
+  '236':'Mayorista / Autoservicio',
+  '258':'Autoservicio',
+  '259':'Autoservicio / Mayorista',
+  '260':'Autoservicio',
+  '262':'Autoservicio',
+  '265':'Autoservicio / Mayorista',
+  '272':'Mayorista',
+  '288':'Autoservicio',
+  '289':'Autoservicio',
+  '325':'Autoservicio / Mayorista',
+  '430':'Autoservicio',
+  '432':'Autoservicio',
+  '433':'Cripa c/orden',
+  '439':'Autoservicio',
+  '440':'Autoservicio / Mayorista',
+  '460':'Autoservicio'
+};
 
-// ====== PLAN DE TRABAJO (cronograma rotativo de 4 semanas) ======
+function canalDe(r){ return RUTAS_CANAL[r] || 'Canal desconocido'; }
+function esErizoCanal(canal){ return (canal || '') === 'Erizo'; }
+
+// ====== PLAN DE TRABAJO ERIZO (cronograma rotativo de 4 semanas) ======
 // Días: L=Lunes, M=Martes, X=Miércoles, J=Jueves, V=Viernes, S=Sábado
 const PLAN = {
   1: {
@@ -356,7 +410,7 @@ const DIAS = [
   {k:'L', n:'Lunes'}, {k:'M', n:'Martes'}, {k:'X', n:'Miércoles'},
   {k:'J', n:'Jueves'}, {k:'V', n:'Viernes'}, {k:'S', n:'Sábado'}
 ];
-const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null}; // 0 = Domingo
+const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 
 let REGISTROS = [];
 
@@ -380,6 +434,22 @@ function estado(x){
                    (x.fis_rechazo===x.hdr_rechazo) &&
                    (x.fis_dollys===x.hdr_dollys);
   return coincide ? 'COINCIDE' : 'REVISAR';
+}
+
+// ====== Mostrar canal al elegir la ruta ======
+function mostrarCanal(){
+  const r = document.getElementById('ruta').value;
+  const box = document.getElementById('canalBadge');
+  if(!r){ box.style.display='none'; return; }
+  const canal = canalDe(r);
+  box.style.display='inline-block';
+  if(canal === 'Canal desconocido'){
+    box.className = 'canal-badge desc';
+    box.textContent = '❓ '+canal;
+  } else {
+    box.className = 'canal-badge ' + (esErizoCanal(canal) ? 'erizo' : 'otro');
+    box.textContent = (esErizoCanal(canal) ? '🦔 ' : '🚚 ') + canal;
+  }
 }
 
 // ====== Pestañas ======
@@ -406,6 +476,7 @@ async function guardar(){
   const registro = {
     fecha: v('fecha'),
     ruta: v('ruta'),
+    canal: canalDe(v('ruta')),
     contador: v('contador'),
     turno: v('turno') || null,
     hoja: v('hoja') || null,
@@ -425,6 +496,7 @@ async function guardar(){
     msg.className='msg ok';
     msg.textContent='✅ Conteo guardado correctamente. ¡Gracias!';
     document.getElementById('form').reset();
+    document.getElementById('canalBadge').style.display='none';
     document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
     ['fis_vacias','fis_devoluciones','fis_rechazo','fis_dollys',
      'hdr_vacias','hdr_devoluciones','hdr_rechazo','hdr_dollys'].forEach(function(id){
@@ -449,20 +521,25 @@ async function cargarDatos(){
     render();
   }catch(e){
     document.getElementById('tbody').innerHTML =
-      '<tr><td colspan="18" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
+      '<tr><td colspan="19" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
   }
 }
 
 // ====== Render tabla + KPIs ======
+function canalReg(x){
+  return x.canal || canalDe(x.ruta);
+}
 function filtrar(){
   const d = document.getElementById('fDesde').value;
   const h = document.getElementById('fHasta').value;
   const r = document.getElementById('fRuta').value.trim().toLowerCase();
+  const c = document.getElementById('fCanal').value;
   const es = document.getElementById('fEstado').value;
   return REGISTROS.filter(function(x){
     if(d && x.fecha < d) return false;
     if(h && x.fecha > h) return false;
     if(r && !(x.ruta||'').toLowerCase().includes(r)) return false;
+    if(c && !(canalReg(x)||'').toLowerCase().includes(c.toLowerCase())) return false;
     if(es && estado(x) !== es) return false;
     return true;
   });
@@ -472,16 +549,19 @@ function render(){
   const rows = filtrar();
   const tb = document.getElementById('tbody');
   if(rows.length===0){
-    tb.innerHTML = '<tr><td colspan="18" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
+    tb.innerHTML = '<tr><td colspan="19" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
   } else {
     tb.innerHTML = rows.map(function(x){
       const es = estado(x);
       const badge = es==='COINCIDE'
         ? '<span class="est coin">COINCIDE</span>'
         : '<span class="est rev">REVISAR</span>';
+      const canal = canalReg(x);
+      const canalTag = '<span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span>';
       return '<tr>'+
         '<td>'+fmtFecha(x.fecha)+'</td>'+
         '<td>'+(x.ruta||'')+'</td>'+
+        '<td>'+canalTag+'</td>'+
         '<td class="left">'+(x.contador||'')+'</td>'+
         '<td>'+(x.turno||'')+'</td>'+
         '<td>'+x.fis_vacias+'</td><td>'+x.hdr_vacias+'</td>'+celdaDif(x.fis_vacias,x.hdr_vacias)+
@@ -515,6 +595,7 @@ function exportar(){
     return {
       'Fecha': fmtFecha(x.fecha),
       'Ruta': x.ruta,
+      'Canal': canalReg(x),
       'Contador': x.contador,
       'Turno': x.turno||'',
       'Hoja': x.hoja||'',
@@ -528,14 +609,14 @@ function exportar(){
   });
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Control Erizos');
-  XLSX.writeFile(wb, 'Control_Erizos_Tablada.xlsx');
+  XLSX.utils.book_append_sheet(wb, ws, 'Vuelta Reparto');
+  XLSX.writeFile(wb, 'Control_Vuelta_Reparto_Tablada.xlsx');
 }
 
-// ====== PLAN DE TRABAJO: rotación automática por calendario ======
+// ====== PLAN DE TRABAJO ERIZO: rotación automática por calendario ======
 function lunesDe(fecha){
   const d = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-  const dow = d.getDay();               // 0=Dom ... 6=Sab
+  const dow = d.getDay();
   const delta = (dow === 0) ? -6 : (1 - dow);
   d.setDate(d.getDate() + delta);
   return d;
@@ -543,13 +624,7 @@ function lunesDe(fecha){
 function semanasEntre(a, b){
   return Math.round((b - a) / (7 * 24 * 60 * 60 * 1000));
 }
-
-// ===== ANCLA FIJA (rotación automática por calendario) =====
-// La semana del lunes 07/09/2026 se considera "Semana 1" del cronograma.
-// A partir de acá la página calcula sola qué semana toca, para siempre.
-// Si alguna vez hay que corregir, el ajuste discreto guarda un override en el navegador.
 const ANCHOR_POR_DEFECTO = { mondayISO: '2026-09-07', week: 1 };
-
 function anclaVigente(){
   return JSON.parse(localStorage.getItem('erizos_plan_anchor') || 'null') || ANCHOR_POR_DEFECTO;
 }
@@ -575,17 +650,13 @@ function ajustarSemana(){
   localStorage.setItem('erizos_plan_anchor', JSON.stringify({ mondayISO: iso, week: w }));
   renderPlan();
 }
-
 function chips(arr){
   if(!arr || arr.length===0) return '<span class="muted">—</span>';
   return '<div class="rutas-chips">' + arr.map(r=>'<span class="chip">'+r+'</span>').join('') + '</div>';
 }
-
 function renderPlan(){
   const cont = document.getElementById('hoyCard');
   const w = semanaActual();
-
-  // --- Tarjeta HOY ---
   const hoy = new Date();
   const kHoy = JS_DAY_TO_K[hoy.getDay()];
   const diaNombre = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
@@ -612,7 +683,6 @@ function renderPlan(){
       '</div>';
   }
 
-  // --- Grilla completa de 4 semanas ---
   let html = '';
   for(let s=1; s<=4; s++){
     const esActual = (w===s);
@@ -643,11 +713,16 @@ function renderPlan(){
 // ====== Init ======
 (function(){
   const sel = document.getElementById('ruta');
-  RUTAS.forEach(function(r){
+  const gE = document.createElement('optgroup'); gE.label = '🦔 Erizo';
+  const gO = document.createElement('optgroup'); gO.label = '🚚 Autoservicio / Mayorista / Otros';
+  Object.keys(RUTAS_CANAL).forEach(function(r){
     const o = document.createElement('option');
-    o.value = r; o.textContent = r;
-    sel.appendChild(o);
+    o.value = r;
+    o.textContent = r + ' · ' + RUTAS_CANAL[r];
+    (RUTAS_CANAL[r] === 'Erizo' ? gE : gO).appendChild(o);
   });
+  sel.appendChild(gE);
+  sel.appendChild(gO);
   document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
 })();
 </script>
