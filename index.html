@@ -30,6 +30,10 @@
     font-weight:600;cursor:pointer;margin-top:16px}
   .btn:hover{background:#004e8c}
   .btn.sec{background:#eef2f7;color:#0066b3}
+  .btn.small{padding:7px 12px;font-size:13px;margin-top:0}
+  .btn.hdr{background:#1b7a37}
+  .btn.hdr:hover{background:#146129}
+  .btn.gris{background:#e6e9ee;color:#556}
   .msg{padding:12px 16px;border-radius:8px;margin-top:14px;font-size:14px;display:none}
   .msg.ok{background:#e6f4ea;color:#1b7a37;display:block}
   .msg.err{background:#fdecea;color:#c0392b;display:block}
@@ -57,9 +61,30 @@
   .canal-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
   .canal-tag.erizo{background:#fdeede;color:#a85a13}
   .canal-tag.otro{background:#e7f0fb;color:#23558f}
+  .acc-btns{display:flex;gap:6px;justify-content:center}
+  .icon-btn{border:1px solid #d5dbe3;background:#fff;border-radius:7px;padding:6px 9px;cursor:pointer;font-size:13px;font-weight:600}
+  .icon-btn.edit{color:#0066b3}
+  .icon-btn.hdr{color:#1b7a37;border-color:#bfe3c9}
+  .icon-btn:hover{background:#f3f7fb}
+  .mini{font-size:10px;color:#8a94a3;display:block;margin-top:2px}
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
+
+  /* ===== Modal ===== */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,20,50,.55);z-index:500;
+    align-items:flex-start;justify-content:center;padding:24px;overflow:auto}
+  .modal-bg.show{display:flex}
+  .modal{background:#fff;border-radius:14px;width:100%;max-width:640px;box-shadow:0 12px 40px rgba(0,0,0,.3);margin:auto}
+  .modal-head{background:linear-gradient(90deg,#0066b3,#003e7e);color:#fff;padding:16px 22px;border-radius:14px 14px 0 0;
+    display:flex;justify-content:space-between;align-items:center}
+  .modal-head.verde{background:linear-gradient(90deg,#1b7a37,#0f5c27)}
+  .modal-head h3{margin:0;font-size:17px}
+  .modal-head .x{cursor:pointer;font-size:22px;line-height:1;opacity:.9}
+  .modal-body{padding:20px 22px}
+  .modal-info{background:#f3f7fb;border-radius:9px;padding:10px 14px;font-size:13px;color:#456;margin-bottom:14px}
+  .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:16px 22px;border-top:1px solid #eef1f4;flex-wrap:wrap}
+  .trace{background:#fffaf0;border:1px solid #f2d9a8;border-radius:8px;padding:8px 12px;font-size:12px;color:#8a6a20;margin-top:10px}
 
   /* ===== Plan de Trabajo Erizo ===== */
   .hoy-card{background:linear-gradient(135deg,#003e7e,#0066b3);color:#fff;border-radius:14px;
@@ -101,12 +126,8 @@
   .leyenda span{display:inline-flex;align-items:center;gap:6px}
   .sw{width:16px;height:16px;border-radius:4px;display:inline-block}
 
-  /* ============================================================
-     RESPONSIVO · CELULAR
-     ============================================================ */
-  @media (max-width: 900px){
-    .sem-grid{grid-template-columns:1fr}
-  }
+  /* ===== RESPONSIVO CELULAR ===== */
+  @media (max-width: 900px){ .sem-grid{grid-template-columns:1fr} }
   @media (max-width: 640px){
     header{padding:14px 16px}
     header h1{font-size:17px}
@@ -136,6 +157,7 @@
     table.plan{font-size:11px;min-width:520px}
     table.plan th,table.plan td{padding:7px 3px}
     .plan-config{padding:12px 13px}
+    .modal-foot .btn{width:100%}
   }
   .scroll-hint{display:none;font-size:11px;color:#8a94a3;margin:0 0 8px;text-align:right}
   @media (max-width: 640px){ .scroll-hint{display:block} }
@@ -162,7 +184,6 @@
     <div class="card">
       <h2>Nuevo conteo · Vuelta de reparto</h2>
       <form id="form" onsubmit="return false;">
-
         <div class="section-title">Datos generales</div>
         <div class="grid">
           <div>
@@ -203,7 +224,7 @@
           <div><label>Dollys</label><input type="number" id="fis_dollys" min="0" value="0"></div>
         </div>
 
-        <div class="section-title">Declarado HDR</div>
+        <div class="section-title">Declarado HDR <span class="muted" style="font-weight:400;text-transform:none">(podés dejarlo en 0 y completarlo después con “Completar HDR”)</span></div>
         <div class="grid">
           <div><label>Bandejas vacías</label><input type="number" id="hdr_vacias" min="0" value="0"></div>
           <div><label>Bandejas devoluciones</label><input type="number" id="hdr_devoluciones" min="0" value="0"></div>
@@ -229,18 +250,9 @@
     <div class="card">
       <h2>Registros cargados</h2>
       <div class="filters">
-        <div>
-          <label>Desde</label>
-          <input type="date" id="fDesde" onchange="render()">
-        </div>
-        <div>
-          <label>Hasta</label>
-          <input type="date" id="fHasta" onchange="render()">
-        </div>
-        <div>
-          <label>Ruta</label>
-          <input type="text" id="fRuta" placeholder="Todas" oninput="render()">
-        </div>
+        <div><label>Desde</label><input type="date" id="fDesde" onchange="render()"></div>
+        <div><label>Hasta</label><input type="date" id="fHasta" onchange="render()"></div>
+        <div><label>Ruta</label><input type="text" id="fRuta" placeholder="Todas" oninput="render()"></div>
         <div>
           <label>Canal</label>
           <select id="fCanal" onchange="render()">
@@ -261,19 +273,16 @@
             <option value="REVISAR">REVISAR</option>
           </select>
         </div>
-        <div style="flex:0">
-          <button class="btn sec" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button>
-        </div>
-        <div style="flex:0">
-          <button class="btn" style="margin-top:0" onclick="exportar()">⬇️ Exportar Excel</button>
-        </div>
+        <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button></div>
+        <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportar()">⬇️ Exportar Excel</button></div>
       </div>
-      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Si todas las diferencias son 0, el estado es <b>COINCIDE</b>; si hay alguna diferencia, queda en <b>REVISAR</b>.</p>
+      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️ Editar</b> para corregir cualquier dato, o <b>📥 HDR</b> para completar solo los declarados.</p>
       <p class="scroll-hint">👉 Deslizá la tabla hacia el costado para ver todas las columnas</p>
       <div class="table-wrap">
         <table id="tabla">
           <thead>
             <tr>
+              <th>Acciones</th>
               <th>Fecha</th><th>Ruta</th><th>Canal</th><th>Contador</th><th>Turno</th>
               <th>Vacías Fís</th><th>Vacías HDR</th><th>Dif</th>
               <th>Devol Fís</th><th>Devol HDR</th><th>Dif</th>
@@ -290,7 +299,6 @@
 
   <!-- ================= PLAN DE TRABAJO ERIZO ================= -->
   <div id="tabPlan" style="display:none">
-
     <div class="plan-config">
       <div style="flex:1;min-width:240px">
         🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario. No hay que configurar nada.
@@ -308,9 +316,7 @@
         </select>
       </div>
     </div>
-
     <div id="hoyCard"></div>
-
     <div class="card">
       <h2>Cronograma rotativo Erizo · 4 semanas · Ventana 04:00 a 08:00</h2>
       <div class="sem-grid" id="semGrid"></div>
@@ -324,92 +330,153 @@
   </div>
 </div>
 
+<!-- ================= MODAL EDITAR ================= -->
+<div class="modal-bg" id="modalEditar">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>✏️ Editar registro</h3>
+      <span class="x" onclick="cerrarModal('modalEditar')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="edInfo"></div>
+      <input type="hidden" id="ed_id">
+      <div class="grid">
+        <div>
+          <label>Fecha</label>
+          <input type="date" id="ed_fecha">
+        </div>
+        <div>
+          <label>Ruta entregadora</label>
+          <select id="ed_ruta" onchange="edMostrarCanal()"></select>
+          <div id="ed_canalBadge" class="canal-badge" style="display:none"></div>
+        </div>
+        <div>
+          <label>Contador</label>
+          <input type="text" id="ed_contador">
+        </div>
+        <div>
+          <label>Turno</label>
+          <select id="ed_turno">
+            <option value="">— Seleccionar —</option>
+            <option>04:00 a 06:00</option>
+            <option>06:00 a 08:00</option>
+            <option>Turno día</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title">Conteo físico</div>
+      <div class="grid">
+        <div><label>Vacías</label><input type="number" id="ed_fis_vacias" min="0"></div>
+        <div><label>Devoluciones</label><input type="number" id="ed_fis_devoluciones" min="0"></div>
+        <div><label>Rechazo</label><input type="number" id="ed_fis_rechazo" min="0"></div>
+        <div><label>Dollys</label><input type="number" id="ed_fis_dollys" min="0"></div>
+      </div>
+
+      <div class="section-title">Declarado HDR</div>
+      <div class="grid">
+        <div><label>Vacías</label><input type="number" id="ed_hdr_vacias" min="0"></div>
+        <div><label>Devoluciones</label><input type="number" id="ed_hdr_devoluciones" min="0"></div>
+        <div><label>Rechazo</label><input type="number" id="ed_hdr_rechazo" min="0"></div>
+        <div><label>Dollys</label><input type="number" id="ed_hdr_dollys" min="0"></div>
+      </div>
+
+      <div class="section-title">Observaciones</div>
+      <textarea id="ed_observaciones" rows="2"></textarea>
+
+      <div class="section-title" style="color:#b26a00;border-color:#f2d9a8">Trazabilidad (obligatorio)</div>
+      <div class="grid">
+        <div>
+          <label>¿Quién modifica? *</label>
+          <input type="text" id="ed_modificado_por" placeholder="Nombre y apellido">
+        </div>
+        <div>
+          <label>Motivo de la modificación *</label>
+          <input type="text" id="ed_motivo" placeholder="Ej: corrección de tipeo en dollys">
+        </div>
+      </div>
+      <div class="trace" id="ed_traza" style="display:none"></div>
+      <div id="edMsg" class="msg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn gris" onclick="cerrarModal('modalEditar')">Cancelar</button>
+      <button class="btn" onclick="guardarEdicion()">💾 Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL COMPLETAR HDR ================= -->
+<div class="modal-bg" id="modalHdr">
+  <div class="modal">
+    <div class="modal-head verde">
+      <h3>📥 Completar HDR</h3>
+      <span class="x" onclick="cerrarModal('modalHdr')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="hdrInfo"></div>
+      <input type="hidden" id="hdr_id">
+      <div class="section-title" style="color:#1b7a37;border-color:#bfe3c9">Declarado HDR</div>
+      <div class="grid">
+        <div><label>Bandejas vacías</label><input type="number" id="hd_hdr_vacias" min="0"></div>
+        <div><label>Bandejas devoluciones</label><input type="number" id="hd_hdr_devoluciones" min="0"></div>
+        <div><label>Bandejas rechazo</label><input type="number" id="hd_hdr_rechazo" min="0"></div>
+        <div><label>Dollys</label><input type="number" id="hd_hdr_dollys" min="0"></div>
+      </div>
+      <div class="section-title" style="color:#1b7a37;border-color:#bfe3c9">¿Quién completa? (obligatorio)</div>
+      <div>
+        <label>Nombre y apellido *</label>
+        <input type="text" id="hd_por" placeholder="Nombre y apellido">
+      </div>
+      <div class="trace" id="hd_traza" style="display:none"></div>
+      <div id="hdrMsg" class="msg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn gris" onclick="cerrarModal('modalHdr')">Cancelar</button>
+      <button class="btn hdr" onclick="guardarHdr()">✅ Guardar HDR</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ====== Conexión Supabase (mismo proyecto del Dashboard Saldo Primario) ======
+// ====== Conexión Supabase ======
 const SUPABASE_URL = 'https://chdteugdydnftkysgfmo.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_yrrkBwZ_N6m1WEKID0AqTg_pZLPFwRX';
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ====== Rutas entregadoras y su CANAL (de la Grilla de Venta Tablada) ======
-// Se toma la Ruta Entregadora (col H) sin el prefijo 14117 (ultimos 4 digitos)
-// y el Canal (col G). Erizo queda marcado como Erizo (ya esta en su dashboard,
-// pero se incluye para que el controlador vea el tipo al anotar la ruta).
+// ====== Rutas entregadoras y su CANAL ======
 const RUTAS_CANAL = {
-  // --- Erizo (incluye 189, 207 y 209 por pedido) ---
   '116':'Erizo','117':'Erizo','126':'Erizo','127':'Erizo','128':'Erizo','129':'Erizo',
   '130':'Erizo','131':'Erizo','154':'Erizo','157':'Erizo','158':'Erizo','159':'Erizo',
   '188':'Erizo','189':'Erizo','205':'Erizo','206':'Erizo','207':'Erizo','209':'Erizo',
   '228':'Erizo','229':'Erizo','263':'Erizo','264':'Erizo','266':'Erizo','286':'Erizo',
   '287':'Erizo','324':'Erizo','411':'Erizo','464':'Erizo',
-  // --- Autoservicio / Mayorista / QSR / Tradicional / Cripa ---
-  '023':'Autoservicio / Mayorista / QSR',
-  '065':'Autoservicio / Mayorista',
-  '124':'Autoservicio',
-  '125':'Autoservicio',
-  '140':'Autoservicio / Mayorista',
-  '141':'Autoservicio',
-  '156':'Autoservicio',
-  '172':'Tradicional',
-  '175':'Mayorista',
-  '190':'Autoservicio',
-  '191':'Autoservicio',
-  '194':'Autoservicio',
-  '195':'Autoservicio',
-  '196':'Autoservicio',
-  '198':'Autoservicio',
-  '199':'Autoservicio',
-  '204':'Mayorista / QSR / Autoservicio',
-  '208':'Autoservicio',
-  '210':'Autoservicio',
-  '211':'Mayorista / Tradicional',
-  '217':'Autoservicio / Mayorista',
-  '219':'Autoservicio',
-  '220':'Autoservicio / Mayorista',
-  '236':'Mayorista / Autoservicio',
-  '258':'Autoservicio',
-  '259':'Autoservicio / Mayorista',
-  '260':'Autoservicio',
-  '262':'Autoservicio',
-  '265':'Autoservicio / Mayorista',
-  '272':'Mayorista',
-  '288':'Autoservicio',
-  '289':'Autoservicio',
-  '325':'Autoservicio / Mayorista',
-  '430':'Autoservicio',
-  '432':'Autoservicio',
-  '433':'Cripa c/orden',
-  '439':'Autoservicio',
-  '440':'Autoservicio / Mayorista',
-  '460':'Autoservicio'
+  '023':'Autoservicio / Mayorista / QSR','065':'Autoservicio / Mayorista','124':'Autoservicio',
+  '125':'Autoservicio','140':'Autoservicio / Mayorista','141':'Autoservicio','156':'Autoservicio',
+  '172':'Tradicional','175':'Mayorista','190':'Autoservicio','191':'Autoservicio','194':'Autoservicio',
+  '195':'Autoservicio','196':'Autoservicio','198':'Autoservicio','199':'Autoservicio',
+  '204':'Mayorista / QSR / Autoservicio','208':'Autoservicio','210':'Autoservicio',
+  '211':'Mayorista / Tradicional','217':'Autoservicio / Mayorista','219':'Autoservicio',
+  '220':'Autoservicio / Mayorista','236':'Mayorista / Autoservicio','258':'Autoservicio',
+  '259':'Autoservicio / Mayorista','260':'Autoservicio','262':'Autoservicio',
+  '265':'Autoservicio / Mayorista','272':'Mayorista','288':'Autoservicio','289':'Autoservicio',
+  '325':'Autoservicio / Mayorista','430':'Autoservicio','432':'Autoservicio','433':'Cripa c/orden',
+  '439':'Autoservicio','440':'Autoservicio / Mayorista','460':'Autoservicio'
 };
-
 function canalDe(r){ return RUTAS_CANAL[r] || 'Canal desconocido'; }
 function esErizoCanal(canal){ return (canal || '') === 'Erizo'; }
 
-// ====== PLAN DE TRABAJO ERIZO (cronograma rotativo de 4 semanas) ======
-// Días: L=Lunes, M=Martes, X=Miércoles, J=Jueves, V=Viernes, S=Sábado
+// ====== PLAN DE TRABAJO ERIZO ======
 const PLAN = {
-  1: {
-    '04-06': { L:[126,127], M:[128,129], X:[205,411], J:[206,287], V:[188,324], S:[130,131] },
-    '06-08': { L:[286,116,117], M:[154,157,158], X:[266,263,264], J:[207,189], V:[159], S:[] }
-  },
-  2: {
-    '04-06': { L:[205,411], M:[126,127], X:[206,287], J:[128,129], V:[130,131], S:[188,324] },
-    '06-08': { L:[154,157,264], M:[266,263,207], X:[286,117], J:[116,159], V:[189], S:[158] }
-  },
-  3: {
-    '04-06': { L:[130,131], M:[206,287], X:[128,129], J:[188,324], V:[126,127], S:[205,411] },
-    '06-08': { L:[266,207], M:[116,189,159], X:[117,158], J:[154,263], V:[286,264], S:[157] }
-  },
-  4: {
-    '04-06': { L:[188,324], M:[205,411], X:[126,127], J:[130,131], V:[206,287], S:[128,129] },
-    '06-08': { L:[263,189,159], M:[117,264], X:[116,157,207], J:[266], V:[154,158], S:[286] }
-  }
+  1: {'04-06':{L:[126,127],M:[128,129],X:[205,411],J:[206,287],V:[188,324],S:[130,131]},
+      '06-08':{L:[286,116,117],M:[154,157,158],X:[266,263,264],J:[207,189],V:[159],S:[]}},
+  2: {'04-06':{L:[205,411],M:[126,127],X:[206,287],J:[128,129],V:[130,131],S:[188,324]},
+      '06-08':{L:[154,157,264],M:[266,263,207],X:[286,117],J:[116,159],V:[189],S:[158]}},
+  3: {'04-06':{L:[130,131],M:[206,287],X:[128,129],J:[188,324],V:[126,127],S:[205,411]},
+      '06-08':{L:[266,207],M:[116,189,159],X:[117,158],J:[154,263],V:[286,264],S:[157]}},
+  4: {'04-06':{L:[188,324],M:[205,411],X:[126,127],J:[130,131],V:[206,287],S:[128,129]},
+      '06-08':{L:[263,189,159],M:[117,264],X:[116,157,207],J:[266],V:[154,158],S:[286]}}
 };
-const DIAS = [
-  {k:'L', n:'Lunes'}, {k:'M', n:'Martes'}, {k:'X', n:'Miércoles'},
-  {k:'J', n:'Jueves'}, {k:'V', n:'Viernes'}, {k:'S', n:'Sábado'}
-];
+const DIAS = [{k:'L',n:'Lunes'},{k:'M',n:'Martes'},{k:'X',n:'Miércoles'},{k:'J',n:'Jueves'},{k:'V',n:'Viernes'},{k:'S',n:'Sábado'}];
 const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 
 let REGISTROS = [];
@@ -417,148 +484,126 @@ let REGISTROS = [];
 // ====== Utilidades ======
 function n(id){ return parseInt(document.getElementById(id).value) || 0; }
 function v(id){ return document.getElementById(id).value.trim(); }
-function fmtFecha(f){
-  if(!f) return '';
-  const p = f.split('-');
-  return p.length===3 ? (p[2]+'/'+p[1]+'/'+p[0]) : f;
+function fmtFecha(f){ if(!f) return ''; const p=f.split('-'); return p.length===3?(p[2]+'/'+p[1]+'/'+p[0]):f; }
+function ahoraTxt(){
+  const d=new Date();
+  const dd=('0'+d.getDate()).slice(-2), mm=('0'+(d.getMonth()+1)).slice(-2);
+  const hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
+  return dd+'/'+mm+'/'+d.getFullYear()+' '+hh+':'+mi;
+}
+function fmtStamp(iso){
+  if(!iso) return '';
+  const d=new Date(iso);
+  const dd=('0'+d.getDate()).slice(-2), mm=('0'+(d.getMonth()+1)).slice(-2);
+  const hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
+  return dd+'/'+mm+'/'+d.getFullYear()+' '+hh+':'+mi;
 }
 function celdaDif(fis, hdr){
-  const d = fis - hdr;
-  const cls = d < 0 ? 'diff-neg' : (d > 0 ? 'diff-pos' : 'diff-zero');
-  const txt = d > 0 ? ('+'+d) : d;
-  return '<td class="'+cls+'">'+txt+'</td>';
+  const d=fis-hdr;
+  const cls=d<0?'diff-neg':(d>0?'diff-pos':'diff-zero');
+  return '<td class="'+cls+'">'+(d>0?('+'+d):d)+'</td>';
 }
 function estado(x){
-  const coincide = (x.fis_vacias===x.hdr_vacias) &&
-                   (x.fis_devoluciones===x.hdr_devoluciones) &&
-                   (x.fis_rechazo===x.hdr_rechazo) &&
-                   (x.fis_dollys===x.hdr_dollys);
-  return coincide ? 'COINCIDE' : 'REVISAR';
+  const c=(x.fis_vacias===x.hdr_vacias)&&(x.fis_devoluciones===x.hdr_devoluciones)&&
+          (x.fis_rechazo===x.hdr_rechazo)&&(x.fis_dollys===x.hdr_dollys);
+  return c?'COINCIDE':'REVISAR';
 }
+function canalReg(x){ return x.canal || canalDe(x.ruta); }
 
-// ====== Mostrar canal al elegir la ruta ======
-function mostrarCanal(){
-  const r = document.getElementById('ruta').value;
-  const box = document.getElementById('canalBadge');
+// ====== Mostrar canal ======
+function mostrarCanal(){ pintarCanal('ruta','canalBadge'); }
+function edMostrarCanal(){ pintarCanal('ed_ruta','ed_canalBadge'); }
+function pintarCanal(selId, boxId){
+  const r=document.getElementById(selId).value;
+  const box=document.getElementById(boxId);
   if(!r){ box.style.display='none'; return; }
-  const canal = canalDe(r);
+  const canal=canalDe(r);
   box.style.display='inline-block';
-  if(canal === 'Canal desconocido'){
-    box.className = 'canal-badge desc';
-    box.textContent = '❓ '+canal;
-  } else {
-    box.className = 'canal-badge ' + (esErizoCanal(canal) ? 'erizo' : 'otro');
-    box.textContent = (esErizoCanal(canal) ? '🦔 ' : '🚚 ') + canal;
-  }
+  if(canal==='Canal desconocido'){ box.className='canal-badge desc'; box.textContent='❓ '+canal; }
+  else { box.className='canal-badge '+(esErizoCanal(canal)?'erizo':'otro'); box.textContent=(esErizoCanal(canal)?'🦔 ':'🚚 ')+canal; }
 }
 
 // ====== Pestañas ======
 function showTab(t){
-  document.getElementById('tabCarga').style.display = t==='carga' ? 'block' : 'none';
-  document.getElementById('tabVer').style.display   = t==='ver'   ? 'block' : 'none';
-  document.getElementById('tabPlan').style.display  = t==='plan'  ? 'block' : 'none';
-  document.getElementById('tabCargaBtn').classList.toggle('active', t==='carga');
-  document.getElementById('tabVerBtn').classList.toggle('active', t==='ver');
-  document.getElementById('tabPlanBtn').classList.toggle('active', t==='plan');
+  document.getElementById('tabCarga').style.display=t==='carga'?'block':'none';
+  document.getElementById('tabVer').style.display=t==='ver'?'block':'none';
+  document.getElementById('tabPlan').style.display=t==='plan'?'block':'none';
+  document.getElementById('tabCargaBtn').classList.toggle('active',t==='carga');
+  document.getElementById('tabVerBtn').classList.toggle('active',t==='ver');
+  document.getElementById('tabPlanBtn').classList.toggle('active',t==='plan');
   if(t==='ver'){ cargarDatos(); }
   if(t==='plan'){ renderPlan(); }
 }
 
-// ====== Guardar conteo ======
+// ====== Guardar conteo nuevo ======
 async function guardar(){
-  const msg = document.getElementById('msg');
-  msg.className = 'msg';
-  if(!v('fecha') || !v('ruta') || !v('contador')){
-    msg.className='msg err';
-    msg.textContent='⚠️ Completá Fecha, Ruta y Contador.';
-    return;
-  }
-  const registro = {
-    fecha: v('fecha'),
-    ruta: v('ruta'),
-    canal: canalDe(v('ruta')),
-    contador: v('contador'),
-    turno: v('turno') || null,
-    hoja: v('hoja') || null,
-    fis_vacias: n('fis_vacias'),
-    fis_devoluciones: n('fis_devoluciones'),
-    fis_rechazo: n('fis_rechazo'),
-    fis_dollys: n('fis_dollys'),
-    hdr_vacias: n('hdr_vacias'),
-    hdr_devoluciones: n('hdr_devoluciones'),
-    hdr_rechazo: n('hdr_rechazo'),
-    hdr_dollys: n('hdr_dollys'),
-    observaciones: v('observaciones') || null
+  const msg=document.getElementById('msg'); msg.className='msg';
+  if(!v('fecha')||!v('ruta')||!v('contador')){ msg.className='msg err'; msg.textContent='⚠️ Completá Fecha, Ruta y Contador.'; return; }
+  const registro={
+    fecha:v('fecha'), ruta:v('ruta'), canal:canalDe(v('ruta')), contador:v('contador'),
+    turno:v('turno')||null, hoja:v('hoja')||null,
+    fis_vacias:n('fis_vacias'), fis_devoluciones:n('fis_devoluciones'), fis_rechazo:n('fis_rechazo'), fis_dollys:n('fis_dollys'),
+    hdr_vacias:n('hdr_vacias'), hdr_devoluciones:n('hdr_devoluciones'), hdr_rechazo:n('hdr_rechazo'), hdr_dollys:n('hdr_dollys'),
+    observaciones:v('observaciones')||null
   };
   try{
-    const { error } = await supa.from('control_erizos').insert(registro);
+    const {error}=await supa.from('control_erizos').insert(registro);
     if(error) throw error;
-    msg.className='msg ok';
-    msg.textContent='✅ Conteo guardado correctamente. ¡Gracias!';
+    msg.className='msg ok'; msg.textContent='✅ Conteo guardado correctamente. ¡Gracias!';
     document.getElementById('form').reset();
     document.getElementById('canalBadge').style.display='none';
-    document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
-    ['fis_vacias','fis_devoluciones','fis_rechazo','fis_dollys',
-     'hdr_vacias','hdr_devoluciones','hdr_rechazo','hdr_dollys'].forEach(function(id){
-       document.getElementById(id).value = 0;
-     });
-  }catch(e){
-    msg.className='msg err';
-    msg.textContent='❌ No se pudo guardar: '+(e.message||e);
-  }
+    document.getElementById('fecha').value=new Date().toISOString().slice(0,10);
+    ['fis_vacias','fis_devoluciones','fis_rechazo','fis_dollys','hdr_vacias','hdr_devoluciones','hdr_rechazo','hdr_dollys']
+      .forEach(id=>document.getElementById(id).value=0);
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
 // ====== Cargar datos ======
 async function cargarDatos(){
   try{
-    const { data, error } = await supa
-      .from('control_erizos')
-      .select('*')
-      .order('fecha', { ascending:false })
-      .order('created_at', { ascending:false });
+    const {data,error}=await supa.from('control_erizos').select('*')
+      .order('fecha',{ascending:false}).order('created_at',{ascending:false});
     if(error) throw error;
-    REGISTROS = data || [];
+    REGISTROS=data||[];
     render();
   }catch(e){
-    document.getElementById('tbody').innerHTML =
-      '<tr><td colspan="19" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
+    document.getElementById('tbody').innerHTML='<tr><td colspan="20" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
   }
 }
 
-// ====== Render tabla + KPIs ======
-function canalReg(x){
-  return x.canal || canalDe(x.ruta);
-}
+// ====== Filtro + render ======
 function filtrar(){
-  const d = document.getElementById('fDesde').value;
-  const h = document.getElementById('fHasta').value;
-  const r = document.getElementById('fRuta').value.trim().toLowerCase();
-  const c = document.getElementById('fCanal').value;
-  const es = document.getElementById('fEstado').value;
+  const d=document.getElementById('fDesde').value, h=document.getElementById('fHasta').value;
+  const r=document.getElementById('fRuta').value.trim().toLowerCase();
+  const c=document.getElementById('fCanal').value, es=document.getElementById('fEstado').value;
   return REGISTROS.filter(function(x){
-    if(d && x.fecha < d) return false;
-    if(h && x.fecha > h) return false;
-    if(r && !(x.ruta||'').toLowerCase().includes(r)) return false;
-    if(c && !(canalReg(x)||'').toLowerCase().includes(c.toLowerCase())) return false;
-    if(es && estado(x) !== es) return false;
+    if(d&&x.fecha<d) return false;
+    if(h&&x.fecha>h) return false;
+    if(r&&!(x.ruta||'').toLowerCase().includes(r)) return false;
+    if(c&&!(canalReg(x)||'').toLowerCase().includes(c.toLowerCase())) return false;
+    if(es&&estado(x)!==es) return false;
     return true;
   });
 }
-
 function render(){
-  const rows = filtrar();
-  const tb = document.getElementById('tbody');
+  const rows=filtrar(); const tb=document.getElementById('tbody');
   if(rows.length===0){
-    tb.innerHTML = '<tr><td colspan="19" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
+    tb.innerHTML='<tr><td colspan="20" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
   } else {
-    tb.innerHTML = rows.map(function(x){
-      const es = estado(x);
-      const badge = es==='COINCIDE'
-        ? '<span class="est coin">COINCIDE</span>'
-        : '<span class="est rev">REVISAR</span>';
-      const canal = canalReg(x);
-      const canalTag = '<span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span>';
+    tb.innerHTML=rows.map(function(x){
+      const es=estado(x);
+      const badge=es==='COINCIDE'?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>';
+      const canal=canalReg(x);
+      const canalTag='<span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span>';
+      let mini='';
+      if(x.fecha_modificacion){ mini+='<span class="mini">✏️ '+(x.modificado_por||'')+' · '+fmtStamp(x.fecha_modificacion)+'</span>'; }
+      if(x.fecha_hdr){ mini+='<span class="mini">📥 HDR: '+(x.hdr_por||'')+' · '+fmtStamp(x.fecha_hdr)+'</span>'; }
+      const acc='<div class="acc-btns">'+
+        '<button class="icon-btn edit" onclick="abrirEditar('+x.id+')">✏️</button>'+
+        '<button class="icon-btn hdr" onclick="abrirHdr('+x.id+')">📥 HDR</button>'+
+        '</div>'+mini;
       return '<tr>'+
+        '<td>'+acc+'</td>'+
         '<td>'+fmtFecha(x.fecha)+'</td>'+
         '<td>'+(x.ruta||'')+'</td>'+
         '<td>'+canalTag+'</td>'+
@@ -573,157 +618,222 @@ function render(){
       '</tr>';
     }).join('');
   }
-  const totFis = rows.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
-  const totHdr = rows.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
-  const totDollysFis = rows.reduce((a,x)=>a+x.fis_dollys,0);
-  const revisar = rows.filter(x=>estado(x)==='REVISAR').length;
-  document.getElementById('kpis').innerHTML =
-    kpi(rows.length,'Conteos') +
-    kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas') +
-    kpi(totHdr.toLocaleString('es-AR'),'Bandejas HDR') +
-    kpi(totDollysFis.toLocaleString('es-AR'),'Dollys físicos') +
+  const totFis=rows.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
+  const totHdr=rows.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
+  const totDollysFis=rows.reduce((a,x)=>a+x.fis_dollys,0);
+  const revisar=rows.filter(x=>estado(x)==='REVISAR').length;
+  document.getElementById('kpis').innerHTML=
+    kpi(rows.length,'Conteos')+kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas')+
+    kpi(totHdr.toLocaleString('es-AR'),'Bandejas HDR')+kpi(totDollysFis.toLocaleString('es-AR'),'Dollys físicos')+
     kpi(revisar,'En REVISAR');
-  document.getElementById('conteoTotal').textContent = REGISTROS.length+' conteos registrados';
+  document.getElementById('conteoTotal').textContent=REGISTROS.length+' conteos registrados';
 }
 function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
 
-// ====== Exportar Excel ======
-function exportar(){
-  const rows = filtrar();
-  if(rows.length===0){ alert('No hay registros para exportar.'); return; }
-  const data = rows.map(function(x){
-    return {
-      'Fecha': fmtFecha(x.fecha),
-      'Ruta': x.ruta,
-      'Canal': canalReg(x),
-      'Contador': x.contador,
-      'Turno': x.turno||'',
-      'Hoja': x.hoja||'',
-      'Vacías Físico': x.fis_vacias, 'Vacías HDR': x.hdr_vacias, 'Dif Vacías': x.fis_vacias-x.hdr_vacias,
-      'Devol Físico': x.fis_devoluciones, 'Devol HDR': x.hdr_devoluciones, 'Dif Devol': x.fis_devoluciones-x.hdr_devoluciones,
-      'Rechazo Físico': x.fis_rechazo, 'Rechazo HDR': x.hdr_rechazo, 'Dif Rechazo': x.fis_rechazo-x.hdr_rechazo,
-      'Dollys Físico': x.fis_dollys, 'Dollys HDR': x.hdr_dollys, 'Dif Dollys': x.fis_dollys-x.hdr_dollys,
-      'Estado': estado(x),
-      'Observaciones': x.observaciones||''
-    };
-  });
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Vuelta Reparto');
-  XLSX.writeFile(wb, 'Control_Vuelta_Reparto_Tablada.xlsx');
+// ====== Modales: abrir/cerrar ======
+function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
+function regById(id){ return REGISTROS.find(x=>x.id===id); }
+
+// ---- EDITAR ----
+function abrirEditar(id){
+  const x=regById(id); if(!x) return;
+  document.getElementById('ed_id').value=x.id;
+  document.getElementById('ed_fecha').value=x.fecha;
+  document.getElementById('ed_ruta').value=x.ruta;
+  edMostrarCanal();
+  document.getElementById('ed_contador').value=x.contador||'';
+  document.getElementById('ed_turno').value=x.turno||'';
+  document.getElementById('ed_fis_vacias').value=x.fis_vacias;
+  document.getElementById('ed_fis_devoluciones').value=x.fis_devoluciones;
+  document.getElementById('ed_fis_rechazo').value=x.fis_rechazo;
+  document.getElementById('ed_fis_dollys').value=x.fis_dollys;
+  document.getElementById('ed_hdr_vacias').value=x.hdr_vacias;
+  document.getElementById('ed_hdr_devoluciones').value=x.hdr_devoluciones;
+  document.getElementById('ed_hdr_rechazo').value=x.hdr_rechazo;
+  document.getElementById('ed_hdr_dollys').value=x.hdr_dollys;
+  document.getElementById('ed_observaciones').value=x.observaciones||'';
+  document.getElementById('ed_modificado_por').value='';
+  document.getElementById('ed_motivo').value='';
+  document.getElementById('edMsg').className='msg';
+  document.getElementById('edInfo').innerHTML='Registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · Cargado por '+(x.contador||'—');
+  const tz=document.getElementById('ed_traza');
+  if(x.fecha_modificacion){
+    tz.style.display='block';
+    tz.innerHTML='Última modificación: <b>'+(x.modificado_por||'—')+'</b> el '+fmtStamp(x.fecha_modificacion)+
+      (x.motivo_modificacion?(' · Motivo: '+x.motivo_modificacion):'');
+  } else { tz.style.display='none'; }
+  document.getElementById('modalEditar').classList.add('show');
+}
+async function guardarEdicion(){
+  const msg=document.getElementById('edMsg'); msg.className='msg';
+  const quien=document.getElementById('ed_modificado_por').value.trim();
+  const motivo=document.getElementById('ed_motivo').value.trim();
+  const ruta=document.getElementById('ed_ruta').value;
+  if(!quien||!motivo){ msg.className='msg err'; msg.textContent='⚠️ Completá quién modifica y el motivo.'; return; }
+  const cambios={
+    fecha:document.getElementById('ed_fecha').value,
+    ruta:ruta, canal:canalDe(ruta),
+    contador:document.getElementById('ed_contador').value.trim(),
+    turno:document.getElementById('ed_turno').value||null,
+    fis_vacias:parseInt(document.getElementById('ed_fis_vacias').value)||0,
+    fis_devoluciones:parseInt(document.getElementById('ed_fis_devoluciones').value)||0,
+    fis_rechazo:parseInt(document.getElementById('ed_fis_rechazo').value)||0,
+    fis_dollys:parseInt(document.getElementById('ed_fis_dollys').value)||0,
+    hdr_vacias:parseInt(document.getElementById('ed_hdr_vacias').value)||0,
+    hdr_devoluciones:parseInt(document.getElementById('ed_hdr_devoluciones').value)||0,
+    hdr_rechazo:parseInt(document.getElementById('ed_hdr_rechazo').value)||0,
+    hdr_dollys:parseInt(document.getElementById('ed_hdr_dollys').value)||0,
+    observaciones:document.getElementById('ed_observaciones').value.trim()||null,
+    modificado_por:quien, motivo_modificacion:motivo, fecha_modificacion:new Date().toISOString()
+  };
+  try{
+    const id=parseInt(document.getElementById('ed_id').value);
+    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    if(error) throw error;
+    msg.className='msg ok'; msg.textContent='✅ Cambios guardados por '+quien+' · '+ahoraTxt();
+    await cargarDatos();
+    setTimeout(()=>cerrarModal('modalEditar'),900);
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
-// ====== PLAN DE TRABAJO ERIZO: rotación automática por calendario ======
+// ---- COMPLETAR HDR ----
+function abrirHdr(id){
+  const x=regById(id); if(!x) return;
+  document.getElementById('hdr_id').value=x.id;
+  document.getElementById('hd_hdr_vacias').value=x.hdr_vacias;
+  document.getElementById('hd_hdr_devoluciones').value=x.hdr_devoluciones;
+  document.getElementById('hd_hdr_rechazo').value=x.hdr_rechazo;
+  document.getElementById('hd_hdr_dollys').value=x.hdr_dollys;
+  document.getElementById('hd_por').value='';
+  document.getElementById('hdrMsg').className='msg';
+  document.getElementById('hdrInfo').innerHTML='Registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b><br>'+
+    'Físico: vacías '+x.fis_vacias+' · devol '+x.fis_devoluciones+' · rechazo '+x.fis_rechazo+' · dollys '+x.fis_dollys;
+  const tz=document.getElementById('hd_traza');
+  if(x.fecha_hdr){ tz.style.display='block'; tz.innerHTML='HDR completada por <b>'+(x.hdr_por||'—')+'</b> el '+fmtStamp(x.fecha_hdr); }
+  else { tz.style.display='none'; }
+  document.getElementById('modalHdr').classList.add('show');
+}
+async function guardarHdr(){
+  const msg=document.getElementById('hdrMsg'); msg.className='msg';
+  const quien=document.getElementById('hd_por').value.trim();
+  if(!quien){ msg.className='msg err'; msg.textContent='⚠️ Indicá quién completa la HDR.'; return; }
+  const cambios={
+    hdr_vacias:parseInt(document.getElementById('hd_hdr_vacias').value)||0,
+    hdr_devoluciones:parseInt(document.getElementById('hd_hdr_devoluciones').value)||0,
+    hdr_rechazo:parseInt(document.getElementById('hd_hdr_rechazo').value)||0,
+    hdr_dollys:parseInt(document.getElementById('hd_hdr_dollys').value)||0,
+    hdr_por:quien, fecha_hdr:new Date().toISOString()
+  };
+  try{
+    const id=parseInt(document.getElementById('hdr_id').value);
+    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    if(error) throw error;
+    msg.className='msg ok'; msg.textContent='✅ HDR completada por '+quien+' · '+ahoraTxt();
+    await cargarDatos();
+    setTimeout(()=>cerrarModal('modalHdr'),900);
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
+}
+
+// ====== Exportar Excel ======
+function exportar(){
+  const rows=filtrar();
+  if(rows.length===0){ alert('No hay registros para exportar.'); return; }
+  const data=rows.map(function(x){
+    return {
+      'Fecha':fmtFecha(x.fecha),'Ruta':x.ruta,'Canal':canalReg(x),'Contador':x.contador,'Turno':x.turno||'','Hoja':x.hoja||'',
+      'Vacías Físico':x.fis_vacias,'Vacías HDR':x.hdr_vacias,'Dif Vacías':x.fis_vacias-x.hdr_vacias,
+      'Devol Físico':x.fis_devoluciones,'Devol HDR':x.hdr_devoluciones,'Dif Devol':x.fis_devoluciones-x.hdr_devoluciones,
+      'Rechazo Físico':x.fis_rechazo,'Rechazo HDR':x.hdr_rechazo,'Dif Rechazo':x.fis_rechazo-x.hdr_rechazo,
+      'Dollys Físico':x.fis_dollys,'Dollys HDR':x.hdr_dollys,'Dif Dollys':x.fis_dollys-x.hdr_dollys,
+      'Estado':estado(x),'Observaciones':x.observaciones||'',
+      'Modificado por':x.modificado_por||'','Motivo modif.':x.motivo_modificacion||'','Fecha modif.':x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
+      'HDR por':x.hdr_por||'','Fecha HDR':x.fecha_hdr?fmtStamp(x.fecha_hdr):''
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Vuelta Reparto');
+  XLSX.writeFile(wb,'Control_Vuelta_Reparto_Tablada.xlsx');
+}
+
+// ====== PLAN DE TRABAJO ERIZO ======
 function lunesDe(fecha){
-  const d = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-  const dow = d.getDay();
-  const delta = (dow === 0) ? -6 : (1 - dow);
-  d.setDate(d.getDate() + delta);
-  return d;
+  const d=new Date(fecha.getFullYear(),fecha.getMonth(),fecha.getDate());
+  const dow=d.getDay(); const delta=(dow===0)?-6:(1-dow); d.setDate(d.getDate()+delta); return d;
 }
-function semanasEntre(a, b){
-  return Math.round((b - a) / (7 * 24 * 60 * 60 * 1000));
-}
-const ANCHOR_POR_DEFECTO = { mondayISO: '2026-09-07', week: 1 };
-function anclaVigente(){
-  return JSON.parse(localStorage.getItem('erizos_plan_anchor') || 'null') || ANCHOR_POR_DEFECTO;
-}
+function semanasEntre(a,b){ return Math.round((b-a)/(7*24*60*60*1000)); }
+const ANCHOR_POR_DEFECTO={ mondayISO:'2026-09-07', week:1 };
+function anclaVigente(){ return JSON.parse(localStorage.getItem('erizos_plan_anchor')||'null')||ANCHOR_POR_DEFECTO; }
 function semanaActual(){
-  const cfg = anclaVigente();
-  const anchorMonday = new Date(cfg.mondayISO + 'T00:00:00');
-  const thisMonday = lunesDe(new Date());
-  const diff = semanasEntre(anchorMonday, thisMonday);
-  return ((cfg.week - 1 + diff) % 4 + 4) % 4 + 1;
+  const cfg=anclaVigente();
+  const anchorMonday=new Date(cfg.mondayISO+'T00:00:00'); const thisMonday=lunesDe(new Date());
+  const diff=semanasEntre(anchorMonday,thisMonday);
+  return ((cfg.week-1+diff)%4+4)%4+1;
 }
 function toggleAjuste(ev){
   if(ev) ev.preventDefault();
-  const box = document.getElementById('ajusteBox');
-  box.style.display = (box.style.display === 'none') ? 'block' : 'none';
-  if(box.style.display === 'block'){
-    document.getElementById('selSemana').value = semanaActual();
-  }
+  const box=document.getElementById('ajusteBox');
+  box.style.display=(box.style.display==='none')?'block':'none';
+  if(box.style.display==='block'){ document.getElementById('selSemana').value=semanaActual(); }
 }
 function ajustarSemana(){
-  const w = parseInt(document.getElementById('selSemana').value);
-  const monday = lunesDe(new Date());
-  const iso = monday.toISOString().slice(0,10);
-  localStorage.setItem('erizos_plan_anchor', JSON.stringify({ mondayISO: iso, week: w }));
+  const w=parseInt(document.getElementById('selSemana').value);
+  const monday=lunesDe(new Date()); const iso=monday.toISOString().slice(0,10);
+  localStorage.setItem('erizos_plan_anchor',JSON.stringify({mondayISO:iso,week:w}));
   renderPlan();
 }
-function chips(arr){
-  if(!arr || arr.length===0) return '<span class="muted">—</span>';
-  return '<div class="rutas-chips">' + arr.map(r=>'<span class="chip">'+r+'</span>').join('') + '</div>';
-}
+function chips(arr){ if(!arr||arr.length===0) return '<span class="muted">—</span>';
+  return '<div class="rutas-chips">'+arr.map(r=>'<span class="chip">'+r+'</span>').join('')+'</div>'; }
 function renderPlan(){
-  const cont = document.getElementById('hoyCard');
-  const w = semanaActual();
-  const hoy = new Date();
-  const kHoy = JS_DAY_TO_K[hoy.getDay()];
-  const diaNombre = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
-  const fechaTxt = ('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
-
+  const cont=document.getElementById('hoyCard'); const w=semanaActual();
+  const hoy=new Date(); const kHoy=JS_DAY_TO_K[hoy.getDay()];
+  const diaNombre=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
+  const fechaTxt=('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
   if(!kHoy){
-    cont.innerHTML =
-      '<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
-      '<div class="badge">Semana '+w+'</div></div>'+
-      '<p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
+    cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
+      '<div class="badge">Semana '+w+'</div></div><p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
   } else {
-    const t1 = PLAN[w]['04-06'][kHoy];
-    const t2 = PLAN[w]['06-08'][kHoy];
-    cont.innerHTML =
-      '<div class="hoy-card">'+
-        '<div class="hoy-top">'+
-          '<div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
-          '<div class="badge">🔁 Semana '+w+' del cronograma</div>'+
-        '</div>'+
-        '<div class="turnos-hoy">'+
-          '<div class="turno-box t1"><div class="th">🟠 Primer turno · 04:00–06:00</div>'+chips(t1)+'</div>'+
-          '<div class="turno-box t2"><div class="th">🔵 Segundo turno · 06:00–08:00</div>'+chips(t2)+'</div>'+
-        '</div>'+
-      '</div>';
+    const t1=PLAN[w]['04-06'][kHoy], t2=PLAN[w]['06-08'][kHoy];
+    cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
+      '<div class="badge">🔁 Semana '+w+' del cronograma</div></div><div class="turnos-hoy">'+
+      '<div class="turno-box t1"><div class="th">🟠 Primer turno · 04:00–06:00</div>'+chips(t1)+'</div>'+
+      '<div class="turno-box t2"><div class="th">🔵 Segundo turno · 06:00–08:00</div>'+chips(t2)+'</div></div></div>';
   }
-
-  let html = '';
-  for(let s=1; s<=4; s++){
-    const esActual = (w===s);
-    html += '<div class="sem-card'+(esActual?' actual':'')+'">';
-    html += '<div class="sem-head"><span>Semana '+s+'</span>'+(esActual?'<span class="tag">ESTA SEMANA</span>':'')+'</div>';
-    html += '<div class="plan-scroll"><table class="plan"><thead><tr><th>Turno</th>';
-    DIAS.forEach(d=>{ html += '<th>'+d.n.toUpperCase()+'</th>'; });
-    html += '</tr></thead><tbody>';
-    html += '<tr class="t1"><td class="turno">04–06</td>';
-    DIAS.forEach(d=>{
-      const hoyCls = (esActual && d.k===kHoy) ? 'hoy-col' : '';
-      const arr = PLAN[s]['04-06'][d.k];
-      html += '<td class="'+hoyCls+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
-    });
-    html += '</tr>';
-    html += '<tr class="t2"><td class="turno">06–08</td>';
-    DIAS.forEach(d=>{
-      const hoyCls = (esActual && d.k===kHoy) ? 'hoy-col' : '';
-      const arr = PLAN[s]['06-08'][d.k];
-      html += '<td class="'+hoyCls+'">'+(arr && arr.length ? arr.join('<br>') : '—')+'</td>';
-    });
-    html += '</tr>';
-    html += '</tbody></table></div></div>';
+  let html='';
+  for(let s=1;s<=4;s++){
+    const esActual=(w===s);
+    html+='<div class="sem-card'+(esActual?' actual':'')+'"><div class="sem-head"><span>Semana '+s+'</span>'+
+      (esActual?'<span class="tag">ESTA SEMANA</span>':'')+'</div><div class="plan-scroll"><table class="plan"><thead><tr><th>Turno</th>';
+    DIAS.forEach(d=>{ html+='<th>'+d.n.toUpperCase()+'</th>'; });
+    html+='</tr></thead><tbody><tr class="t1"><td class="turno">04–06</td>';
+    DIAS.forEach(d=>{ const hc=(esActual&&d.k===kHoy)?'hoy-col':''; const arr=PLAN[s]['04-06'][d.k];
+      html+='<td class="'+hc+'">'+(arr&&arr.length?arr.join('<br>'):'—')+'</td>'; });
+    html+='</tr><tr class="t2"><td class="turno">06–08</td>';
+    DIAS.forEach(d=>{ const hc=(esActual&&d.k===kHoy)?'hoy-col':''; const arr=PLAN[s]['06-08'][d.k];
+      html+='<td class="'+hc+'">'+(arr&&arr.length?arr.join('<br>'):'—')+'</td>'; });
+    html+='</tr></tbody></table></div></div>';
   }
-  document.getElementById('semGrid').innerHTML = html;
+  document.getElementById('semGrid').innerHTML=html;
 }
 
-// ====== Init ======
-(function(){
-  const sel = document.getElementById('ruta');
-  const gE = document.createElement('optgroup'); gE.label = '🦔 Erizo';
-  const gO = document.createElement('optgroup'); gO.label = '🚚 Autoservicio / Mayorista / Otros';
+// ====== Init: llenar rutas en los dos selectores ======
+function llenarSelectorRutas(sel){
+  const gE=document.createElement('optgroup'); gE.label='🦔 Erizo';
+  const gO=document.createElement('optgroup'); gO.label='🚚 Autoservicio / Mayorista / Otros';
   Object.keys(RUTAS_CANAL).forEach(function(r){
-    const o = document.createElement('option');
-    o.value = r;
-    o.textContent = r + ' · ' + RUTAS_CANAL[r];
-    (RUTAS_CANAL[r] === 'Erizo' ? gE : gO).appendChild(o);
+    const o=document.createElement('option'); o.value=r; o.textContent=r+' · '+RUTAS_CANAL[r];
+    (RUTAS_CANAL[r]==='Erizo'?gE:gO).appendChild(o);
   });
-  sel.appendChild(gE);
-  sel.appendChild(gO);
-  document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
+  sel.appendChild(gE); sel.appendChild(gO);
+}
+(function(){
+  const sel=document.getElementById('ruta');
+  sel.innerHTML='<option value="">— Seleccionar —</option>';
+  llenarSelectorRutas(sel);
+  const edSel=document.getElementById('ed_ruta');
+  edSel.innerHTML='';
+  llenarSelectorRutas(edSel);
+  document.getElementById('fecha').value=new Date().toISOString().slice(0,10);
 })();
 </script>
 </body>
