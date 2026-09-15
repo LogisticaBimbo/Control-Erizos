@@ -60,7 +60,7 @@
   tr.anulado td.no-strike{text-decoration:none}
   .diff-neg{color:#c0392b;font-weight:700}
   .diff-pos{color:#1b7a37;font-weight:700}
-  .diff-zero{color:#999}
+  .diff-zero{color:#c8ced6}
   .est{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
   .est.rev{background:#fff4e0;color:#b26a00}
   .est.coin{background:#e6f4ea;color:#1b7a37}
@@ -68,14 +68,20 @@
   .canal-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
   .canal-tag.erizo{background:#fdeede;color:#a85a13}
   .canal-tag.otro{background:#e7f0fb;color:#23558f}
-  .acc-btns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
-  .icon-btn{border:1px solid #d5dbe3;background:#fff;border-radius:7px;padding:6px 9px;cursor:pointer;font-size:13px;font-weight:600}
+
+  /* ==== Acciones compactas: 3 iconos en una sola fila ==== */
+  .acc-cell{min-width:118px}
+  .acc-btns{display:inline-flex;gap:5px;justify-content:center;align-items:center}
+  .icon-btn{border:1px solid #d5dbe3;background:#fff;border-radius:8px;width:32px;height:32px;
+    display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;padding:0;line-height:1}
   .icon-btn.edit{color:#0066b3}
-  .icon-btn.hdr{color:#1b7a37;border-color:#bfe3c9}
-  .icon-btn.del{color:#c0392b;border-color:#f0c8c2}
-  .icon-btn:hover{background:#f3f7fb}
-  .mini{font-size:10px;color:#8a94a3;display:block;margin-top:2px}
+  .icon-btn.hdr{color:#1b7a37;border-color:#bfe3c9;background:#f2faf4}
+  .icon-btn.del{color:#c0392b;border-color:#f0c8c2;background:#fdf4f3}
+  .icon-btn.react{color:#1b7a37;border-color:#bfe3c9;background:#f2faf4;width:auto;padding:0 12px;font-size:13px;font-weight:600;gap:5px}
+  .icon-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
+  .mini{font-size:10px;color:#8a94a3;display:block;margin-top:4px;line-height:1.3}
   .mini.anu{color:#b0483a}
+
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
@@ -290,7 +296,7 @@
       <label class="chk" style="margin-bottom:12px">
         <input type="checkbox" id="verAnulados" onchange="render()"> Mostrar registros anulados
       </label>
-      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️</b> para editar, <b>📥 HDR</b> para completar declarados, o <b>🗑️</b> para anular duplicados (queda registrado quién y por qué).</p>
+      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️</b> para editar, <b>📥</b> para completar HDR, o <b>🗑️</b> para anular duplicados (queda registrado quién y por qué).</p>
       <p class="scroll-hint">👉 Deslizá la tabla hacia el costado para ver todas las columnas</p>
       <div class="table-wrap">
         <table id="tabla">
@@ -646,20 +652,20 @@ function render(){
       const canalTag='<span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span>';
       let mini='';
       if(x.fecha_modificacion){ mini+='<span class="mini">✏️ '+(x.modificado_por||'')+' · '+fmtStamp(x.fecha_modificacion)+'</span>'; }
-      if(x.fecha_hdr){ mini+='<span class="mini">📥 HDR: '+(x.hdr_por||'')+' · '+fmtStamp(x.fecha_hdr)+'</span>'; }
+      if(x.fecha_hdr){ mini+='<span class="mini">📥 '+(x.hdr_por||'')+' · '+fmtStamp(x.fecha_hdr)+'</span>'; }
       if(x.fecha_anulacion){ mini+='<span class="mini anu">🗑️ '+(x.anulado_por||'')+' · '+fmtStamp(x.fecha_anulacion)+(x.motivo_anulacion?(' · '+x.motivo_anulacion):'')+'</span>'; }
       let acc;
       if(anu){
-        acc='<div class="acc-btns"><button class="icon-btn hdr" onclick="abrirReactivar('+x.id+')">♻️ Reactivar</button></div>'+mini;
+        acc='<div class="acc-btns"><button class="icon-btn react" title="Reactivar" onclick="abrirReactivar('+x.id+')">♻️ Reactivar</button></div>'+mini;
       } else {
         acc='<div class="acc-btns">'+
-          '<button class="icon-btn edit" onclick="abrirEditar('+x.id+')">✏️</button>'+
-          '<button class="icon-btn hdr" onclick="abrirHdr('+x.id+')">📥 HDR</button>'+
-          '<button class="icon-btn del" onclick="abrirAnular('+x.id+')">🗑️</button>'+
+          '<button class="icon-btn edit" title="Editar registro" onclick="abrirEditar('+x.id+')">✏️</button>'+
+          '<button class="icon-btn hdr" title="Completar HDR" onclick="abrirHdr('+x.id+')">📥</button>'+
+          '<button class="icon-btn del" title="Anular registro" onclick="abrirAnular('+x.id+')">🗑️</button>'+
           '</div>'+mini;
       }
       return '<tr class="'+(anu?'anulado':'')+'">'+
-        '<td class="no-strike">'+acc+'</td>'+
+        '<td class="no-strike acc-cell">'+acc+'</td>'+
         '<td>'+fmtFecha(x.fecha)+'</td>'+
         '<td>'+(x.ruta||'')+'</td>'+
         '<td class="no-strike">'+canalTag+'</td>'+
@@ -674,7 +680,6 @@ function render(){
       '</tr>';
     }).join('');
   }
-  // KPIs solo con ACTIVOS visibles
   const activos=rows.filter(x=>!esAnulado(x));
   const totFis=activos.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
   const totHdr=activos.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
