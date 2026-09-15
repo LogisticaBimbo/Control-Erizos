@@ -30,9 +30,10 @@
     font-weight:600;cursor:pointer;margin-top:16px}
   .btn:hover{background:#004e8c}
   .btn.sec{background:#eef2f7;color:#0066b3}
-  .btn.small{padding:7px 12px;font-size:13px;margin-top:0}
   .btn.hdr{background:#1b7a37}
   .btn.hdr:hover{background:#146129}
+  .btn.rojo{background:#c0392b}
+  .btn.rojo:hover{background:#9d2f23}
   .btn.gris{background:#e6e9ee;color:#556}
   .msg{padding:12px 16px;border-radius:8px;margin-top:14px;font-size:14px;display:none}
   .msg.ok{background:#e6f4ea;color:#1b7a37;display:block}
@@ -47,26 +48,34 @@
   .kpi .l{font-size:12px;color:#667;margin-top:3px}
   .filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
   .filters > div{flex:1;min-width:130px}
+  .chk{display:flex;align-items:center;gap:7px;font-size:13px;color:#556;font-weight:600}
+  .chk input{width:auto}
   table{width:100%;border-collapse:collapse;font-size:13px}
   th,td{padding:8px 9px;text-align:center;border-bottom:1px solid #eef1f4;white-space:nowrap}
   th{background:#0066b3;color:#fff;position:sticky;top:0;font-size:12px}
   tbody tr:hover{background:#f3f7fb}
   td.left{text-align:left}
+  tr.anulado{background:#fbf1f0!important;color:#b0a0a0}
+  tr.anulado td{text-decoration:line-through;text-decoration-color:#d8b3ad}
+  tr.anulado td.no-strike{text-decoration:none}
   .diff-neg{color:#c0392b;font-weight:700}
   .diff-pos{color:#1b7a37;font-weight:700}
   .diff-zero{color:#999}
   .est{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
   .est.rev{background:#fff4e0;color:#b26a00}
   .est.coin{background:#e6f4ea;color:#1b7a37}
+  .est.anu{background:#f3d9d5;color:#a3382a}
   .canal-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
   .canal-tag.erizo{background:#fdeede;color:#a85a13}
   .canal-tag.otro{background:#e7f0fb;color:#23558f}
-  .acc-btns{display:flex;gap:6px;justify-content:center}
+  .acc-btns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
   .icon-btn{border:1px solid #d5dbe3;background:#fff;border-radius:7px;padding:6px 9px;cursor:pointer;font-size:13px;font-weight:600}
   .icon-btn.edit{color:#0066b3}
   .icon-btn.hdr{color:#1b7a37;border-color:#bfe3c9}
+  .icon-btn.del{color:#c0392b;border-color:#f0c8c2}
   .icon-btn:hover{background:#f3f7fb}
   .mini{font-size:10px;color:#8a94a3;display:block;margin-top:2px}
+  .mini.anu{color:#b0483a}
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
@@ -79,12 +88,14 @@
   .modal-head{background:linear-gradient(90deg,#0066b3,#003e7e);color:#fff;padding:16px 22px;border-radius:14px 14px 0 0;
     display:flex;justify-content:space-between;align-items:center}
   .modal-head.verde{background:linear-gradient(90deg,#1b7a37,#0f5c27)}
+  .modal-head.rojo{background:linear-gradient(90deg,#c0392b,#8f2317)}
   .modal-head h3{margin:0;font-size:17px}
   .modal-head .x{cursor:pointer;font-size:22px;line-height:1;opacity:.9}
   .modal-body{padding:20px 22px}
   .modal-info{background:#f3f7fb;border-radius:9px;padding:10px 14px;font-size:13px;color:#456;margin-bottom:14px}
   .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:16px 22px;border-top:1px solid #eef1f4;flex-wrap:wrap}
   .trace{background:#fffaf0;border:1px solid #f2d9a8;border-radius:8px;padding:8px 12px;font-size:12px;color:#8a6a20;margin-top:10px}
+  .warn-box{background:#fdecea;border:1px solid #f0c8c2;border-radius:9px;padding:12px 14px;font-size:13px;color:#a3382a;margin-bottom:14px}
 
   /* ===== Plan de Trabajo Erizo ===== */
   .hoy-card{background:linear-gradient(135deg,#003e7e,#0066b3);color:#fff;border-radius:14px;
@@ -276,7 +287,10 @@
         <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button></div>
         <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportar()">⬇️ Exportar Excel</button></div>
       </div>
-      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️ Editar</b> para corregir cualquier dato, o <b>📥 HDR</b> para completar solo los declarados.</p>
+      <label class="chk" style="margin-bottom:12px">
+        <input type="checkbox" id="verAnulados" onchange="render()"> Mostrar registros anulados
+      </label>
+      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️</b> para editar, <b>📥 HDR</b> para completar declarados, o <b>🗑️</b> para anular duplicados (queda registrado quién y por qué).</p>
       <p class="scroll-hint">👉 Deslizá la tabla hacia el costado para ver todas las columnas</p>
       <div class="table-wrap">
         <table id="tabla">
@@ -341,19 +355,13 @@
       <div class="modal-info" id="edInfo"></div>
       <input type="hidden" id="ed_id">
       <div class="grid">
-        <div>
-          <label>Fecha</label>
-          <input type="date" id="ed_fecha">
-        </div>
+        <div><label>Fecha</label><input type="date" id="ed_fecha"></div>
         <div>
           <label>Ruta entregadora</label>
           <select id="ed_ruta" onchange="edMostrarCanal()"></select>
           <div id="ed_canalBadge" class="canal-badge" style="display:none"></div>
         </div>
-        <div>
-          <label>Contador</label>
-          <input type="text" id="ed_contador">
-        </div>
+        <div><label>Contador</label><input type="text" id="ed_contador"></div>
         <div>
           <label>Turno</label>
           <select id="ed_turno">
@@ -364,7 +372,6 @@
           </select>
         </div>
       </div>
-
       <div class="section-title">Conteo físico</div>
       <div class="grid">
         <div><label>Vacías</label><input type="number" id="ed_fis_vacias" min="0"></div>
@@ -372,7 +379,6 @@
         <div><label>Rechazo</label><input type="number" id="ed_fis_rechazo" min="0"></div>
         <div><label>Dollys</label><input type="number" id="ed_fis_dollys" min="0"></div>
       </div>
-
       <div class="section-title">Declarado HDR</div>
       <div class="grid">
         <div><label>Vacías</label><input type="number" id="ed_hdr_vacias" min="0"></div>
@@ -380,20 +386,12 @@
         <div><label>Rechazo</label><input type="number" id="ed_hdr_rechazo" min="0"></div>
         <div><label>Dollys</label><input type="number" id="ed_hdr_dollys" min="0"></div>
       </div>
-
       <div class="section-title">Observaciones</div>
       <textarea id="ed_observaciones" rows="2"></textarea>
-
       <div class="section-title" style="color:#b26a00;border-color:#f2d9a8">Trazabilidad (obligatorio)</div>
       <div class="grid">
-        <div>
-          <label>¿Quién modifica? *</label>
-          <input type="text" id="ed_modificado_por" placeholder="Nombre y apellido">
-        </div>
-        <div>
-          <label>Motivo de la modificación *</label>
-          <input type="text" id="ed_motivo" placeholder="Ej: corrección de tipeo en dollys">
-        </div>
+        <div><label>¿Quién modifica? *</label><input type="text" id="ed_modificado_por" placeholder="Nombre y apellido"></div>
+        <div><label>Motivo de la modificación *</label><input type="text" id="ed_motivo" placeholder="Ej: corrección de tipeo en dollys"></div>
       </div>
       <div class="trace" id="ed_traza" style="display:none"></div>
       <div id="edMsg" class="msg"></div>
@@ -423,16 +421,60 @@
         <div><label>Dollys</label><input type="number" id="hd_hdr_dollys" min="0"></div>
       </div>
       <div class="section-title" style="color:#1b7a37;border-color:#bfe3c9">¿Quién completa? (obligatorio)</div>
-      <div>
-        <label>Nombre y apellido *</label>
-        <input type="text" id="hd_por" placeholder="Nombre y apellido">
-      </div>
+      <div><label>Nombre y apellido *</label><input type="text" id="hd_por" placeholder="Nombre y apellido"></div>
       <div class="trace" id="hd_traza" style="display:none"></div>
       <div id="hdrMsg" class="msg"></div>
     </div>
     <div class="modal-foot">
       <button class="btn gris" onclick="cerrarModal('modalHdr')">Cancelar</button>
       <button class="btn hdr" onclick="guardarHdr()">✅ Guardar HDR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL ANULAR ================= -->
+<div class="modal-bg" id="modalAnular">
+  <div class="modal">
+    <div class="modal-head rojo">
+      <h3>🗑️ Anular registro</h3>
+      <span class="x" onclick="cerrarModal('modalAnular')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="warn-box">
+        El registro <b>no se borra</b>: queda guardado y tachado para poder auditarlo. Dejará de contar en los totales.
+      </div>
+      <div class="modal-info" id="anInfo"></div>
+      <input type="hidden" id="an_id">
+      <div class="section-title" style="color:#c0392b;border-color:#f0c8c2">Trazabilidad (obligatorio)</div>
+      <div class="grid">
+        <div><label>¿Quién anula? *</label><input type="text" id="an_por" placeholder="Nombre y apellido"></div>
+        <div><label>Motivo de la anulación *</label><input type="text" id="an_motivo" placeholder="Ej: registro duplicado"></div>
+      </div>
+      <div id="anMsg" class="msg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn gris" onclick="cerrarModal('modalAnular')">Cancelar</button>
+      <button class="btn rojo" onclick="anularRegistro()">🗑️ Confirmar anulación</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL REACTIVAR ================= -->
+<div class="modal-bg" id="modalReactivar">
+  <div class="modal">
+    <div class="modal-head verde">
+      <h3>♻️ Reactivar registro</h3>
+      <span class="x" onclick="cerrarModal('modalReactivar')">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info" id="reInfo"></div>
+      <input type="hidden" id="re_id">
+      <div><label>¿Quién reactiva? *</label><input type="text" id="re_por" placeholder="Nombre y apellido"></div>
+      <div id="reMsg" class="msg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn gris" onclick="cerrarModal('modalReactivar')">Cancelar</button>
+      <button class="btn hdr" onclick="reactivarRegistro()">♻️ Reactivar</button>
     </div>
   </div>
 </div>
@@ -503,7 +545,9 @@ function celdaDif(fis, hdr){
   const cls=d<0?'diff-neg':(d>0?'diff-pos':'diff-zero');
   return '<td class="'+cls+'">'+(d>0?('+'+d):d)+'</td>';
 }
+function esAnulado(x){ return (x.estado||'ACTIVO')==='ANULADO'; }
 function estado(x){
+  if(esAnulado(x)) return 'ANULADO';
   const c=(x.fis_vacias===x.hdr_vacias)&&(x.fis_devoluciones===x.hdr_devoluciones)&&
           (x.fis_rechazo===x.hdr_rechazo)&&(x.fis_dollys===x.hdr_dollys);
   return c?'COINCIDE':'REVISAR';
@@ -541,7 +585,7 @@ async function guardar(){
   if(!v('fecha')||!v('ruta')||!v('contador')){ msg.className='msg err'; msg.textContent='⚠️ Completá Fecha, Ruta y Contador.'; return; }
   const registro={
     fecha:v('fecha'), ruta:v('ruta'), canal:canalDe(v('ruta')), contador:v('contador'),
-    turno:v('turno')||null, hoja:v('hoja')||null,
+    turno:v('turno')||null, hoja:v('hoja')||null, estado:'ACTIVO',
     fis_vacias:n('fis_vacias'), fis_devoluciones:n('fis_devoluciones'), fis_rechazo:n('fis_rechazo'), fis_dollys:n('fis_dollys'),
     hdr_vacias:n('hdr_vacias'), hdr_devoluciones:n('hdr_devoluciones'), hdr_rechazo:n('hdr_rechazo'), hdr_dollys:n('hdr_dollys'),
     observaciones:v('observaciones')||null
@@ -576,7 +620,9 @@ function filtrar(){
   const d=document.getElementById('fDesde').value, h=document.getElementById('fHasta').value;
   const r=document.getElementById('fRuta').value.trim().toLowerCase();
   const c=document.getElementById('fCanal').value, es=document.getElementById('fEstado').value;
+  const verAnu=document.getElementById('verAnulados').checked;
   return REGISTROS.filter(function(x){
+    if(!verAnu && esAnulado(x)) return false;
     if(d&&x.fecha<d) return false;
     if(h&&x.fecha>h) return false;
     if(r&&!(x.ruta||'').toLowerCase().includes(r)) return false;
@@ -591,42 +637,56 @@ function render(){
     tb.innerHTML='<tr><td colspan="20" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
   } else {
     tb.innerHTML=rows.map(function(x){
+      const anu=esAnulado(x);
       const es=estado(x);
-      const badge=es==='COINCIDE'?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>';
+      let badge;
+      if(anu) badge='<span class="est anu">ANULADO</span>';
+      else badge=(es==='COINCIDE')?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>';
       const canal=canalReg(x);
       const canalTag='<span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span>';
       let mini='';
       if(x.fecha_modificacion){ mini+='<span class="mini">✏️ '+(x.modificado_por||'')+' · '+fmtStamp(x.fecha_modificacion)+'</span>'; }
       if(x.fecha_hdr){ mini+='<span class="mini">📥 HDR: '+(x.hdr_por||'')+' · '+fmtStamp(x.fecha_hdr)+'</span>'; }
-      const acc='<div class="acc-btns">'+
-        '<button class="icon-btn edit" onclick="abrirEditar('+x.id+')">✏️</button>'+
-        '<button class="icon-btn hdr" onclick="abrirHdr('+x.id+')">📥 HDR</button>'+
-        '</div>'+mini;
-      return '<tr>'+
-        '<td>'+acc+'</td>'+
+      if(x.fecha_anulacion){ mini+='<span class="mini anu">🗑️ '+(x.anulado_por||'')+' · '+fmtStamp(x.fecha_anulacion)+(x.motivo_anulacion?(' · '+x.motivo_anulacion):'')+'</span>'; }
+      let acc;
+      if(anu){
+        acc='<div class="acc-btns"><button class="icon-btn hdr" onclick="abrirReactivar('+x.id+')">♻️ Reactivar</button></div>'+mini;
+      } else {
+        acc='<div class="acc-btns">'+
+          '<button class="icon-btn edit" onclick="abrirEditar('+x.id+')">✏️</button>'+
+          '<button class="icon-btn hdr" onclick="abrirHdr('+x.id+')">📥 HDR</button>'+
+          '<button class="icon-btn del" onclick="abrirAnular('+x.id+')">🗑️</button>'+
+          '</div>'+mini;
+      }
+      return '<tr class="'+(anu?'anulado':'')+'">'+
+        '<td class="no-strike">'+acc+'</td>'+
         '<td>'+fmtFecha(x.fecha)+'</td>'+
         '<td>'+(x.ruta||'')+'</td>'+
-        '<td>'+canalTag+'</td>'+
+        '<td class="no-strike">'+canalTag+'</td>'+
         '<td class="left">'+(x.contador||'')+'</td>'+
         '<td>'+(x.turno||'')+'</td>'+
         '<td>'+x.fis_vacias+'</td><td>'+x.hdr_vacias+'</td>'+celdaDif(x.fis_vacias,x.hdr_vacias)+
         '<td>'+x.fis_devoluciones+'</td><td>'+x.hdr_devoluciones+'</td>'+celdaDif(x.fis_devoluciones,x.hdr_devoluciones)+
         '<td>'+x.fis_rechazo+'</td><td>'+x.hdr_rechazo+'</td>'+celdaDif(x.fis_rechazo,x.hdr_rechazo)+
         '<td>'+x.fis_dollys+'</td><td>'+x.hdr_dollys+'</td>'+celdaDif(x.fis_dollys,x.hdr_dollys)+
-        '<td>'+badge+'</td>'+
+        '<td class="no-strike">'+badge+'</td>'+
         '<td class="left">'+(x.observaciones||'')+'</td>'+
       '</tr>';
     }).join('');
   }
-  const totFis=rows.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
-  const totHdr=rows.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
-  const totDollysFis=rows.reduce((a,x)=>a+x.fis_dollys,0);
-  const revisar=rows.filter(x=>estado(x)==='REVISAR').length;
+  // KPIs solo con ACTIVOS visibles
+  const activos=rows.filter(x=>!esAnulado(x));
+  const totFis=activos.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
+  const totHdr=activos.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
+  const totDollysFis=activos.reduce((a,x)=>a+x.fis_dollys,0);
+  const revisar=activos.filter(x=>estado(x)==='REVISAR').length;
   document.getElementById('kpis').innerHTML=
-    kpi(rows.length,'Conteos')+kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas')+
+    kpi(activos.length,'Conteos activos')+kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas')+
     kpi(totHdr.toLocaleString('es-AR'),'Bandejas HDR')+kpi(totDollysFis.toLocaleString('es-AR'),'Dollys físicos')+
     kpi(revisar,'En REVISAR');
-  document.getElementById('conteoTotal').textContent=REGISTROS.length+' conteos registrados';
+  const totalActivos=REGISTROS.filter(x=>!esAnulado(x)).length;
+  const totalAnu=REGISTROS.filter(esAnulado).length;
+  document.getElementById('conteoTotal').textContent=totalActivos+' activos'+(totalAnu?(' · '+totalAnu+' anulados'):'');
 }
 function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
 
@@ -734,6 +794,61 @@ async function guardarHdr(){
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
+// ---- ANULAR ----
+function abrirAnular(id){
+  const x=regById(id); if(!x) return;
+  document.getElementById('an_id').value=x.id;
+  document.getElementById('an_por').value='';
+  document.getElementById('an_motivo').value='';
+  document.getElementById('anMsg').className='msg';
+  document.getElementById('anInfo').innerHTML='Vas a anular el registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · '+(canalReg(x))+
+    '<br>Cargado por '+(x.contador||'—');
+  document.getElementById('modalAnular').classList.add('show');
+}
+async function anularRegistro(){
+  const msg=document.getElementById('anMsg'); msg.className='msg';
+  const quien=document.getElementById('an_por').value.trim();
+  const motivo=document.getElementById('an_motivo').value.trim();
+  if(!quien||!motivo){ msg.className='msg err'; msg.textContent='⚠️ Completá quién anula y el motivo.'; return; }
+  const cambios={ estado:'ANULADO', anulado_por:quien, motivo_anulacion:motivo, fecha_anulacion:new Date().toISOString() };
+  try{
+    const id=parseInt(document.getElementById('an_id').value);
+    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    if(error) throw error;
+    msg.className='msg ok'; msg.textContent='✅ Registro anulado por '+quien+' · '+ahoraTxt();
+    await cargarDatos();
+    setTimeout(()=>cerrarModal('modalAnular'),900);
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo anular: '+(e.message||e); }
+}
+
+// ---- REACTIVAR ----
+function abrirReactivar(id){
+  const x=regById(id); if(!x) return;
+  document.getElementById('re_id').value=x.id;
+  document.getElementById('re_por').value='';
+  document.getElementById('reMsg').className='msg';
+  document.getElementById('reInfo').innerHTML='Vas a reactivar el registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b>'+
+    (x.motivo_anulacion?('<br>Estaba anulado por: '+(x.anulado_por||'—')+' · '+x.motivo_anulacion):'');
+  document.getElementById('modalReactivar').classList.add('show');
+}
+async function reactivarRegistro(){
+  const msg=document.getElementById('reMsg'); msg.className='msg';
+  const quien=document.getElementById('re_por').value.trim();
+  if(!quien){ msg.className='msg err'; msg.textContent='⚠️ Indicá quién reactiva.'; return; }
+  const x=regById(parseInt(document.getElementById('re_id').value));
+  const nota='Reactivado por '+quien+' el '+ahoraTxt()+(x&&x.motivo_anulacion?(' (había sido anulado: '+x.motivo_anulacion+')'):'');
+  const cambios={ estado:'ACTIVO', anulado_por:null, motivo_anulacion:null, fecha_anulacion:null,
+    modificado_por:quien, motivo_modificacion:nota, fecha_modificacion:new Date().toISOString() };
+  try{
+    const id=parseInt(document.getElementById('re_id').value);
+    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    if(error) throw error;
+    msg.className='msg ok'; msg.textContent='✅ Registro reactivado por '+quien;
+    await cargarDatos();
+    setTimeout(()=>cerrarModal('modalReactivar'),900);
+  }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo reactivar: '+(e.message||e); }
+}
+
 // ====== Exportar Excel ======
 function exportar(){
   const rows=filtrar();
@@ -747,7 +862,8 @@ function exportar(){
       'Dollys Físico':x.fis_dollys,'Dollys HDR':x.hdr_dollys,'Dif Dollys':x.fis_dollys-x.hdr_dollys,
       'Estado':estado(x),'Observaciones':x.observaciones||'',
       'Modificado por':x.modificado_por||'','Motivo modif.':x.motivo_modificacion||'','Fecha modif.':x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
-      'HDR por':x.hdr_por||'','Fecha HDR':x.fecha_hdr?fmtStamp(x.fecha_hdr):''
+      'HDR por':x.hdr_por||'','Fecha HDR':x.fecha_hdr?fmtStamp(x.fecha_hdr):'',
+      'Anulado por':x.anulado_por||'','Motivo anulación':x.motivo_anulacion||'','Fecha anulación':x.fecha_anulacion?fmtStamp(x.fecha_anulacion):''
     };
   });
   const ws=XLSX.utils.json_to_sheet(data);
@@ -816,7 +932,7 @@ function renderPlan(){
   document.getElementById('semGrid').innerHTML=html;
 }
 
-// ====== Init: llenar rutas en los dos selectores ======
+// ====== Init ======
 function llenarSelectorRutas(sel){
   const gE=document.createElement('optgroup'); gE.label='🦔 Erizo';
   const gO=document.createElement('optgroup'); gO.label='🚚 Autoservicio / Mayorista / Otros';
