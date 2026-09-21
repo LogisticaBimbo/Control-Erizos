@@ -104,6 +104,7 @@
   .rutas-falt{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
   .rf{background:#fdecea;color:#a3382a;font-weight:700;font-size:13px;padding:6px 11px;border-radius:8px;border:1px solid #f4cfc9}
   .rf.ok{background:#e6f4ea;color:#1b7a37;border-color:#c5e6ce}
+  .rf.plan{background:#fff4e0;color:#8a6a20;border-color:#f2d9a8}
   .rank-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f3f6}
   .rank-row:last-child{border-bottom:none}
   .rank-pos{width:26px;height:26px;border-radius:50%;background:#eef3f9;color:#003e7e;font-weight:800;font-size:12px;
@@ -118,8 +119,15 @@
   .dia-val{font-size:12px;font-weight:700;color:#334;width:34px;text-align:right}
   .alert-box{background:#fff8ec;border:1px solid #f2d9a8;border-radius:10px;padding:13px 16px;font-size:13px;color:#8a6a20;margin-bottom:16px}
   .alert-box.rojo{background:#fdecea;border-color:#f0c8c2;color:#a3382a}
+  .alert-box.azul{background:#eef5fc;border-color:#c5dcf2;color:#23558f}
   .ind-tabla th{background:#3b6ea8;font-size:11px}
   .ind-tabla td{font-size:12.5px}
+  .plan-dia{border:1px solid #eef1f4;border-radius:10px;padding:11px 13px;margin-bottom:9px}
+  .plan-dia.ok{border-color:#c5e6ce;background:#f6fbf7}
+  .plan-dia.falta{border-color:#f4cfc9;background:#fdf7f6}
+  .plan-dia-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .plan-dia-fecha{font-size:13px;font-weight:700;color:#334}
+  .plan-dia-pct{font-size:12px;font-weight:800}
 
   /* ===== Modal ===== */
   .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,20,50,.55);z-index:500;
@@ -257,7 +265,9 @@
           </div>
           <div>
             <label>Contador *</label>
-            <input type="text" id="contador" placeholder="Nombre y apellido" required>
+            <input type="text" id="contador" list="listaContadores" placeholder="Nombre y apellido" required>
+            <datalist id="listaContadores"></datalist>
+            <div class="muted" style="font-size:11px;margin-top:4px">Elegí tu nombre de la lista para que quede siempre igual.</div>
           </div>
           <div>
             <label>Turno</label>
@@ -385,6 +395,12 @@
     <div id="indAlertas"></div>
     <div class="ind-hero" id="indHero"></div>
 
+    <div class="card">
+      <h2>📋 Cumplimiento del Plan de Trabajo Erizo</h2>
+      <p class="muted" style="margin:0 0 12px">Compara las rutas <b>planificadas</b> por el cronograma rotativo contra las que <b>realmente se controlaron</b> ese día.</p>
+      <div id="indPlan"></div>
+    </div>
+
     <div class="ind-2col">
       <div class="card">
         <h2>🚨 Rutas sin controlar en el período</h2>
@@ -400,7 +416,7 @@
     <div class="ind-2col">
       <div class="card">
         <h2>🏆 Quién controla más</h2>
-        <p class="muted" style="margin:0 0 10px">Cantidad de conteos y su nivel de exactitud.</p>
+        <p class="muted" style="margin:0 0 10px">Los nombres se unifican automáticamente aunque se escriban distinto.</p>
         <div id="indRanking"></div>
       </div>
       <div class="card">
@@ -419,11 +435,11 @@
   <!-- ================= PLAN DE TRABAJO ERIZO ================= -->
   <div id="tabPlan" style="display:none">
     <div class="plan-config">
-      <div style="flex:1;min-width:240px">
-        🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario. No hay que configurar nada.
+      <div style="flex:1;min-width:240px" id="planEstadoTxt">
+        🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario.
       </div>
       <div style="flex:0">
-        <a href="#" id="linkAjustar" onclick="toggleAjuste(event)" style="color:#8a6a20;font-weight:700;text-decoration:underline;font-size:13px;white-space:nowrap">⚙️ ¿No coincide? Ajustar</a>
+        <a href="#" onclick="toggleAjuste(event)" style="color:#8a6a20;font-weight:700;text-decoration:underline;font-size:13px;white-space:nowrap">⚙️ ¿No coincide? Ajustar</a>
       </div>
       <div id="ajusteBox" style="display:none;flex-basis:100%;margin-top:6px;border-top:1px dashed #e0c68a;padding-top:12px">
         <label>Si la semana marcada abajo no es la real, elegí acá cuál es <b>esta semana</b> (se ajusta al instante, sin botón):</label>
@@ -433,6 +449,9 @@
           <option value="3">Semana 3</option>
           <option value="4">Semana 4</option>
         </select>
+        <div style="margin-top:10px">
+          <button class="btn sec" style="margin-top:0" onclick="resetRotacion()">🔄 Volver a la rotación automática</button>
+        </div>
       </div>
     </div>
     <div id="hoyCard"></div>
@@ -466,7 +485,7 @@
           <select id="ed_ruta" onchange="edMostrarCanal()"></select>
           <div id="ed_canalBadge" class="canal-badge" style="display:none"></div>
         </div>
-        <div><label>Contador</label><input type="text" id="ed_contador"></div>
+        <div><label>Contador</label><input type="text" id="ed_contador" list="listaContadores"></div>
         <div>
           <label>Turno</label>
           <select id="ed_turno">
@@ -526,7 +545,7 @@
         <div><label>Dollys</label><input type="number" id="hd_hdr_dollys" min="0"></div>
       </div>
       <div class="section-title" style="color:#1b7a37;border-color:#bfe3c9">¿Quién completa? (obligatorio)</div>
-      <div><label>Nombre y apellido *</label><input type="text" id="hd_por" placeholder="Nombre y apellido"></div>
+      <div><label>Nombre y apellido *</label><input type="text" id="hd_por" list="listaContadores" placeholder="Nombre y apellido"></div>
       <div class="trace" id="hd_traza" style="display:none"></div>
       <div id="hdrMsg" class="msg"></div>
     </div>
@@ -552,7 +571,7 @@
       <input type="hidden" id="an_id">
       <div class="section-title" style="color:#c0392b;border-color:#f0c8c2">Trazabilidad (obligatorio)</div>
       <div class="grid">
-        <div><label>¿Quién anula? *</label><input type="text" id="an_por" placeholder="Nombre y apellido"></div>
+        <div><label>¿Quién anula? *</label><input type="text" id="an_por" list="listaContadores" placeholder="Nombre y apellido"></div>
         <div><label>Motivo de la anulación *</label><input type="text" id="an_motivo" placeholder="Ej: registro duplicado"></div>
       </div>
       <div id="anMsg" class="msg"></div>
@@ -574,7 +593,7 @@
     <div class="modal-body">
       <div class="modal-info" id="reInfo"></div>
       <input type="hidden" id="re_id">
-      <div><label>¿Quién reactiva? *</label><input type="text" id="re_por" placeholder="Nombre y apellido"></div>
+      <div><label>¿Quién reactiva? *</label><input type="text" id="re_por" list="listaContadores" placeholder="Nombre y apellido"></div>
       <div id="reMsg" class="msg"></div>
     </div>
     <div class="modal-foot">
@@ -627,6 +646,7 @@ const DIAS = [{k:'L',n:'Lunes'},{k:'M',n:'Martes'},{k:'X',n:'Miércoles'},{k:'J'
 const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 
 let REGISTROS = [];
+let MAPA_NOMBRES = {};
 
 // ====== Utilidades ======
 function n(id){ return parseInt(document.getElementById(id).value) || 0; }
@@ -658,7 +678,6 @@ function estado(x){
   return c?'COINCIDE':'REVISAR';
 }
 function canalReg(x){ return x.canal || canalDe(x.ruta); }
-// HDR todavía no cargada: todos los declarados en 0 y nunca se completó
 function hdrPendiente(x){
   const suma=(x.hdr_vacias||0)+(x.hdr_devoluciones||0)+(x.hdr_rechazo||0)+(x.hdr_dollys||0);
   return suma===0 && !x.fecha_hdr;
@@ -668,6 +687,59 @@ function difBandejas(x){
          Math.abs(x.fis_rechazo-x.hdr_rechazo);
 }
 function difDollys(x){ return Math.abs(x.fis_dollys-x.hdr_dollys); }
+
+/* ===== Unificación de nombres de contadores =====
+   Agrupa variantes de la misma persona aunque cambie el orden,
+   las mayúsculas o falte el apellido. */
+function sinAcentos(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function tokensNombre(nombre){
+  return sinAcentos(nombre).toLowerCase().replace(/[^a-z0-9\s]/g,' ')
+    .split(/\s+/).filter(t=>t.length>1).sort();
+}
+function tituloNombre(s){
+  return String(s||'').trim().toLowerCase().split(/\s+/)
+    .map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+}
+function construirMapaNombres(lista){
+  const grupos={};
+  lista.forEach(function(raw){
+    const t=tokensNombre(raw); if(t.length===0) return;
+    const k=t.join(' ');
+    if(!grupos[k]) grupos[k]={tokens:t, variantes:[]};
+    if(grupos[k].variantes.indexOf(raw)===-1) grupos[k].variantes.push(raw);
+  });
+  const claves=Object.keys(grupos);
+  const destino={};
+  claves.forEach(function(k){
+    let padre=k;
+    for(let i=0;i<claves.length;i++){
+      const otra=claves[i];
+      if(otra===k) continue;
+      if(grupos[otra].tokens.length<=grupos[k].tokens.length) continue;
+      const esSub=grupos[k].tokens.every(t=>grupos[otra].tokens.indexOf(t)!==-1);
+      if(esSub){ padre=otra; break; }
+    }
+    destino[k]=padre;
+  });
+  const mapa={};
+  claves.forEach(function(k){
+    let p=k, guard=0;
+    while(destino[p] && destino[p]!==p && guard++<10){ p=destino[p]; }
+    const mejor=grupos[p].variantes.slice().sort((a,b)=>String(b).trim().length-String(a).trim().length)[0];
+    grupos[k].variantes.forEach(function(vv){ mapa[vv]=tituloNombre(mejor); });
+  });
+  return mapa;
+}
+function nombreUnificado(raw){
+  const r=String(raw||'').trim();
+  return MAPA_NOMBRES[r] || (r?tituloNombre(r):'Sin nombre');
+}
+function refrescarNombres(){
+  MAPA_NOMBRES=construirMapaNombres(REGISTROS.map(x=>x.contador).filter(Boolean));
+  const unicos=[...new Set(Object.keys(MAPA_NOMBRES).map(k=>MAPA_NOMBRES[k]))].sort();
+  const dl=document.getElementById('listaContadores');
+  if(dl) dl.innerHTML=unicos.map(u=>'<option value="'+u+'">').join('');
+}
 
 // ====== Mostrar canal ======
 function mostrarCanal(){ pintarCanal('ruta','canalBadge'); }
@@ -702,7 +774,7 @@ async function guardar(){
   const msg=document.getElementById('msg'); msg.className='msg';
   if(!v('fecha')||!v('ruta')||!v('contador')){ msg.className='msg err'; msg.textContent='⚠️ Completá Fecha, Ruta y Contador.'; return; }
   const registro={
-    fecha:v('fecha'), ruta:v('ruta'), canal:canalDe(v('ruta')), contador:v('contador'),
+    fecha:v('fecha'), ruta:v('ruta'), canal:canalDe(v('ruta')), contador:nombreUnificado(v('contador')),
     turno:v('turno')||null, hoja:v('hoja')||null, estado:'ACTIVO',
     fis_vacias:n('fis_vacias'), fis_devoluciones:n('fis_devoluciones'), fis_rechazo:n('fis_rechazo'), fis_dollys:n('fis_dollys'),
     hdr_vacias:n('hdr_vacias'), hdr_devoluciones:n('hdr_devoluciones'), hdr_rechazo:n('hdr_rechazo'), hdr_dollys:n('hdr_dollys'),
@@ -726,6 +798,7 @@ async function traerRegistros(){
     .order('fecha',{ascending:false}).order('created_at',{ascending:false});
   if(error) throw error;
   REGISTROS=data||[];
+  refrescarNombres();
 }
 async function cargarDatos(){
   try{
@@ -794,7 +867,7 @@ function render(){
         '<td>'+fmtFecha(x.fecha)+'</td>'+
         '<td>'+(x.ruta||'')+'</td>'+
         '<td class="no-strike">'+canalTag+'</td>'+
-        '<td class="left">'+(x.contador||'')+'</td>'+
+        '<td class="left">'+nombreUnificado(x.contador)+'</td>'+
         '<td>'+(x.turno||'')+'</td>'+
         '<td>'+x.fis_vacias+'</td><td>'+x.hdr_vacias+'</td>'+celdaDif(x.fis_vacias,x.hdr_vacias)+
         '<td>'+x.fis_devoluciones+'</td><td>'+x.hdr_devoluciones+'</td>'+celdaDif(x.fis_devoluciones,x.hdr_devoluciones)+
@@ -826,21 +899,24 @@ function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div cl
 function periodoMes(){
   const h=new Date();
   const ini=new Date(h.getFullYear(),h.getMonth(),1);
-  document.getElementById('iDesde').value=ini.toISOString().slice(0,10);
-  document.getElementById('iHasta').value=h.toISOString().slice(0,10);
+  document.getElementById('iDesde').value=isoLocal(ini);
+  document.getElementById('iHasta').value=isoLocal(h);
   renderIndicadores();
 }
 function periodoSemana(){
   const h=new Date(); const l=lunesDe(h);
-  document.getElementById('iDesde').value=l.toISOString().slice(0,10);
-  document.getElementById('iHasta').value=h.toISOString().slice(0,10);
+  document.getElementById('iDesde').value=isoLocal(l);
+  document.getElementById('iHasta').value=isoLocal(h);
   renderIndicadores();
+}
+function isoLocal(d){
+  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
 }
 function filtrarInd(){
   const d=document.getElementById('iDesde').value, h=document.getElementById('iHasta').value;
   const c=document.getElementById('iCanal').value;
   return REGISTROS.filter(function(x){
-    if(esAnulado(x)) return false;           // los anulados nunca cuentan
+    if(esAnulado(x)) return false;
     if(d&&x.fecha<d) return false;
     if(h&&x.fecha>h) return false;
     if(c&&!(canalReg(x)||'').toLowerCase().includes(c.toLowerCase())) return false;
@@ -867,16 +943,53 @@ function indCard(label, valor, sub, clase, pct, claseBarra){
   '</div>';
 }
 
+/* ---- Cumplimiento del Plan de Trabajo Erizo ---- */
+function calcularCumplimientoPlan(desde, hasta, rowsPeriodo){
+  if(!desde||!hasta) return null;
+  const ini=new Date(desde+'T00:00:00'), fin=new Date(hasta+'T00:00:00');
+  if(isNaN(ini)||isNaN(fin)||fin<ini) return null;
+  // rutas erizo controladas por fecha
+  const porFecha={};
+  rowsPeriodo.forEach(function(x){
+    if(!esErizoCanal(canalDe(String(x.ruta)))) return;
+    (porFecha[x.fecha]=porFecha[x.fecha]||[]).push(String(x.ruta));
+  });
+  const dias=[]; let totPlan=0, totHecho=0;
+  const cur=new Date(ini);
+  let guard=0;
+  while(cur<=fin && guard++<400){
+    const k=JS_DAY_TO_K[cur.getDay()];
+    if(k){
+      const w=semanaDeFecha(cur);
+      const plan=[].concat(PLAN[w]['04-06'][k]||[], PLAN[w]['06-08'][k]||[]).map(String);
+      if(plan.length>0){
+        const iso=isoLocal(cur);
+        const hechas=porFecha[iso]||[];
+        const cumplidas=plan.filter(r=>hechas.indexOf(r)!==-1);
+        const faltan=plan.filter(r=>hechas.indexOf(r)===-1);
+        const fuera=[...new Set(hechas.filter(r=>plan.indexOf(r)===-1))];
+        totPlan+=plan.length; totHecho+=cumplidas.length;
+        dias.push({iso:iso, semana:w, plan:plan, cumplidas:cumplidas, faltan:faltan, fuera:fuera,
+                   pct:plan.length?Math.round(cumplidas.length/plan.length*100):0});
+      }
+    }
+    cur.setDate(cur.getDate()+1);
+  }
+  return {dias:dias, totPlan:totPlan, totHecho:totHecho,
+          pct: totPlan?Math.round(totHecho/totPlan*100):0};
+}
+
 function renderIndicadores(){
   const rows=filtrarInd();
   const maestro=rutasDelMaestro();
+  const desde=document.getElementById('iDesde').value, hasta=document.getElementById('iHasta').value;
 
   // ---- 1. COBERTURA ----
   const controladas=[...new Set(rows.map(x=>String(x.ruta)))];
   const faltantes=maestro.filter(r=>controladas.indexOf(r)===-1);
   const pctCob=maestro.length?Math.round(controladas.length/maestro.length*100):0;
 
-  // ---- 2. EXACTITUD (solo con HDR cargada) ----
+  // ---- 2. EXACTITUD ----
   const conHdr=rows.filter(x=>!hdrPendiente(x));
   const pendientes=rows.filter(hdrPendiente);
   const coinciden=conHdr.filter(x=>estado(x)==='COINCIDE').length;
@@ -885,6 +998,16 @@ function renderIndicadores(){
   const totDifDoll=conHdr.reduce((a,x)=>a+difDollys(x),0);
   const conDifBand=conHdr.filter(x=>difBandejas(x)>0).length;
   const conDifDoll=conHdr.filter(x=>difDollys(x)>0).length;
+
+  // ---- 3. PLAN ----
+  // el plan es solo de Erizo: se calcula sobre todos los registros del período sin filtro de canal
+  const rowsPlan=REGISTROS.filter(function(x){
+    if(esAnulado(x)) return false;
+    if(desde&&x.fecha<desde) return false;
+    if(hasta&&x.fecha>hasta) return false;
+    return true;
+  });
+  const cum=calcularCumplimientoPlan(desde,hasta,rowsPlan);
 
   // ---- Alertas ----
   let alertas='';
@@ -895,30 +1018,73 @@ function renderIndicadores(){
   if(faltantes.length>0){
     alertas+='<div class="alert-box rojo">🚨 Quedan <b>'+faltantes.length+' ruta(s) sin controlar</b> en el período seleccionado.</div>';
   }
+  if(localStorage.getItem('erizos_plan_anchor')){
+    alertas+='<div class="alert-box azul">⚙️ La rotación del plan está <b>ajustada manualmente</b> en este navegador. '+
+      'Si los cálculos del plan no cuadran, andá a <b>Plan de Trabajo Erizo → ¿No coincide? Ajustar → Volver a la rotación automática</b>.</div>';
+  }
   document.getElementById('indAlertas').innerHTML=alertas;
 
-  // ---- Tarjetas principales ----
+  // ---- Tarjetas ----
   document.getElementById('indHero').innerHTML=
+    indCard('Cumplimiento del plan', (cum?cum.pct:0)+'%',
+            cum?(cum.totHecho+' de '+cum.totPlan+' rutas planificadas'):'Sin período',
+            cum&&cum.pct>=80?'verde':(cum&&cum.pct>=50?'naranja':'rojo'),
+            cum?cum.pct:0, cum&&cum.pct>=80?'verde':(cum&&cum.pct>=50?'naranja':'rojo'))+
     indCard('Cobertura de rutas', pctCob+'%', controladas.length+' de '+maestro.length+' rutas controladas',
             pctCob>=80?'verde':(pctCob>=50?'naranja':'rojo'), pctCob, pctCob>=80?'verde':(pctCob>=50?'naranja':'rojo'))+
     indCard('Rutas sin controlar', faltantes.length, 'Pendientes en el período', faltantes.length?'rojo':'verde')+
     indCard('Exactitud HDR', pctExac+'%', coinciden+' de '+conHdr.length+' conteos coinciden',
             pctExac>=90?'verde':(pctExac>=70?'naranja':'rojo'), pctExac, pctExac>=90?'verde':(pctExac>=70?'naranja':'rojo'))+
     indCard('Bandejas con diferencia', totDifBand.toLocaleString('es-AR'), 'En '+conDifBand+' conteo(s)', totDifBand?'naranja':'verde')+
-    indCard('Dollys con diferencia', totDifDoll.toLocaleString('es-AR'), 'En '+conDifDoll+' conteo(s)', totDifDoll?'naranja':'verde')+
-    indCard('Conteos realizados', rows.length, pendientes.length+' con HDR pendiente');
+    indCard('Dollys con diferencia', totDifDoll.toLocaleString('es-AR'), 'En '+conDifDoll+' conteo(s)', totDifDoll?'naranja':'verde');
+
+  // ---- Panel del plan ----
+  const cajaP=document.getElementById('indPlan');
+  if(!cum || cum.dias.length===0){
+    cajaP.innerHTML='<p class="muted">Elegí un período para ver el cumplimiento del plan.</p>';
+  } else {
+    let hp='<div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px">'+
+      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Planificadas</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#003e7e">'+cum.totPlan+'</div></div>'+
+      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Controladas</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#1b7a37">'+cum.totHecho+'</div></div>'+
+      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Sin hacer</div>'+
+      '<div style="font-size:22px;font-weight:800;color:#c0392b">'+(cum.totPlan-cum.totHecho)+'</div></div>'+
+      '<div style="flex:1;min-width:180px;align-self:center">'+barra(cum.pct, cum.pct>=80?'verde':(cum.pct>=50?'naranja':'rojo'))+'</div>'+
+      '</div>';
+    const nomDia=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    cum.dias.slice().reverse().forEach(function(d){
+      const fd=new Date(d.iso+'T00:00:00');
+      const cls=d.faltan.length===0?'ok':'falta';
+      const col=d.pct>=80?'#1b7a37':(d.pct>=50?'#c8780f':'#c0392b');
+      hp+='<div class="plan-dia '+cls+'">'+
+        '<div class="plan-dia-top">'+
+          '<div class="plan-dia-fecha">'+nomDia[fd.getDay()]+' '+fmtFecha(d.iso)+
+            ' <span class="muted" style="font-weight:400">· Semana '+d.semana+' del plan</span></div>'+
+          '<div class="plan-dia-pct" style="color:'+col+'">'+d.cumplidas.length+'/'+d.plan.length+' · '+d.pct+'%</div>'+
+        '</div>';
+      if(d.faltan.length>0){
+        hp+='<div class="muted" style="font-size:11.5px;margin-bottom:4px">No se controlaron:</div>'+
+            '<div class="rutas-falt">'+d.faltan.map(r=>'<span class="rf">'+r+'</span>').join('')+'</div>';
+      } else {
+        hp+='<div class="rutas-falt"><span class="rf ok">✅ Plan cumplido</span></div>';
+      }
+      if(d.fuera.length>0){
+        hp+='<div class="muted" style="font-size:11.5px;margin:7px 0 4px">Erizos controlados fuera del plan de ese día:</div>'+
+            '<div class="rutas-falt">'+d.fuera.map(r=>'<span class="rf plan">'+r+'</span>').join('')+'</div>';
+      }
+      hp+='</div>';
+    });
+    cajaP.innerHTML=hp;
+  }
 
   // ---- Rutas faltantes ----
   const cajaF=document.getElementById('indFaltantes');
   if(faltantes.length===0){
     cajaF.innerHTML='<div class="rutas-falt"><span class="rf ok">✅ Todas las rutas fueron controladas</span></div>';
   } else {
-    // agrupar por canal
     const porCanal={};
-    faltantes.forEach(function(r){
-      const c=RUTAS_CANAL[r];
-      (porCanal[c]=porCanal[c]||[]).push(r);
-    });
+    faltantes.forEach(function(r){ const c=RUTAS_CANAL[r]; (porCanal[c]=porCanal[c]||[]).push(r); });
     let h='';
     Object.keys(porCanal).sort().forEach(function(c){
       h+='<div style="margin-bottom:12px"><div class="muted" style="font-weight:700;margin-bottom:5px">'+c+
@@ -937,21 +1103,23 @@ function renderIndicadores(){
     const ctrl=tot.filter(r=>controladas.indexOf(r)!==-1);
     const p=Math.round(ctrl.length/tot.length*100);
     const color=p>=80?'#1b7a37':(p>=50?'#c8780f':'#c0392b');
-    hc+='<tr><td class="left"><b>'+c+'</b></td><td>'+ctrl.length+'</td><td>'+tot.length+'</td>'+
+    hc+='<tr><td class="left"><b>'+c+'</b> <span class="muted" style="font-size:11px">('+tot.sort().join(', ')+')</span></td>'+
+        '<td>'+ctrl.length+'</td><td>'+tot.length+'</td>'+
         '<td style="color:'+color+';font-weight:800">'+p+'%</td></tr>';
   });
   hc+='</tbody></table>';
   document.getElementById('indCanal').innerHTML=hc;
 
-  // ---- Ranking de contadores ----
+  // ---- Ranking (nombres unificados) ----
   const porPersona={};
   rows.forEach(function(x){
-    const k=(x.contador||'Sin nombre').trim();
+    const k=nombreUnificado(x.contador);
     if(!porPersona[k]) porPersona[k]={n:0, coin:0, conHdr:0};
     porPersona[k].n++;
     if(!hdrPendiente(x)){ porPersona[k].conHdr++; if(estado(x)==='COINCIDE') porPersona[k].coin++; }
   });
-  const rank=Object.keys(porPersona).map(k=>({nombre:k, ...porPersona[k]})).sort((a,b)=>b.n-a.n);
+  const rank=Object.keys(porPersona).map(k=>({nombre:k, n:porPersona[k].n, coin:porPersona[k].coin, conHdr:porPersona[k].conHdr}))
+    .sort((a,b)=>b.n-a.n);
   const maxN=rank.length?rank[0].n:1;
   const cajaR=document.getElementById('indRanking');
   if(rank.length===0){ cajaR.innerHTML='<p class="muted">Sin conteos en el período.</p>'; }
@@ -972,12 +1140,10 @@ function renderIndicadores(){
   conHdr.forEach(function(x){
     const k=String(x.ruta);
     if(!porRuta[k]) porRuta[k]={band:0, doll:0, n:0};
-    porRuta[k].band+=difBandejas(x);
-    porRuta[k].doll+=difDollys(x);
-    porRuta[k].n++;
+    porRuta[k].band+=difBandejas(x); porRuta[k].doll+=difDollys(x); porRuta[k].n++;
   });
-  const topDif=Object.keys(porRuta).map(k=>({ruta:k, ...porRuta[k], total:porRuta[k].band+porRuta[k].doll}))
-    .filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,8);
+  const topDif=Object.keys(porRuta).map(k=>({ruta:k, band:porRuta[k].band, doll:porRuta[k].doll, n:porRuta[k].n,
+      total:porRuta[k].band+porRuta[k].doll})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,8);
   const cajaD=document.getElementById('indTopDif');
   if(topDif.length===0){
     cajaD.innerHTML='<p class="muted">✅ Sin diferencias registradas en el período.</p>';
@@ -996,32 +1162,29 @@ function renderIndicadores(){
   const porDia={};
   rows.forEach(function(x){ porDia[x.fecha]=(porDia[x.fecha]||0)+1; });
   const dias=Object.keys(porDia).sort();
-  const maxD=dias.length?Math.max(...dias.map(d=>porDia[d])):1;
+  const maxD=dias.length?Math.max.apply(null,dias.map(d=>porDia[d])):1;
   const cajaDias=document.getElementById('indDias');
   if(dias.length===0){ cajaDias.innerHTML='<p class="muted">Sin conteos en el período.</p>'; }
   else{
     cajaDias.innerHTML=dias.map(function(d){
-      return '<div class="dia-row">'+
-        '<div class="dia-lbl">'+fmtFecha(d)+'</div>'+
+      return '<div class="dia-row"><div class="dia-lbl">'+fmtFecha(d)+'</div>'+
         '<div class="dia-bar">'+barra(porDia[d]/maxD*100)+'</div>'+
-        '<div class="dia-val">'+porDia[d]+'</div>'+
-      '</div>';
+        '<div class="dia-val">'+porDia[d]+'</div></div>';
     }).join('');
   }
 }
 
-// ====== Modales: abrir/cerrar ======
+// ====== Modales ======
 function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
 function regById(id){ return REGISTROS.find(x=>x.id===id); }
 
-// ---- EDITAR ----
 function abrirEditar(id){
   const x=regById(id); if(!x) return;
   document.getElementById('ed_id').value=x.id;
   document.getElementById('ed_fecha').value=x.fecha;
   document.getElementById('ed_ruta').value=x.ruta;
   edMostrarCanal();
-  document.getElementById('ed_contador').value=x.contador||'';
+  document.getElementById('ed_contador').value=nombreUnificado(x.contador);
   document.getElementById('ed_turno').value=x.turno||'';
   document.getElementById('ed_fis_vacias').value=x.fis_vacias;
   document.getElementById('ed_fis_devoluciones').value=x.fis_devoluciones;
@@ -1035,7 +1198,7 @@ function abrirEditar(id){
   document.getElementById('ed_modificado_por').value='';
   document.getElementById('ed_motivo').value='';
   document.getElementById('edMsg').className='msg';
-  document.getElementById('edInfo').innerHTML='Registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · Cargado por '+(x.contador||'—');
+  document.getElementById('edInfo').innerHTML='Registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · Cargado por '+nombreUnificado(x.contador);
   const tz=document.getElementById('ed_traza');
   if(x.fecha_modificacion){
     tz.style.display='block';
@@ -1053,7 +1216,7 @@ async function guardarEdicion(){
   const cambios={
     fecha:document.getElementById('ed_fecha').value,
     ruta:ruta, canal:canalDe(ruta),
-    contador:document.getElementById('ed_contador').value.trim(),
+    contador:nombreUnificado(document.getElementById('ed_contador').value.trim()),
     turno:document.getElementById('ed_turno').value||null,
     fis_vacias:parseInt(document.getElementById('ed_fis_vacias').value)||0,
     fis_devoluciones:parseInt(document.getElementById('ed_fis_devoluciones').value)||0,
@@ -1064,19 +1227,18 @@ async function guardarEdicion(){
     hdr_rechazo:parseInt(document.getElementById('ed_hdr_rechazo').value)||0,
     hdr_dollys:parseInt(document.getElementById('ed_hdr_dollys').value)||0,
     observaciones:document.getElementById('ed_observaciones').value.trim()||null,
-    modificado_por:quien, motivo_modificacion:motivo, fecha_modificacion:new Date().toISOString()
+    modificado_por:nombreUnificado(quien), motivo_modificacion:motivo, fecha_modificacion:new Date().toISOString()
   };
   try{
     const id=parseInt(document.getElementById('ed_id').value);
     const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
     if(error) throw error;
-    msg.className='msg ok'; msg.textContent='✅ Cambios guardados por '+quien+' · '+ahoraTxt();
+    msg.className='msg ok'; msg.textContent='✅ Cambios guardados por '+nombreUnificado(quien)+' · '+ahoraTxt();
     await cargarDatos();
     setTimeout(()=>cerrarModal('modalEditar'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
-// ---- COMPLETAR HDR ----
 function abrirHdr(id){
   const x=regById(id); if(!x) return;
   document.getElementById('hdr_id').value=x.id;
@@ -1102,19 +1264,18 @@ async function guardarHdr(){
     hdr_devoluciones:parseInt(document.getElementById('hd_hdr_devoluciones').value)||0,
     hdr_rechazo:parseInt(document.getElementById('hd_hdr_rechazo').value)||0,
     hdr_dollys:parseInt(document.getElementById('hd_hdr_dollys').value)||0,
-    hdr_por:quien, fecha_hdr:new Date().toISOString()
+    hdr_por:nombreUnificado(quien), fecha_hdr:new Date().toISOString()
   };
   try{
     const id=parseInt(document.getElementById('hdr_id').value);
     const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
     if(error) throw error;
-    msg.className='msg ok'; msg.textContent='✅ HDR completada por '+quien+' · '+ahoraTxt();
+    msg.className='msg ok'; msg.textContent='✅ HDR completada por '+nombreUnificado(quien)+' · '+ahoraTxt();
     await cargarDatos();
     setTimeout(()=>cerrarModal('modalHdr'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
-// ---- ANULAR ----
 function abrirAnular(id){
   const x=regById(id); if(!x) return;
   document.getElementById('an_id').value=x.id;
@@ -1122,7 +1283,7 @@ function abrirAnular(id){
   document.getElementById('an_motivo').value='';
   document.getElementById('anMsg').className='msg';
   document.getElementById('anInfo').innerHTML='Vas a anular el registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · '+(canalReg(x))+
-    '<br>Cargado por '+(x.contador||'—');
+    '<br>Cargado por '+nombreUnificado(x.contador);
   document.getElementById('modalAnular').classList.add('show');
 }
 async function anularRegistro(){
@@ -1130,18 +1291,17 @@ async function anularRegistro(){
   const quien=document.getElementById('an_por').value.trim();
   const motivo=document.getElementById('an_motivo').value.trim();
   if(!quien||!motivo){ msg.className='msg err'; msg.textContent='⚠️ Completá quién anula y el motivo.'; return; }
-  const cambios={ estado:'ANULADO', anulado_por:quien, motivo_anulacion:motivo, fecha_anulacion:new Date().toISOString() };
+  const cambios={ estado:'ANULADO', anulado_por:nombreUnificado(quien), motivo_anulacion:motivo, fecha_anulacion:new Date().toISOString() };
   try{
     const id=parseInt(document.getElementById('an_id').value);
     const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
     if(error) throw error;
-    msg.className='msg ok'; msg.textContent='✅ Registro anulado por '+quien+' · '+ahoraTxt();
+    msg.className='msg ok'; msg.textContent='✅ Registro anulado por '+nombreUnificado(quien)+' · '+ahoraTxt();
     await cargarDatos();
     setTimeout(()=>cerrarModal('modalAnular'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo anular: '+(e.message||e); }
 }
 
-// ---- REACTIVAR ----
 function abrirReactivar(id){
   const x=regById(id); if(!x) return;
   document.getElementById('re_id').value=x.id;
@@ -1156,14 +1316,14 @@ async function reactivarRegistro(){
   const quien=document.getElementById('re_por').value.trim();
   if(!quien){ msg.className='msg err'; msg.textContent='⚠️ Indicá quién reactiva.'; return; }
   const x=regById(parseInt(document.getElementById('re_id').value));
-  const nota='Reactivado por '+quien+' el '+ahoraTxt()+(x&&x.motivo_anulacion?(' (había sido anulado: '+x.motivo_anulacion+')'):'');
+  const nota='Reactivado por '+nombreUnificado(quien)+' el '+ahoraTxt()+(x&&x.motivo_anulacion?(' (había sido anulado: '+x.motivo_anulacion+')'):'');
   const cambios={ estado:'ACTIVO', anulado_por:null, motivo_anulacion:null, fecha_anulacion:null,
-    modificado_por:quien, motivo_modificacion:nota, fecha_modificacion:new Date().toISOString() };
+    modificado_por:nombreUnificado(quien), motivo_modificacion:nota, fecha_modificacion:new Date().toISOString() };
   try{
     const id=parseInt(document.getElementById('re_id').value);
     const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
     if(error) throw error;
-    msg.className='msg ok'; msg.textContent='✅ Registro reactivado por '+quien;
+    msg.className='msg ok'; msg.textContent='✅ Registro reactivado por '+nombreUnificado(quien);
     await cargarDatos();
     setTimeout(()=>cerrarModal('modalReactivar'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo reactivar: '+(e.message||e); }
@@ -1175,7 +1335,8 @@ function exportar(){
   if(rows.length===0){ alert('No hay registros para exportar.'); return; }
   const data=rows.map(function(x){
     return {
-      'Fecha':fmtFecha(x.fecha),'Ruta':x.ruta,'Canal':canalReg(x),'Contador':x.contador,'Turno':x.turno||'','Hoja':x.hoja||'',
+      'Fecha':fmtFecha(x.fecha),'Ruta':x.ruta,'Canal':canalReg(x),'Contador':nombreUnificado(x.contador),
+      'Turno':x.turno||'','Hoja':x.hoja||'',
       'Vacías Físico':x.fis_vacias,'Vacías HDR':x.hdr_vacias,'Dif Vacías':x.fis_vacias-x.hdr_vacias,
       'Devol Físico':x.fis_devoluciones,'Devol HDR':x.hdr_devoluciones,'Dif Devol':x.fis_devoluciones-x.hdr_devoluciones,
       'Rechazo Físico':x.fis_rechazo,'Rechazo HDR':x.hdr_rechazo,'Dif Rechazo':x.fis_rechazo-x.hdr_rechazo,
@@ -1200,12 +1361,16 @@ function lunesDe(fecha){
 function semanasEntre(a,b){ return Math.round((b-a)/(7*24*60*60*1000)); }
 const ANCHOR_POR_DEFECTO={ mondayISO:'2026-09-07', week:1 };
 function anclaVigente(){ return JSON.parse(localStorage.getItem('erizos_plan_anchor')||'null')||ANCHOR_POR_DEFECTO; }
-function semanaActual(){
+function hayAjusteManual(){ return !!localStorage.getItem('erizos_plan_anchor'); }
+// Semana del plan para CUALQUIER fecha
+function semanaDeFecha(fecha){
   const cfg=anclaVigente();
-  const anchorMonday=new Date(cfg.mondayISO+'T00:00:00'); const thisMonday=lunesDe(new Date());
-  const diff=semanasEntre(anchorMonday,thisMonday);
+  const anchorMonday=new Date(cfg.mondayISO+'T00:00:00');
+  const m=lunesDe(fecha);
+  const diff=semanasEntre(anchorMonday,m);
   return ((cfg.week-1+diff)%4+4)%4+1;
 }
+function semanaActual(){ return semanaDeFecha(new Date()); }
 function toggleAjuste(ev){
   if(ev) ev.preventDefault();
   const box=document.getElementById('ajusteBox');
@@ -1214,8 +1379,12 @@ function toggleAjuste(ev){
 }
 function ajustarSemana(){
   const w=parseInt(document.getElementById('selSemana').value);
-  const monday=lunesDe(new Date()); const iso=monday.toISOString().slice(0,10);
+  const monday=lunesDe(new Date()); const iso=isoLocal(monday);
   localStorage.setItem('erizos_plan_anchor',JSON.stringify({mondayISO:iso,week:w}));
+  renderPlan();
+}
+function resetRotacion(){
+  localStorage.removeItem('erizos_plan_anchor');
   renderPlan();
 }
 function chips(arr){ if(!arr||arr.length===0) return '<span class="muted">—</span>';
@@ -1225,6 +1394,17 @@ function renderPlan(){
   const hoy=new Date(); const kHoy=JS_DAY_TO_K[hoy.getDay()];
   const diaNombre=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
   const fechaTxt=('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
+
+  // Aviso del estado de la rotación
+  const est=document.getElementById('planEstadoTxt');
+  if(hayAjusteManual()){
+    const cfg=anclaVigente();
+    est.innerHTML='⚙️ <b>Rotación ajustada manualmente</b> en este navegador: la semana del '+fmtFecha(cfg.mondayISO)+
+      ' quedó fijada como Semana '+cfg.week+'. Si no coincide, usá <b>Volver a la rotación automática</b>.';
+  } else {
+    est.innerHTML='🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario.';
+  }
+
   if(!kHoy){
     cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
       '<div class="badge">Semana '+w+'</div></div><p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
