@@ -68,8 +68,6 @@
   .canal-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
   .canal-tag.erizo{background:#fdeede;color:#a85a13}
   .canal-tag.otro{background:#e7f0fb;color:#23558f}
-
-  /* ==== Acciones compactas: 3 iconos en una sola fila ==== */
   .acc-cell{min-width:118px}
   .acc-btns{display:inline-flex;gap:5px;justify-content:center;align-items:center}
   .icon-btn{border:1px solid #d5dbe3;background:#fff;border-radius:8px;width:32px;height:32px;
@@ -81,10 +79,47 @@
   .icon-btn:hover{filter:brightness(.96);transform:translateY(-1px)}
   .mini{font-size:10px;color:#8a94a3;display:block;margin-top:4px;line-height:1.3}
   .mini.anu{color:#b0483a}
-
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
+
+  /* ===== INDICADORES ===== */
+  .ind-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-bottom:18px}
+  .ind-card{background:#fff;border-radius:13px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:4px solid #0066b3}
+  .ind-card.verde{border-top-color:#1b7a37}
+  .ind-card.naranja{border-top-color:#e08a1e}
+  .ind-card.rojo{border-top-color:#c0392b}
+  .ind-card .ic-l{font-size:11px;font-weight:700;color:#7a8595;text-transform:uppercase;letter-spacing:.5px}
+  .ind-card .ic-n{font-size:32px;font-weight:800;color:#003e7e;margin:6px 0 2px;line-height:1}
+  .ind-card.verde .ic-n{color:#1b7a37}
+  .ind-card.naranja .ic-n{color:#c8780f}
+  .ind-card.rojo .ic-n{color:#c0392b}
+  .ind-card .ic-s{font-size:12px;color:#8a94a3}
+  .bar-track{height:9px;background:#eef1f5;border-radius:6px;overflow:hidden;margin-top:10px}
+  .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#0066b3,#2f8fd6)}
+  .bar-fill.verde{background:linear-gradient(90deg,#1b7a37,#39a85a)}
+  .bar-fill.naranja{background:linear-gradient(90deg,#e08a1e,#f0ad4e)}
+  .bar-fill.rojo{background:linear-gradient(90deg,#c0392b,#e06055)}
+  .ind-2col{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
+  .rutas-falt{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+  .rf{background:#fdecea;color:#a3382a;font-weight:700;font-size:13px;padding:6px 11px;border-radius:8px;border:1px solid #f4cfc9}
+  .rf.ok{background:#e6f4ea;color:#1b7a37;border-color:#c5e6ce}
+  .rank-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f3f6}
+  .rank-row:last-child{border-bottom:none}
+  .rank-pos{width:26px;height:26px;border-radius:50%;background:#eef3f9;color:#003e7e;font-weight:800;font-size:12px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .rank-pos.top{background:#ffd166;color:#5a4300}
+  .rank-name{flex:1;font-size:13px;font-weight:600;color:#334}
+  .rank-bar{flex:1.4;max-width:170px}
+  .rank-val{font-size:13px;font-weight:800;color:#0066b3;min-width:62px;text-align:right}
+  .dia-row{display:flex;align-items:center;gap:10px;padding:6px 0}
+  .dia-lbl{font-size:12px;color:#667;width:78px;flex-shrink:0}
+  .dia-bar{flex:1}
+  .dia-val{font-size:12px;font-weight:700;color:#334;width:34px;text-align:right}
+  .alert-box{background:#fff8ec;border:1px solid #f2d9a8;border-radius:10px;padding:13px 16px;font-size:13px;color:#8a6a20;margin-bottom:16px}
+  .alert-box.rojo{background:#fdecea;border-color:#f0c8c2;color:#a3382a}
+  .ind-tabla th{background:#3b6ea8;font-size:11px}
+  .ind-tabla td{font-size:12.5px}
 
   /* ===== Modal ===== */
   .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,20,50,.55);z-index:500;
@@ -175,6 +210,11 @@
     table.plan th,table.plan td{padding:7px 3px}
     .plan-config{padding:12px 13px}
     .modal-foot .btn{width:100%}
+    .ind-hero{grid-template-columns:repeat(2,1fr);gap:10px}
+    .ind-card{padding:14px}
+    .ind-card .ic-n{font-size:25px}
+    .ind-2col{grid-template-columns:1fr}
+    .rank-bar{max-width:80px}
   }
   .scroll-hint{display:none;font-size:11px;color:#8a94a3;margin:0 0 8px;text-align:right}
   @media (max-width: 640px){ .scroll-hint{display:block} }
@@ -193,6 +233,7 @@
   <div class="tabs">
     <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar conteo</button>
     <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
+    <button id="tabIndBtn" onclick="showTab('ind')">📈 Indicadores</button>
     <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo Erizo</button>
   </div>
 
@@ -314,6 +355,64 @@
           <tbody id="tbody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= INDICADORES ================= -->
+  <div id="tabInd" style="display:none">
+    <div class="card" style="padding:16px 20px">
+      <div class="filters" style="margin-bottom:0">
+        <div><label>Desde</label><input type="date" id="iDesde" onchange="renderIndicadores()"></div>
+        <div><label>Hasta</label><input type="date" id="iHasta" onchange="renderIndicadores()"></div>
+        <div>
+          <label>Canal</label>
+          <select id="iCanal" onchange="renderIndicadores()">
+            <option value="">Todos los canales</option>
+            <option value="Erizo">Solo Erizo</option>
+            <option value="Autoservicio">Autoservicio</option>
+            <option value="Mayorista">Mayorista</option>
+            <option value="QSR">QSR</option>
+            <option value="Tradicional">Tradicional</option>
+            <option value="Cripa">Cripa</option>
+          </select>
+        </div>
+        <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="periodoMes()">📅 Este mes</button></div>
+        <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="periodoSemana()">📆 Esta semana</button></div>
+        <div style="flex:0"><button class="btn" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button></div>
+      </div>
+    </div>
+
+    <div id="indAlertas"></div>
+    <div class="ind-hero" id="indHero"></div>
+
+    <div class="ind-2col">
+      <div class="card">
+        <h2>🚨 Rutas sin controlar en el período</h2>
+        <p class="muted" style="margin:0 0 10px">Rutas del maestro que <b>no tienen ningún conteo</b> en las fechas elegidas.</p>
+        <div id="indFaltantes"></div>
+      </div>
+      <div class="card">
+        <h2>📊 Cobertura por canal</h2>
+        <div id="indCanal"></div>
+      </div>
+    </div>
+
+    <div class="ind-2col">
+      <div class="card">
+        <h2>🏆 Quién controla más</h2>
+        <p class="muted" style="margin:0 0 10px">Cantidad de conteos y su nivel de exactitud.</p>
+        <div id="indRanking"></div>
+      </div>
+      <div class="card">
+        <h2>⚠️ Top rutas con más diferencias</h2>
+        <p class="muted" style="margin:0 0 10px">Suma de diferencias absolutas (bandejas + dollys).</p>
+        <div id="indTopDif"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📅 Conteos por día</h2>
+      <div id="indDias"></div>
     </div>
   </div>
 
@@ -559,6 +658,16 @@ function estado(x){
   return c?'COINCIDE':'REVISAR';
 }
 function canalReg(x){ return x.canal || canalDe(x.ruta); }
+// HDR todavía no cargada: todos los declarados en 0 y nunca se completó
+function hdrPendiente(x){
+  const suma=(x.hdr_vacias||0)+(x.hdr_devoluciones||0)+(x.hdr_rechazo||0)+(x.hdr_dollys||0);
+  return suma===0 && !x.fecha_hdr;
+}
+function difBandejas(x){
+  return Math.abs(x.fis_vacias-x.hdr_vacias)+Math.abs(x.fis_devoluciones-x.hdr_devoluciones)+
+         Math.abs(x.fis_rechazo-x.hdr_rechazo);
+}
+function difDollys(x){ return Math.abs(x.fis_dollys-x.hdr_dollys); }
 
 // ====== Mostrar canal ======
 function mostrarCanal(){ pintarCanal('ruta','canalBadge'); }
@@ -577,11 +686,14 @@ function pintarCanal(selId, boxId){
 function showTab(t){
   document.getElementById('tabCarga').style.display=t==='carga'?'block':'none';
   document.getElementById('tabVer').style.display=t==='ver'?'block':'none';
+  document.getElementById('tabInd').style.display=t==='ind'?'block':'none';
   document.getElementById('tabPlan').style.display=t==='plan'?'block':'none';
   document.getElementById('tabCargaBtn').classList.toggle('active',t==='carga');
   document.getElementById('tabVerBtn').classList.toggle('active',t==='ver');
+  document.getElementById('tabIndBtn').classList.toggle('active',t==='ind');
   document.getElementById('tabPlanBtn').classList.toggle('active',t==='plan');
   if(t==='ver'){ cargarDatos(); }
+  if(t==='ind'){ cargarDatosInd(); }
   if(t==='plan'){ renderPlan(); }
 }
 
@@ -609,19 +721,32 @@ async function guardar(){
 }
 
 // ====== Cargar datos ======
+async function traerRegistros(){
+  const {data,error}=await supa.from('control_erizos').select('*')
+    .order('fecha',{ascending:false}).order('created_at',{ascending:false});
+  if(error) throw error;
+  REGISTROS=data||[];
+}
 async function cargarDatos(){
   try{
-    const {data,error}=await supa.from('control_erizos').select('*')
-      .order('fecha',{ascending:false}).order('created_at',{ascending:false});
-    if(error) throw error;
-    REGISTROS=data||[];
-    render();
+    await traerRegistros();
+    if(document.getElementById('tabVer').style.display!=='none') render();
+    if(document.getElementById('tabInd').style.display!=='none') renderIndicadores();
   }catch(e){
     document.getElementById('tbody').innerHTML='<tr><td colspan="20" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
   }
 }
+async function cargarDatosInd(){
+  try{
+    if(REGISTROS.length===0) await traerRegistros();
+    if(!document.getElementById('iDesde').value) periodoMes();
+    else renderIndicadores();
+  }catch(e){
+    document.getElementById('indHero').innerHTML='<div class="alert-box rojo">❌ Error al cargar: '+(e.message||e)+'</div>';
+  }
+}
 
-// ====== Filtro + render ======
+// ====== Filtro + render (Ver registros) ======
 function filtrar(){
   const d=document.getElementById('fDesde').value, h=document.getElementById('fHasta').value;
   const r=document.getElementById('fRuta').value.trim().toLowerCase();
@@ -694,6 +819,196 @@ function render(){
   document.getElementById('conteoTotal').textContent=totalActivos+' activos'+(totalAnu?(' · '+totalAnu+' anulados'):'');
 }
 function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
+
+/* ==========================================================
+   INDICADORES
+   ========================================================== */
+function periodoMes(){
+  const h=new Date();
+  const ini=new Date(h.getFullYear(),h.getMonth(),1);
+  document.getElementById('iDesde').value=ini.toISOString().slice(0,10);
+  document.getElementById('iHasta').value=h.toISOString().slice(0,10);
+  renderIndicadores();
+}
+function periodoSemana(){
+  const h=new Date(); const l=lunesDe(h);
+  document.getElementById('iDesde').value=l.toISOString().slice(0,10);
+  document.getElementById('iHasta').value=h.toISOString().slice(0,10);
+  renderIndicadores();
+}
+function filtrarInd(){
+  const d=document.getElementById('iDesde').value, h=document.getElementById('iHasta').value;
+  const c=document.getElementById('iCanal').value;
+  return REGISTROS.filter(function(x){
+    if(esAnulado(x)) return false;           // los anulados nunca cuentan
+    if(d&&x.fecha<d) return false;
+    if(h&&x.fecha>h) return false;
+    if(c&&!(canalReg(x)||'').toLowerCase().includes(c.toLowerCase())) return false;
+    return true;
+  });
+}
+function rutasDelMaestro(){
+  const c=document.getElementById('iCanal').value;
+  return Object.keys(RUTAS_CANAL).filter(function(r){
+    if(!c) return true;
+    return RUTAS_CANAL[r].toLowerCase().includes(c.toLowerCase());
+  });
+}
+function barra(pct, clase){
+  const p=Math.max(0,Math.min(100,pct));
+  return '<div class="bar-track"><div class="bar-fill '+(clase||'')+'" style="width:'+p+'%"></div></div>';
+}
+function indCard(label, valor, sub, clase, pct, claseBarra){
+  return '<div class="ind-card '+(clase||'')+'">'+
+    '<div class="ic-l">'+label+'</div>'+
+    '<div class="ic-n">'+valor+'</div>'+
+    '<div class="ic-s">'+(sub||'')+'</div>'+
+    (pct!==undefined?barra(pct,claseBarra):'')+
+  '</div>';
+}
+
+function renderIndicadores(){
+  const rows=filtrarInd();
+  const maestro=rutasDelMaestro();
+
+  // ---- 1. COBERTURA ----
+  const controladas=[...new Set(rows.map(x=>String(x.ruta)))];
+  const faltantes=maestro.filter(r=>controladas.indexOf(r)===-1);
+  const pctCob=maestro.length?Math.round(controladas.length/maestro.length*100):0;
+
+  // ---- 2. EXACTITUD (solo con HDR cargada) ----
+  const conHdr=rows.filter(x=>!hdrPendiente(x));
+  const pendientes=rows.filter(hdrPendiente);
+  const coinciden=conHdr.filter(x=>estado(x)==='COINCIDE').length;
+  const pctExac=conHdr.length?Math.round(coinciden/conHdr.length*100):0;
+  const totDifBand=conHdr.reduce((a,x)=>a+difBandejas(x),0);
+  const totDifDoll=conHdr.reduce((a,x)=>a+difDollys(x),0);
+  const conDifBand=conHdr.filter(x=>difBandejas(x)>0).length;
+  const conDifDoll=conHdr.filter(x=>difDollys(x)>0).length;
+
+  // ---- Alertas ----
+  let alertas='';
+  if(pendientes.length>0){
+    alertas+='<div class="alert-box">⏳ Hay <b>'+pendientes.length+' conteo(s) con la HDR sin cargar</b>. '+
+      'No se incluyen en el cálculo de diferencias para no distorsionar los números. Completalos con el botón 📥 en Ver registros.</div>';
+  }
+  if(faltantes.length>0){
+    alertas+='<div class="alert-box rojo">🚨 Quedan <b>'+faltantes.length+' ruta(s) sin controlar</b> en el período seleccionado.</div>';
+  }
+  document.getElementById('indAlertas').innerHTML=alertas;
+
+  // ---- Tarjetas principales ----
+  document.getElementById('indHero').innerHTML=
+    indCard('Cobertura de rutas', pctCob+'%', controladas.length+' de '+maestro.length+' rutas controladas',
+            pctCob>=80?'verde':(pctCob>=50?'naranja':'rojo'), pctCob, pctCob>=80?'verde':(pctCob>=50?'naranja':'rojo'))+
+    indCard('Rutas sin controlar', faltantes.length, 'Pendientes en el período', faltantes.length?'rojo':'verde')+
+    indCard('Exactitud HDR', pctExac+'%', coinciden+' de '+conHdr.length+' conteos coinciden',
+            pctExac>=90?'verde':(pctExac>=70?'naranja':'rojo'), pctExac, pctExac>=90?'verde':(pctExac>=70?'naranja':'rojo'))+
+    indCard('Bandejas con diferencia', totDifBand.toLocaleString('es-AR'), 'En '+conDifBand+' conteo(s)', totDifBand?'naranja':'verde')+
+    indCard('Dollys con diferencia', totDifDoll.toLocaleString('es-AR'), 'En '+conDifDoll+' conteo(s)', totDifDoll?'naranja':'verde')+
+    indCard('Conteos realizados', rows.length, pendientes.length+' con HDR pendiente');
+
+  // ---- Rutas faltantes ----
+  const cajaF=document.getElementById('indFaltantes');
+  if(faltantes.length===0){
+    cajaF.innerHTML='<div class="rutas-falt"><span class="rf ok">✅ Todas las rutas fueron controladas</span></div>';
+  } else {
+    // agrupar por canal
+    const porCanal={};
+    faltantes.forEach(function(r){
+      const c=RUTAS_CANAL[r];
+      (porCanal[c]=porCanal[c]||[]).push(r);
+    });
+    let h='';
+    Object.keys(porCanal).sort().forEach(function(c){
+      h+='<div style="margin-bottom:12px"><div class="muted" style="font-weight:700;margin-bottom:5px">'+c+
+         ' <span style="font-weight:400">('+porCanal[c].length+')</span></div><div class="rutas-falt">'+
+         porCanal[c].sort().map(r=>'<span class="rf">'+r+'</span>').join('')+'</div></div>';
+    });
+    cajaF.innerHTML=h;
+  }
+
+  // ---- Cobertura por canal ----
+  const canales=['Erizo','Autoservicio','Mayorista','QSR','Tradicional','Cripa'];
+  let hc='<table class="ind-tabla"><thead><tr><th>Canal</th><th>Controladas</th><th>Total</th><th>%</th></tr></thead><tbody>';
+  canales.forEach(function(c){
+    const tot=Object.keys(RUTAS_CANAL).filter(r=>RUTAS_CANAL[r].toLowerCase().includes(c.toLowerCase()));
+    if(tot.length===0) return;
+    const ctrl=tot.filter(r=>controladas.indexOf(r)!==-1);
+    const p=Math.round(ctrl.length/tot.length*100);
+    const color=p>=80?'#1b7a37':(p>=50?'#c8780f':'#c0392b');
+    hc+='<tr><td class="left"><b>'+c+'</b></td><td>'+ctrl.length+'</td><td>'+tot.length+'</td>'+
+        '<td style="color:'+color+';font-weight:800">'+p+'%</td></tr>';
+  });
+  hc+='</tbody></table>';
+  document.getElementById('indCanal').innerHTML=hc;
+
+  // ---- Ranking de contadores ----
+  const porPersona={};
+  rows.forEach(function(x){
+    const k=(x.contador||'Sin nombre').trim();
+    if(!porPersona[k]) porPersona[k]={n:0, coin:0, conHdr:0};
+    porPersona[k].n++;
+    if(!hdrPendiente(x)){ porPersona[k].conHdr++; if(estado(x)==='COINCIDE') porPersona[k].coin++; }
+  });
+  const rank=Object.keys(porPersona).map(k=>({nombre:k, ...porPersona[k]})).sort((a,b)=>b.n-a.n);
+  const maxN=rank.length?rank[0].n:1;
+  const cajaR=document.getElementById('indRanking');
+  if(rank.length===0){ cajaR.innerHTML='<p class="muted">Sin conteos en el período.</p>'; }
+  else{
+    cajaR.innerHTML=rank.map(function(p,i){
+      const exac=p.conHdr?Math.round(p.coin/p.conHdr*100):null;
+      return '<div class="rank-row">'+
+        '<div class="rank-pos'+(i===0?' top':'')+'">'+(i+1)+'</div>'+
+        '<div class="rank-name">'+p.nombre+(exac!==null?(' <span class="muted" style="font-weight:400">· '+exac+'% exactitud</span>'):'')+'</div>'+
+        '<div class="rank-bar">'+barra(p.n/maxN*100)+'</div>'+
+        '<div class="rank-val">'+p.n+'</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  // ---- Top rutas con diferencias ----
+  const porRuta={};
+  conHdr.forEach(function(x){
+    const k=String(x.ruta);
+    if(!porRuta[k]) porRuta[k]={band:0, doll:0, n:0};
+    porRuta[k].band+=difBandejas(x);
+    porRuta[k].doll+=difDollys(x);
+    porRuta[k].n++;
+  });
+  const topDif=Object.keys(porRuta).map(k=>({ruta:k, ...porRuta[k], total:porRuta[k].band+porRuta[k].doll}))
+    .filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,8);
+  const cajaD=document.getElementById('indTopDif');
+  if(topDif.length===0){
+    cajaD.innerHTML='<p class="muted">✅ Sin diferencias registradas en el período.</p>';
+  } else {
+    let hd='<table class="ind-tabla"><thead><tr><th>Ruta</th><th>Canal</th><th>Bandejas</th><th>Dollys</th><th>Conteos</th></tr></thead><tbody>';
+    topDif.forEach(function(r){
+      hd+='<tr><td><b>'+r.ruta+'</b></td><td class="left" style="font-size:11px">'+canalDe(r.ruta)+'</td>'+
+          '<td style="color:#c0392b;font-weight:700">'+r.band.toLocaleString('es-AR')+'</td>'+
+          '<td style="color:#c0392b;font-weight:700">'+r.doll+'</td><td>'+r.n+'</td></tr>';
+    });
+    hd+='</tbody></table>';
+    cajaD.innerHTML=hd;
+  }
+
+  // ---- Conteos por día ----
+  const porDia={};
+  rows.forEach(function(x){ porDia[x.fecha]=(porDia[x.fecha]||0)+1; });
+  const dias=Object.keys(porDia).sort();
+  const maxD=dias.length?Math.max(...dias.map(d=>porDia[d])):1;
+  const cajaDias=document.getElementById('indDias');
+  if(dias.length===0){ cajaDias.innerHTML='<p class="muted">Sin conteos en el período.</p>'; }
+  else{
+    cajaDias.innerHTML=dias.map(function(d){
+      return '<div class="dia-row">'+
+        '<div class="dia-lbl">'+fmtFecha(d)+'</div>'+
+        '<div class="dia-bar">'+barra(porDia[d]/maxD*100)+'</div>'+
+        '<div class="dia-val">'+porDia[d]+'</div>'+
+      '</div>';
+    }).join('');
+  }
+}
 
 // ====== Modales: abrir/cerrar ======
 function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
