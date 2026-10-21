@@ -35,6 +35,7 @@
   .btn.rojo{background:#c0392b}
   .btn.rojo:hover{background:#9d2f23}
   .btn.gris{background:#e6e9ee;color:#556}
+  .btn.flecha{padding:10px 14px;font-size:15px}
   .msg{padding:12px 16px;border-radius:8px;margin-top:14px;font-size:14px;display:none}
   .msg.ok{background:#e6f4ea;color:#1b7a37;display:block}
   .msg.err{background:#fdecea;color:#c0392b;display:block}
@@ -68,6 +69,7 @@
   .canal-tag{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
   .canal-tag.erizo{background:#fdeede;color:#a85a13}
   .canal-tag.otro{background:#e7f0fb;color:#23558f}
+  .canal-tag.sc{background:#eef1f4;color:#6b7785}
   .acc-cell{min-width:118px}
   .acc-btns{display:inline-flex;gap:5px;justify-content:center;align-items:center}
   .icon-btn{border:1px solid #d5dbe3;background:#fff;border-radius:8px;width:32px;height:32px;
@@ -82,6 +84,13 @@
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
+
+  /* ===== CHOFERES DEL DIA ===== */
+  .ctrl-si{background:#e6f4ea;color:#1b7a37;font-weight:700;font-size:12px;padding:3px 10px;border-radius:14px}
+  .ctrl-no{color:#b0b8c2;font-size:12px}
+  .chofer-nom{font-weight:600;color:#26384a}
+  .ruta-num{font-weight:800;color:#003e7e}
+  .vacio{text-align:center;padding:28px 16px;color:#7a8595;font-size:14px}
 
   /* ===== INDICADORES ===== */
   .ind-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-bottom:18px}
@@ -121,13 +130,9 @@
   .alert-box.rojo{background:#fdecea;border-color:#f0c8c2;color:#a3382a}
   .ind-tabla th{background:#3b6ea8;font-size:11px}
   .ind-tabla td{font-size:12.5px}
-
-  /* Nota explicativa (qué significa cada indicador) */
   .nota{background:#f5f8fc;border:1px solid #e0e9f3;border-radius:9px;padding:10px 13px;
     font-size:12px;color:#5a6b7d;line-height:1.55;margin:0 0 12px}
   .nota b{color:#3b5a78}
-
-  /* Tooltip de rutas por canal */
   .canal-nombre{position:relative;cursor:help;border-bottom:1px dotted #8aa2bb}
   .canal-nombre .tip{
     visibility:hidden;opacity:0;transition:opacity .15s;
@@ -137,8 +142,6 @@
     font-size:11.5px;font-weight:500;line-height:1.7;box-shadow:0 6px 20px rgba(0,0,0,.25)}
   .canal-nombre:hover .tip{visibility:visible;opacity:1}
   .canal-nombre .tip b{display:block;margin-bottom:4px;font-size:11px;letter-spacing:.4px;text-transform:uppercase;opacity:.75}
-
-  /* Desplegable del plan */
   details.desplegable{background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:18px;overflow:hidden}
   details.desplegable > summary{
     list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -236,6 +239,7 @@
     .filters{gap:10px}
     .filters > div{flex:1 1 100%;min-width:0}
     .filters > div[style*="flex:0"]{flex:1 1 100%}
+    .filters > div.dia-nav{flex:1 1 30%!important}
     .filters .btn{margin-top:0}
     .table-wrap{max-height:70vh}
     table{font-size:12px}
@@ -272,6 +276,7 @@
   <div class="tabs">
     <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar conteo</button>
     <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
+    <button id="tabChofBtn" onclick="showTab('chof')">🚚 Choferes del día</button>
     <button id="tabIndBtn" onclick="showTab('ind')">📈 Indicadores</button>
     <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo Erizo</button>
   </div>
@@ -394,6 +399,48 @@
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CHOFERES DEL DIA ================= -->
+  <div id="tabChof" style="display:none">
+    <div class="card" style="padding:16px 20px">
+      <div class="filters" style="margin-bottom:0">
+        <div class="dia-nav" style="flex:0"><button class="btn sec flecha" style="margin-top:0" title="Día anterior" onclick="moverDia(-1)">◀</button></div>
+        <div><label>Fecha</label><input type="date" id="cFecha" onchange="cargarChoferes()"></div>
+        <div class="dia-nav" style="flex:0"><button class="btn sec flecha" style="margin-top:0" title="Día siguiente" onclick="moverDia(1)">▶</button></div>
+        <div class="dia-nav" style="flex:0"><button class="btn sec" style="margin-top:0" onclick="irHoy()">📅 Hoy</button></div>
+        <div>
+          <label>Canal</label>
+          <select id="cCanal" onchange="renderChoferes()">
+            <option value="">Todos</option>
+            <option value="Erizo">Erizo</option>
+            <option value="Autoservicio">Autoservicio</option>
+            <option value="Mayorista">Mayorista</option>
+            <option value="QSR">QSR</option>
+            <option value="Tradicional">Tradicional</option>
+            <option value="Cripa">Cripa</option>
+            <option value="Sin clasificar">Sin clasificar</option>
+          </select>
+        </div>
+        <div><label>Buscar</label><input type="text" id="cBuscar" placeholder="Ruta o chofer" oninput="renderChoferes()"></div>
+        <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportarChoferes()">⬇️ Excel</button></div>
+      </div>
+    </div>
+
+    <div class="kpis" id="cKpis"></div>
+
+    <div class="card">
+      <h2 id="cTitulo">Choferes que salieron a reparto</h2>
+      <p class="muted" id="cActualizado" style="margin:-6px 0 12px"></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Ruta</th><th>Canal</th><th>Chofer</th><th>Control del día</th></tr>
+          </thead>
+          <tbody id="cTbody"></tbody>
         </table>
       </div>
     </div>
@@ -689,9 +736,11 @@ const PLAN = {
 };
 const DIAS = [{k:'L',n:'Lunes'},{k:'M',n:'Martes'},{k:'X',n:'Miércoles'},{k:'J',n:'Jueves'},{k:'V',n:'Viernes'},{k:'S',n:'Sábado'}];
 const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
+const NOM_DIA = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
 let REGISTROS = [];
 let MAPA_NOMBRES = {};
+let CHOFERES = [];
 
 // ====== Utilidades ======
 function n(id){ return parseInt(document.getElementById(id).value) || 0; }
@@ -802,15 +851,15 @@ function pintarCanal(selId, boxId){
 
 // ====== Pestañas ======
 function showTab(t){
-  document.getElementById('tabCarga').style.display=t==='carga'?'block':'none';
-  document.getElementById('tabVer').style.display=t==='ver'?'block':'none';
-  document.getElementById('tabInd').style.display=t==='ind'?'block':'none';
-  document.getElementById('tabPlan').style.display=t==='plan'?'block':'none';
-  document.getElementById('tabCargaBtn').classList.toggle('active',t==='carga');
-  document.getElementById('tabVerBtn').classList.toggle('active',t==='ver');
-  document.getElementById('tabIndBtn').classList.toggle('active',t==='ind');
-  document.getElementById('tabPlanBtn').classList.toggle('active',t==='plan');
+  const tabs=['carga','ver','chof','ind','plan'];
+  const ids={carga:'tabCarga',ver:'tabVer',chof:'tabChof',ind:'tabInd',plan:'tabPlan'};
+  const btns={carga:'tabCargaBtn',ver:'tabVerBtn',chof:'tabChofBtn',ind:'tabIndBtn',plan:'tabPlanBtn'};
+  tabs.forEach(function(k){
+    document.getElementById(ids[k]).style.display=(k===t)?'block':'none';
+    document.getElementById(btns[k]).classList.toggle('active',k===t);
+  });
   if(t==='ver'){ cargarDatos(); }
+  if(t==='chof'){ cargarChoferes(); }
   if(t==='ind'){ cargarDatosInd(); }
   if(t==='plan'){ renderPlan(); }
 }
@@ -941,6 +990,127 @@ function render(){
 function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
 
 /* ==========================================================
+   CHOFERES DEL DÍA (datos de Driv.in guardados en Supabase)
+   ========================================================== */
+function canalChofer(r){ return RUTAS_CANAL[r] || 'Sin clasificar'; }
+
+async function cargarChoferes(){
+  const f=document.getElementById('cFecha').value;
+  const tb=document.getElementById('cTbody');
+  tb.innerHTML='<tr><td colspan="4" class="vacio">Cargando…</td></tr>';
+  try{
+    const {data,error}=await supa.from('choferes_reparto')
+      .select('fecha,ruta,chofer,actualizado_at').eq('fecha',f).order('ruta',{ascending:true});
+    if(error) throw error;
+    CHOFERES=data||[];
+    if(REGISTROS.length===0){ try{ await traerRegistros(); }catch(e){} }
+    renderChoferes();
+  }catch(e){
+    tb.innerHTML='<tr><td colspan="4" class="vacio">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
+  }
+}
+
+function controlesDelDia(f){
+  const mapa={};
+  REGISTROS.forEach(function(x){
+    if(esAnulado(x) || x.fecha!==f) return;
+    const k=String(x.ruta);
+    const nom=nombreUnificado(x.contador);
+    (mapa[k]=mapa[k]||[]);
+    if(mapa[k].indexOf(nom)===-1) mapa[k].push(nom);
+  });
+  return mapa;
+}
+
+function filtrarChoferes(){
+  const c=document.getElementById('cCanal').value.toLowerCase();
+  const b=sinAcentos(document.getElementById('cBuscar').value.trim().toLowerCase());
+  return CHOFERES.filter(function(x){
+    const canal=canalChofer(x.ruta).toLowerCase();
+    if(c && canal.indexOf(c)===-1) return false;
+    if(b){
+      const texto=sinAcentos((x.ruta+' '+(x.chofer||'')).toLowerCase());
+      if(texto.indexOf(b)===-1) return false;
+    }
+    return true;
+  });
+}
+
+function renderChoferes(){
+  const f=document.getElementById('cFecha').value;
+  const fd=new Date(f+'T00:00:00');
+  document.getElementById('cTitulo').textContent='Choferes que salieron a reparto · '+NOM_DIA[fd.getDay()]+' '+fmtFecha(f);
+
+  const ult=CHOFERES.reduce(function(m,x){ return (!m || x.actualizado_at>m)?x.actualizado_at:m; }, null);
+  document.getElementById('cActualizado').textContent=ult?('Datos de Driv.in · última actualización: '+fmtStamp(ult)):'';
+
+  const ctrl=controlesDelDia(f);
+  const rows=filtrarChoferes();
+  const tb=document.getElementById('cTbody');
+
+  if(CHOFERES.length===0){
+    tb.innerHTML='<tr><td colspan="4" class="vacio">No hay choferes registrados para este día.<br>'+
+      '<span style="font-size:12px">Si es hoy, puede que Driv.in todavía no tenga la salida cargada: se actualiza cada hora de 04:00 a 15:00.</span></td></tr>';
+  } else if(rows.length===0){
+    tb.innerHTML='<tr><td colspan="4" class="vacio">Ninguna ruta coincide con los filtros.</td></tr>';
+  } else {
+    tb.innerHTML=rows.map(function(x){
+      const canal=canalChofer(x.ruta);
+      const cls=canal==='Sin clasificar'?'sc':(esErizoCanal(canal)?'erizo':'otro');
+      const quien=ctrl[String(x.ruta)];
+      const celdaCtrl=quien?'<span class="ctrl-si">✅ '+quien.join(', ')+'</span>':'<span class="ctrl-no">— Sin control</span>';
+      return '<tr>'+
+        '<td><span class="ruta-num">'+x.ruta+'</span></td>'+
+        '<td><span class="canal-tag '+cls+'">'+canal+'</span></td>'+
+        '<td class="left"><span class="chofer-nom">'+(x.chofer||'—')+'</span></td>'+
+        '<td>'+celdaCtrl+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  // KPIs del día (sobre todas las rutas que salieron, sin filtros)
+  const salieron=CHOFERES.length;
+  const choferes=new Set(CHOFERES.map(x=>(x.chofer||'').trim()).filter(Boolean)).size;
+  const controladas=CHOFERES.filter(x=>ctrl[String(x.ruta)]).length;
+  const pct=salieron?Math.round(controladas/salieron*100):0;
+  const erizos=CHOFERES.filter(x=>esErizoCanal(canalChofer(x.ruta))).length;
+  document.getElementById('cKpis').innerHTML=
+    kpi(salieron,'Rutas que salieron')+
+    kpi(choferes,'Choferes')+
+    kpi(erizos,'Rutas Erizo')+
+    kpi(controladas,'Rutas controladas')+
+    kpi(pct+'%','Controladas sobre salidas');
+}
+
+function moverDia(delta){
+  const inp=document.getElementById('cFecha');
+  const d=new Date((inp.value||isoLocal(new Date()))+'T00:00:00');
+  d.setDate(d.getDate()+delta);
+  inp.value=isoLocal(d);
+  cargarChoferes();
+}
+function irHoy(){
+  document.getElementById('cFecha').value=isoLocal(new Date());
+  cargarChoferes();
+}
+function exportarChoferes(){
+  const rows=filtrarChoferes();
+  if(rows.length===0){ alert('No hay choferes para exportar.'); return; }
+  const f=document.getElementById('cFecha').value;
+  const ctrl=controlesDelDia(f);
+  const data=rows.map(function(x){
+    return {
+      'Fecha':fmtFecha(f),'Ruta':x.ruta,'Canal':canalChofer(x.ruta),'Chofer':x.chofer||'',
+      'Controlada':ctrl[String(x.ruta)]?'Sí':'No','Controlada por':(ctrl[String(x.ruta)]||[]).join(', ')
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Choferes');
+  XLSX.writeFile(wb,'Choferes_Tablada_'+f+'.xlsx');
+}
+
+/* ==========================================================
    INDICADORES
    ========================================================== */
 function periodoMes(){
@@ -987,7 +1157,6 @@ function indCard(label, valor, sub, clase, pct, claseBarra){
   '</div>';
 }
 
-/* ---- Cumplimiento del Plan ---- */
 function calcularCumplimientoPlan(desde, hasta, rowsPeriodo){
   if(!desde||!hasta) return null;
   const ini=new Date(desde+'T00:00:00'), fin=new Date(hasta+'T00:00:00');
@@ -1025,12 +1194,10 @@ function renderIndicadores(){
   const maestro=rutasDelMaestro();
   const desde=document.getElementById('iDesde').value, hasta=document.getElementById('iHasta').value;
 
-  // COBERTURA
   const controladas=[...new Set(rows.map(x=>String(x.ruta)))];
   const faltantes=maestro.filter(r=>controladas.indexOf(r)===-1);
   const pctCob=maestro.length?Math.round(controladas.length/maestro.length*100):0;
 
-  // EXACTITUD
   const conHdr=rows.filter(x=>!hdrPendiente(x));
   const pendientes=rows.filter(hdrPendiente);
   const coinciden=conHdr.filter(x=>estado(x)==='COINCIDE').length;
@@ -1040,7 +1207,6 @@ function renderIndicadores(){
   const conDifBand=conHdr.filter(x=>difBandejas(x)>0).length;
   const conDifDoll=conHdr.filter(x=>difDollys(x)>0).length;
 
-  // PLAN (siempre sobre Erizo, sin filtro de canal)
   const rowsPlan=REGISTROS.filter(function(x){
     if(esAnulado(x)) return false;
     if(desde&&x.fecha<desde) return false;
@@ -1049,7 +1215,6 @@ function renderIndicadores(){
   });
   const cum=calcularCumplimientoPlan(desde,hasta,rowsPlan);
 
-  // Alertas
   let alertas='';
   if(pendientes.length>0){
     alertas+='<div class="alert-box">⏳ Hay <b>'+pendientes.length+' conteo(s) con la HDR sin cargar</b>. '+
@@ -1060,7 +1225,6 @@ function renderIndicadores(){
   }
   document.getElementById('indAlertas').innerHTML=alertas;
 
-  // Tarjetas
   document.getElementById('indHero').innerHTML=
     indCard('Cumplimiento del plan', (cum?cum.pct:0)+'%',
             cum?(cum.totHecho+' de '+cum.totPlan+' rutas planificadas'):'Sin período',
@@ -1074,14 +1238,12 @@ function renderIndicadores(){
     indCard('Bandejas con diferencia', totDifBand.toLocaleString('es-AR'), 'En '+conDifBand+' conteo(s)', totDifBand?'naranja':'verde')+
     indCard('Dollys con diferencia', totDifDoll.toLocaleString('es-AR'), 'En '+conDifDoll+' conteo(s)', totDifDoll?'naranja':'verde');
 
-  // Resumen en el título del desplegable
   const resum=document.getElementById('planResumen');
   if(cum){
     const cls=cum.pct>=80?'verde':(cum.pct>=50?'naranja':'rojo');
     resum.innerHTML='<span class="sum-pill '+cls+'">'+cum.pct+'% · '+cum.totHecho+'/'+cum.totPlan+' rutas</span>';
   } else { resum.innerHTML=''; }
 
-  // Panel del plan
   const cajaP=document.getElementById('indPlan');
   if(!cum || cum.dias.length===0){
     cajaP.innerHTML='<p class="muted">Elegí un período para ver el cumplimiento del plan.</p>';
@@ -1095,14 +1257,13 @@ function renderIndicadores(){
       '<div style="font-size:22px;font-weight:800;color:#c0392b">'+(cum.totPlan-cum.totHecho)+'</div></div>'+
       '<div style="flex:1;min-width:180px;align-self:center">'+barra(cum.pct, cum.pct>=80?'verde':(cum.pct>=50?'naranja':'rojo'))+'</div>'+
       '</div>';
-    const nomDia=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     cum.dias.slice().reverse().forEach(function(d){
       const fd=new Date(d.iso+'T00:00:00');
       const cls=d.faltan.length===0?'ok':'falta';
       const col=d.pct>=80?'#1b7a37':(d.pct>=50?'#c8780f':'#c0392b');
       hp+='<div class="plan-dia '+cls+'">'+
         '<div class="plan-dia-top">'+
-          '<div class="plan-dia-fecha">'+nomDia[fd.getDay()]+' '+fmtFecha(d.iso)+
+          '<div class="plan-dia-fecha">'+NOM_DIA[fd.getDay()]+' '+fmtFecha(d.iso)+
             ' <span class="muted" style="font-weight:400">· Semana '+d.semana+' del plan</span></div>'+
           '<div class="plan-dia-pct" style="color:'+col+'">'+d.cumplidas.length+'/'+d.plan.length+' · '+d.pct+'%</div>'+
         '</div>';
@@ -1121,7 +1282,6 @@ function renderIndicadores(){
     cajaP.innerHTML=hp;
   }
 
-  // Rutas faltantes
   const cajaF=document.getElementById('indFaltantes');
   if(faltantes.length===0){
     cajaF.innerHTML='<div class="rutas-falt"><span class="rf ok">✅ Todas las rutas fueron controladas</span></div>';
@@ -1137,7 +1297,6 @@ function renderIndicadores(){
     cajaF.innerHTML=h;
   }
 
-  // Cobertura por canal (rutas en tooltip)
   const canales=['Erizo','Autoservicio','Mayorista','QSR','Tradicional','Cripa'];
   let hc='<table class="ind-tabla"><thead><tr><th>Canal</th><th>Controladas</th><th>Total</th><th>%</th></tr></thead><tbody>';
   canales.forEach(function(c){
@@ -1157,7 +1316,6 @@ function renderIndicadores(){
   hc+='</tbody></table>';
   document.getElementById('indCanal').innerHTML=hc;
 
-  // Ranking
   const porPersona={};
   rows.forEach(function(x){
     const k=nombreUnificado(x.contador);
@@ -1182,7 +1340,6 @@ function renderIndicadores(){
     }).join('');
   }
 
-  // Top rutas con diferencias
   const porRuta={};
   conHdr.forEach(function(x){
     const k=String(x.ruta);
@@ -1205,7 +1362,6 @@ function renderIndicadores(){
     cajaD.innerHTML=hd;
   }
 
-  // Conteos por día
   const porDia={};
   rows.forEach(function(x){ porDia[x.fecha]=(porDia[x.fecha]||0)+1; });
   const dias=Object.keys(porDia).sort();
@@ -1440,7 +1596,7 @@ function chips(arr){ if(!arr||arr.length===0) return '<span class="muted">—</s
 function renderPlan(){
   const cont=document.getElementById('hoyCard'); const w=semanaActual();
   const hoy=new Date(); const kHoy=JS_DAY_TO_K[hoy.getDay()];
-  const diaNombre=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][hoy.getDay()];
+  const diaNombre=NOM_DIA[hoy.getDay()];
   const fechaTxt=('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
 
   const est=document.getElementById('planEstadoTxt');
@@ -1489,7 +1645,6 @@ function llenarSelectorRutas(sel){
   sel.appendChild(gE); sel.appendChild(gO);
 }
 (function(){
-  // Limpia ajustes viejos de rotación que quedaron de pruebas anteriores
   const cfg=JSON.parse(localStorage.getItem('erizos_plan_anchor')||'null');
   if(cfg && cfg.mondayISO){
     const anc=new Date(cfg.mondayISO+'T00:00:00');
@@ -1503,7 +1658,7 @@ function llenarSelectorRutas(sel){
   edSel.innerHTML='';
   llenarSelectorRutas(edSel);
   document.getElementById('fecha').value=isoLocal(new Date());
-  // Trae los datos al abrir para que las sugerencias de nombres estén listas
+  document.getElementById('cFecha').value=isoLocal(new Date());
   traerRegistros().catch(function(){});
 })();
 </script>
