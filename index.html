@@ -275,8 +275,8 @@
 <div class="container">
   <div class="tabs">
     <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar conteo</button>
-    <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
     <button id="tabChofBtn" onclick="showTab('chof')">🚚 Choferes del día</button>
+    <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
     <button id="tabIndBtn" onclick="showTab('ind')">📈 Indicadores</button>
     <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo Erizo</button>
   </div>
@@ -425,6 +425,14 @@
             <option value="Sin clasificar">Sin clasificar</option>
           </select>
         </div>
+        <div>
+          <label>Control</label>
+          <select id="cControl" onchange="renderChoferes()">
+            <option value="">Todos</option>
+            <option value="si">✅ Controlados</option>
+            <option value="no">— Sin controlar</option>
+          </select>
+        </div>
         <div><label>Buscar</label><input type="text" id="cBuscar" placeholder="Ruta o chofer" oninput="renderChoferes()"></div>
         <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportarChoferes()">⬇️ Excel</button></div>
       </div>
@@ -517,6 +525,43 @@
         <div id="indTopDif"></div>
       </div>
     </div>
+
+    <h3 style="color:#003e7e;margin:26px 0 12px;font-size:17px">🚚 Choferes</h3>
+    <p class="nota" style="margin-bottom:14px">
+      Cruza los choferes que salieron según <b>Driv.in</b> con los conteos cargados, para el período y canal elegidos arriba.
+      Un chofer cuenta como <b>controlado</b> si su ruta tuvo un conteo el mismo día que salió.
+      <b>Con diferencia</b> significa que el conteo no coincidió con la HDR (solo se miran conteos con la HDR ya cargada).
+    </p>
+    <div id="indChofAviso"></div>
+    <div class="ind-hero" id="indChofHero"></div>
+
+    <div class="ind-2col">
+      <div class="card">
+        <h2>🚫 Nunca controlados</h2>
+        <p class="muted" style="margin:0 0 10px">Salieron a reparto en el período y <b>no tuvieron ningún control</b>. Entre paréntesis, cuántos días salieron.</p>
+        <div id="indChofNunca"></div>
+      </div>
+      <div class="card">
+        <h2>⚠️ Diferencias recurrentes</h2>
+        <p class="muted" style="margin:0 0 10px">Choferes con <b>al menos 2 controles</b> y diferencia en la mitad o más de ellos.</p>
+        <div id="indChofDif"></div>
+      </div>
+    </div>
+
+    <details class="desplegable">
+      <summary>📋 Detalle por chofer <span id="indChofResumen"></span></summary>
+      <div class="desp-body">
+        <div class="table-wrap">
+          <table class="ind-tabla">
+            <thead><tr>
+              <th>Chofer</th><th>Rutas</th><th>Días que salió</th><th>Controles</th><th>% controlado</th>
+              <th>Con diferencia</th><th>Bandejas dif.</th><th>Dollys dif.</th><th>Último control</th>
+            </tr></thead>
+            <tbody id="indChofTabla"></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
 
     <div class="card">
       <h2>📅 Conteos por día</h2>
@@ -898,6 +943,7 @@ async function traerRegistros(){
 }
 async function cargarDatos(){
   try{
+    CHOF_CACHE={clave:'', filas:[]};
     await traerRegistros();
     if(document.getElementById('tabVer').style.display!=='none') render();
     if(document.getElementById('tabInd').style.display!=='none') renderIndicadores();
@@ -1025,9 +1071,14 @@ function controlesDelDia(f){
 function filtrarChoferes(){
   const c=document.getElementById('cCanal').value.toLowerCase();
   const b=sinAcentos(document.getElementById('cBuscar').value.trim().toLowerCase());
+  const ctrlFiltro=document.getElementById('cControl').value;
+  const ctrl=controlesDelDia(document.getElementById('cFecha').value);
   return CHOFERES.filter(function(x){
     const canal=canalChofer(x.ruta).toLowerCase();
     if(c && canal.indexOf(c)===-1) return false;
+    const controlada=!!ctrl[String(x.ruta)];
+    if(ctrlFiltro==='si' && !controlada) return false;
+    if(ctrlFiltro==='no' && controlada) return false;
     if(b){
       const texto=sinAcentos((x.ruta+' '+(x.chofer||'')).toLowerCase());
       if(texto.indexOf(b)===-1) return false;
@@ -1375,6 +1426,134 @@ function renderIndicadores(){
         '<div class="dia-val">'+porDia[d]+'</div></div>';
     }).join('');
   }
+
+  renderChoferesInd();
+}
+
+/* ---- Indicadores de choferes (Driv.in x conteos) ---- */
+let CHOF_CACHE={clave:'', filas:[]};
+async function traerChoferesRango(desde, hasta){
+  const clave=desde+'|'+hasta;
+  if(CHOF_CACHE.clave===clave) return CHOF_CACHE.filas;
+  const todas=[]; const paso=1000; let ini=0;
+  while(true){
+    const {data,error}=await supa.from('choferes_reparto').select('fecha,ruta,chofer')
+      .gte('fecha',desde).lte('fecha',hasta).order('fecha',{ascending:true}).range(ini, ini+paso-1);
+    if(error) throw error;
+    todas.push.apply(todas, data||[]);
+    if(!data || data.length<paso) break;
+    ini+=paso;
+  }
+  CHOF_CACHE={clave:clave, filas:todas};
+  return todas;
+}
+
+async function renderChoferesInd(){
+  const desde=document.getElementById('iDesde').value, hasta=document.getElementById('iHasta').value;
+  const c=document.getElementById('iCanal').value.toLowerCase();
+  const aviso=document.getElementById('indChofAviso');
+  if(!desde||!hasta){ aviso.innerHTML=''; return; }
+  let salidas;
+  try{ salidas=await traerChoferesRango(desde,hasta); }
+  catch(e){ aviso.innerHTML='<div class="alert-box rojo">❌ No se pudieron cargar los choferes: '+(e.message||e)+'</div>'; return; }
+  aviso.innerHTML='';
+
+  salidas=salidas.filter(function(s){
+    if(!s.chofer) return false;
+    if(c && canalChofer(s.ruta).toLowerCase().indexOf(c)===-1) return false;
+    return true;
+  });
+
+  // conteos activos indexados por fecha+ruta
+  const conteos={};
+  REGISTROS.forEach(function(x){
+    if(esAnulado(x)) return;
+    if(x.fecha<desde||x.fecha>hasta) return;
+    const k=x.fecha+'|'+String(x.ruta);
+    (conteos[k]=conteos[k]||[]).push(x);
+  });
+
+  const porChofer={};
+  salidas.forEach(function(s){
+    const nom=tituloNombre(s.chofer);
+    if(!porChofer[nom]) porChofer[nom]={nombre:nom, rutas:{}, dias:{}, controles:0, conHdr:0, conDif:0, band:0, doll:0, ultimo:null};
+    const p=porChofer[nom];
+    p.rutas[String(s.ruta)]=1;
+    p.dias[s.fecha]=1;
+    const lista=conteos[s.fecha+'|'+String(s.ruta)];
+    if(lista && lista.length){
+      p.controles++;
+      if(!p.ultimo || s.fecha>p.ultimo) p.ultimo=s.fecha;
+      lista.forEach(function(x){
+        if(hdrPendiente(x)) return;
+        p.conHdr++;
+        const db=difBandejas(x), dd=difDollys(x);
+        if(db>0||dd>0) p.conDif++;
+        p.band+=db; p.doll+=dd;
+      });
+    }
+  });
+
+  const lista=Object.keys(porChofer).map(k=>porChofer[k]);
+  const total=lista.length;
+  const controlados=lista.filter(p=>p.controles>0);
+  const nunca=lista.filter(p=>p.controles===0).sort((a,b)=>Object.keys(b.dias).length-Object.keys(a.dias).length);
+  const recurr=lista.filter(p=>p.conHdr>=2 && p.conDif/p.conHdr>=0.5)
+    .sort((a,b)=>(b.conDif/b.conHdr)-(a.conDif/a.conHdr) || (b.band+b.doll)-(a.band+a.doll));
+  const sinDif=controlados.filter(p=>p.conHdr>0 && p.conDif===0).length;
+  const pctCtrl=total?Math.round(controlados.length/total*100):0;
+
+  if(total===0){
+    document.getElementById('indChofHero').innerHTML='';
+    document.getElementById('indChofNunca').innerHTML='<p class="muted">No hay datos de Driv.in para este período.</p>';
+    document.getElementById('indChofDif').innerHTML='';
+    document.getElementById('indChofTabla').innerHTML='';
+    document.getElementById('indChofResumen').innerHTML='';
+    return;
+  }
+
+  document.getElementById('indChofHero').innerHTML=
+    indCard('Choferes que salieron', total, 'Según Driv.in en el período')+
+    indCard('Choferes controlados', pctCtrl+'%', controlados.length+' de '+total+' tuvieron al menos un control',
+            pctCtrl>=80?'verde':(pctCtrl>=50?'naranja':'rojo'), pctCtrl, pctCtrl>=80?'verde':(pctCtrl>=50?'naranja':'rojo'))+
+    indCard('Nunca controlados', nunca.length, 'Sin ningún control en el período', nunca.length?'rojo':'verde')+
+    indCard('Diferencias recurrentes', recurr.length, 'Diferencia en la mitad o más de sus controles', recurr.length?'naranja':'verde')+
+    indCard('Siempre coinciden', sinDif, 'Controlados y sin ninguna diferencia', 'verde');
+
+  const cajaN=document.getElementById('indChofNunca');
+  cajaN.innerHTML=nunca.length
+    ? '<div class="rutas-falt">'+nunca.map(p=>'<span class="rf">'+p.nombre+' ('+Object.keys(p.dias).length+')</span>').join('')+'</div>'
+    : '<div class="rutas-falt"><span class="rf ok">✅ Todos los choferes tuvieron al menos un control</span></div>';
+
+  const cajaD=document.getElementById('indChofDif');
+  if(recurr.length===0){
+    cajaD.innerHTML='<p class="muted">✅ Ningún chofer con diferencias recurrentes.</p>';
+  } else {
+    let h='<table class="ind-tabla"><thead><tr><th>Chofer</th><th>Con dif.</th><th>%</th><th>Bandejas</th><th>Dollys</th></tr></thead><tbody>';
+    recurr.forEach(function(p){
+      const pc=Math.round(p.conDif/p.conHdr*100);
+      h+='<tr><td class="left"><b>'+p.nombre+'</b></td><td>'+p.conDif+' de '+p.conHdr+'</td>'+
+         '<td style="color:'+(pc===100?'#c0392b':'#c8780f')+';font-weight:800">'+pc+'%</td>'+
+         '<td>'+p.band.toLocaleString('es-AR')+'</td><td>'+p.doll+'</td></tr>';
+    });
+    cajaD.innerHTML=h+'</tbody></table>';
+  }
+
+  document.getElementById('indChofResumen').innerHTML='<span class="sum-pill naranja">'+total+' choferes</span>';
+  const orden=lista.slice().sort((a,b)=>b.controles-a.controles || Object.keys(b.dias).length-Object.keys(a.dias).length);
+  document.getElementById('indChofTabla').innerHTML=orden.map(function(p){
+    const dias=Object.keys(p.dias).length;
+    const pc=dias?Math.round(p.controles/dias*100):0;
+    const col=pc>=80?'#1b7a37':(pc>=50?'#c8780f':'#c0392b');
+    return '<tr><td class="left"><b>'+p.nombre+'</b></td>'+
+      '<td>'+Object.keys(p.rutas).sort().join(', ')+'</td>'+
+      '<td>'+dias+'</td><td>'+p.controles+'</td>'+
+      '<td style="color:'+col+';font-weight:800">'+pc+'%</td>'+
+      '<td>'+(p.conHdr?(p.conDif+' de '+p.conHdr):'—')+'</td>'+
+      '<td>'+(p.conHdr?p.band.toLocaleString('es-AR'):'—')+'</td>'+
+      '<td>'+(p.conHdr?p.doll:'—')+'</td>'+
+      '<td>'+(p.ultimo?fmtFecha(p.ultimo):'Nunca')+'</td></tr>';
+  }).join('');
 }
 
 // ====== Modales ======
