@@ -1,0 +1,30 @@
+name: Actualizar choferes Driv.in
+
+on:
+  schedule:
+    # Cada hora de 04:00 a 15:00 (hora Argentina, UTC-3), de lunes a sábado
+    - cron: "0 7-18 * * 1-6"
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: "Fecha a consultar (AAAA-MM-DD). Vacío = hoy"
+        required: false
+        default: ""
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Traer choferes y guardar en Supabase
+        env:
+          DRIVIN_API_KEY: ${{ secrets.DRIVIN_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FECHA_MANUAL: ${{ github.event.inputs.fecha }}
+        run: python scripts/actualizar_choferes.py
