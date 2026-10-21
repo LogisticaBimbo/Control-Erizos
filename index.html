@@ -18,6 +18,10 @@
   .tabs button{background:#fff;border:1px solid #d5dbe3;padding:10px 18px;border-radius:8px;
     cursor:pointer;font-size:14px;font-weight:600;color:#0066b3}
   .tabs button.active{background:#0066b3;color:#fff;border-color:#0066b3}
+  .subtabs{display:inline-flex;background:#fff;border:1px solid #d5dbe3;border-radius:10px;padding:4px;gap:4px;margin-bottom:16px}
+  .subtabs button{border:none;background:transparent;padding:9px 20px;border-radius:7px;cursor:pointer;
+    font-size:14px;font-weight:700;color:#5a6b7d}
+  .subtabs button.active{background:#003e7e;color:#fff}
   .card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:18px}
   .card h2{margin:0 0 14px;font-size:16px;color:#003e7e}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
@@ -231,6 +235,8 @@
     .container{padding:14px 12px}
     .tabs{gap:8px}
     .tabs button{flex:1 1 auto;padding:12px 10px;font-size:13px;text-align:center}
+    .subtabs{display:flex}
+    .subtabs button{flex:1}
     .card{padding:15px 13px;border-radius:10px}
     .card h2{font-size:15px}
     .grid{grid-template-columns:1fr;gap:12px}
@@ -276,16 +282,76 @@
 
 <div class="container">
   <div class="tabs">
-    <button id="tabCargaBtn" class="active" onclick="showTab('carga')">📝 Cargar Devo Equipos</button>
-    <button id="tabDevoBtn" onclick="showTab('devo')">📦 Cargar Devo PT</button>
+    <button id="tabDevoBtn" class="active" onclick="showTab('devo')">📦 Cargar Devo PT</button>
+    <button id="tabCargaBtn" onclick="showTab('carga')">📝 Cargar Devo Equipos</button>
     <button id="tabChofBtn" onclick="showTab('chof')">🚚 Choferes del día</button>
     <button id="tabVerBtn" onclick="showTab('ver')">📊 Ver registros</button>
     <button id="tabIndBtn" onclick="showTab('ind')">📈 Indicadores</button>
     <button id="tabPlanBtn" onclick="showTab('plan')">📋 Plan de Trabajo Erizo</button>
   </div>
 
+  <!-- ================= CARGA DEVO PT ================= -->
+  <div id="tabDevo">
+    <div class="card">
+      <h2>Nuevo conteo · Devolución de producto terminado</h2>
+      <form id="formDevo" onsubmit="return false;">
+        <div class="section-title">Datos generales</div>
+        <div class="grid">
+          <div>
+            <label>Fecha *</label>
+            <input type="date" id="d_fecha" required>
+          </div>
+          <div>
+            <label>Ruta entregadora *</label>
+            <select id="d_ruta" required onchange="pintarCanal('d_ruta','d_canalBadge')">
+              <option value="">— Seleccionar —</option>
+            </select>
+            <div id="d_canalBadge" class="canal-badge" style="display:none"></div>
+          </div>
+          <div>
+            <label>Contador *</label>
+            <input type="text" id="d_contador" list="listaContadores" autocomplete="off" placeholder="Escribí tu nombre y apellido" required>
+            <div class="muted" style="font-size:11px;margin-top:4px">Escribí libremente. Si ya controlaste antes, te va a sugerir tu nombre.</div>
+          </div>
+          <div>
+            <label>Turno</label>
+            <select id="d_turno">
+              <option value="">— Seleccionar —</option>
+              <option>04:00 a 06:00</option>
+              <option>06:00 a 08:00</option>
+              <option>Turno día</option>
+            </select>
+          </div>
+          <div>
+            <label>N° de hoja</label>
+            <input type="text" id="d_hoja" placeholder="Opcional">
+          </div>
+        </div>
+
+        <div class="section-title">Conteo físico</div>
+        <div class="grid">
+          <div><label>Cantidad productos</label><input type="number" id="d_fis" min="0" value="0" oninput="difDevo()"></div>
+        </div>
+
+        <div class="section-title">Declarado por el cliente</div>
+        <div class="grid">
+          <div><label>Cantidad productos</label><input type="number" id="d_cli" min="0" value="0" oninput="difDevo()"></div>
+        </div>
+        <div id="d_dif" class="dif-live">Diferencia: 0</div>
+
+        <div class="section-title">Observaciones</div>
+        <div>
+          <textarea id="d_obs" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea>
+        </div>
+
+        <button class="btn" onclick="guardarDevo()">💾 Guardar devolución</button>
+        <div id="d_msg" class="msg"></div>
+      </form>
+    </div>
+  </div>
+
   <!-- ================= CARGA DEVO EQUIPOS ================= -->
-  <div id="tabCarga">
+  <div id="tabCarga" style="display:none">
     <div class="card">
       <h2>Nuevo conteo · Devolución de equipos</h2>
       <form id="form" onsubmit="return false;">
@@ -350,122 +416,6 @@
     </div>
   </div>
 
-  <!-- ================= CARGA DEVO PT ================= -->
-  <div id="tabDevo" style="display:none">
-    <div class="card">
-      <h2>Nuevo conteo · Devolución de producto terminado</h2>
-      <form id="formDevo" onsubmit="return false;">
-        <div class="section-title">Datos generales</div>
-        <div class="grid">
-          <div>
-            <label>Fecha *</label>
-            <input type="date" id="d_fecha" required>
-          </div>
-          <div>
-            <label>Ruta entregadora *</label>
-            <select id="d_ruta" required onchange="pintarCanal('d_ruta','d_canalBadge')">
-              <option value="">— Seleccionar —</option>
-            </select>
-            <div id="d_canalBadge" class="canal-badge" style="display:none"></div>
-          </div>
-          <div>
-            <label>Contador *</label>
-            <input type="text" id="d_contador" list="listaContadores" autocomplete="off" placeholder="Escribí tu nombre y apellido" required>
-          </div>
-          <div>
-            <label>Turno</label>
-            <select id="d_turno">
-              <option value="">— Seleccionar —</option>
-              <option>04:00 a 06:00</option>
-              <option>06:00 a 08:00</option>
-              <option>Turno día</option>
-            </select>
-          </div>
-          <div>
-            <label>N° de hoja</label>
-            <input type="text" id="d_hoja" placeholder="Opcional">
-          </div>
-        </div>
-
-        <div class="section-title">Conteo físico</div>
-        <div class="grid">
-          <div><label>Cantidad productos</label><input type="number" id="d_fis" min="0" value="0" oninput="difDevo()"></div>
-        </div>
-
-        <div class="section-title">Declarado por el cliente</div>
-        <div class="grid">
-          <div><label>Cantidad productos</label><input type="number" id="d_cli" min="0" value="0" oninput="difDevo()"></div>
-        </div>
-        <div id="d_dif" class="dif-live">Diferencia: 0</div>
-
-        <div class="section-title">Observaciones</div>
-        <div>
-          <textarea id="d_obs" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea>
-        </div>
-
-        <button class="btn" onclick="guardarDevo()">💾 Guardar devolución</button>
-        <div id="d_msg" class="msg"></div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ================= VER ================= -->
-  <div id="tabVer" style="display:none">
-    <div class="kpis" id="kpis"></div>
-
-    <div class="card">
-      <h2>Registros cargados</h2>
-      <div class="filters">
-        <div><label>Desde</label><input type="date" id="fDesde" onchange="render()"></div>
-        <div><label>Hasta</label><input type="date" id="fHasta" onchange="render()"></div>
-        <div><label>Ruta</label><input type="text" id="fRuta" placeholder="Todas" oninput="render()"></div>
-        <div>
-          <label>Canal</label>
-          <select id="fCanal" onchange="render()">
-            <option value="">Todos</option>
-            <option value="Erizo">Erizo</option>
-            <option value="Autoservicio">Autoservicio</option>
-            <option value="Mayorista">Mayorista</option>
-            <option value="QSR">QSR</option>
-            <option value="Tradicional">Tradicional</option>
-            <option value="Cripa">Cripa</option>
-          </select>
-        </div>
-        <div>
-          <label>Estado</label>
-          <select id="fEstado" onchange="render()">
-            <option value="">Todos</option>
-            <option value="COINCIDE">COINCIDE</option>
-            <option value="REVISAR">REVISAR</option>
-          </select>
-        </div>
-        <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button></div>
-        <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportar()">⬇️ Exportar Excel</button></div>
-      </div>
-      <label class="chk" style="margin-bottom:12px">
-        <input type="checkbox" id="verAnulados" onchange="render()"> Mostrar registros anulados
-      </label>
-      <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️</b> para editar, <b>📥</b> para completar HDR, o <b>🗑️</b> para anular duplicados (queda registrado quién y por qué).</p>
-      <p class="scroll-hint">👉 Deslizá la tabla hacia el costado para ver todas las columnas</p>
-      <div class="table-wrap">
-        <table id="tabla">
-          <thead>
-            <tr>
-              <th>Acciones</th>
-              <th>Fecha</th><th>Ruta</th><th>Canal</th><th>Contador</th><th>Turno</th>
-              <th>Vacías Fís</th><th>Vacías HDR</th><th>Dif</th>
-              <th>Devol Fís</th><th>Devol HDR</th><th>Dif</th>
-              <th>Rech Fís</th><th>Rech HDR</th><th>Dif</th>
-              <th>Dollys Fís</th><th>Dollys HDR</th><th>Dif</th>
-              <th>Estado</th><th>Observaciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
   <!-- ================= CHOFERES DEL DIA ================= -->
   <div id="tabChof" style="display:none">
     <div class="card" style="padding:16px 20px">
@@ -507,6 +457,113 @@
           </thead>
           <tbody id="cTbody"></tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VER REGISTROS ================= -->
+  <div id="tabVer" style="display:none">
+    <div class="subtabs">
+      <button id="verPTBtn" class="active" onclick="setVerModo('pt')">📦 Devo PT</button>
+      <button id="verEqBtn" onclick="setVerModo('eq')">📝 Devo Equipos</button>
+    </div>
+
+    <!-- ---- Registros Devo PT ---- -->
+    <div id="verPT">
+      <div class="kpis" id="ptKpis"></div>
+      <div class="card">
+        <h2>Registros de devolución de producto terminado</h2>
+        <div class="filters">
+          <div><label>Desde</label><input type="date" id="pDesde" onchange="renderPT()"></div>
+          <div><label>Hasta</label><input type="date" id="pHasta" onchange="renderPT()"></div>
+          <div><label>Ruta</label><input type="text" id="pRuta" placeholder="Todas" oninput="renderPT()"></div>
+          <div>
+            <label>Canal</label>
+            <select id="pCanal" onchange="renderPT()">
+              <option value="">Todos</option>
+              <option value="Erizo">Erizo</option>
+              <option value="AASS">AASS</option>
+            </select>
+          </div>
+          <div>
+            <label>Estado</label>
+            <select id="pEstado" onchange="renderPT()">
+              <option value="">Todos</option>
+              <option value="COINCIDE">COINCIDE</option>
+              <option value="REVISAR">REVISAR</option>
+            </select>
+          </div>
+          <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="cargarDevoPT()">🔄 Actualizar</button></div>
+          <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportarPT()">⬇️ Exportar Excel</button></div>
+        </div>
+        <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − Declarado por el cliente</b>. Si es 0, el estado es <b>COINCIDE</b>; si no, <b>REVISAR</b>.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Ruta</th><th>Canal</th><th>Contador</th><th>Turno</th>
+                <th>Físico</th><th>Cliente</th><th>Dif</th><th>Estado</th><th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody id="ptTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Registros Devo Equipos ---- -->
+    <div id="verEq" style="display:none">
+      <div class="kpis" id="kpis"></div>
+      <div class="card">
+        <h2>Registros de devolución de equipos</h2>
+        <div class="filters">
+          <div><label>Desde</label><input type="date" id="fDesde" onchange="render()"></div>
+          <div><label>Hasta</label><input type="date" id="fHasta" onchange="render()"></div>
+          <div><label>Ruta</label><input type="text" id="fRuta" placeholder="Todas" oninput="render()"></div>
+          <div>
+            <label>Canal</label>
+            <select id="fCanal" onchange="render()">
+              <option value="">Todos</option>
+              <option value="Erizo">Erizo</option>
+              <option value="Autoservicio">Autoservicio</option>
+              <option value="Mayorista">Mayorista</option>
+              <option value="QSR">QSR</option>
+              <option value="Tradicional">Tradicional</option>
+              <option value="Cripa">Cripa</option>
+            </select>
+          </div>
+          <div>
+            <label>Estado</label>
+            <select id="fEstado" onchange="render()">
+              <option value="">Todos</option>
+              <option value="COINCIDE">COINCIDE</option>
+              <option value="REVISAR">REVISAR</option>
+            </select>
+          </div>
+          <div style="flex:0"><button class="btn sec" style="margin-top:0" onclick="cargarDatos()">🔄 Actualizar</button></div>
+          <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportar()">⬇️ Exportar Excel</button></div>
+        </div>
+        <label class="chk" style="margin-bottom:12px">
+          <input type="checkbox" id="verAnulados" onchange="render()"> Mostrar registros anulados
+        </label>
+        <p class="muted grp">La <b>diferencia</b> se calcula como <b>Físico − HDR</b>. Usá <b>✏️</b> para editar, <b>📥</b> para completar HDR, o <b>🗑️</b> para anular duplicados (queda registrado quién y por qué).</p>
+        <p class="scroll-hint">👉 Deslizá la tabla hacia el costado para ver todas las columnas</p>
+        <div class="table-wrap">
+          <table id="tabla">
+            <thead>
+              <tr>
+                <th>Acciones</th>
+                <th>Fecha</th><th>Ruta</th><th>Canal</th><th>Contador</th><th>Turno</th>
+                <th>Vacías Fís</th><th>Vacías HDR</th><th>Dif</th>
+                <th>Devol Fís</th><th>Devol HDR</th><th>Dif</th>
+                <th>Rech Fís</th><th>Rech HDR</th><th>Dif</th>
+                <th>Dollys Fís</th><th>Dollys HDR</th><th>Dif</th>
+                <th>Estado</th><th>Observaciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -841,8 +898,10 @@ const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 const NOM_DIA = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
 let REGISTROS = [];
+let DEVO_PT = [];
 let MAPA_NOMBRES = {};
 let CHOFERES = [];
+let VER_MODO = 'pt';
 
 // ====== Utilidades ======
 function n(id){ return parseInt(document.getElementById(id).value) || 0; }
@@ -932,7 +991,8 @@ function nombreUnificado(raw){
   return MAPA_NOMBRES[r] || (r?tituloNombre(r):'Sin nombre');
 }
 function refrescarNombres(){
-  MAPA_NOMBRES=construirMapaNombres(REGISTROS.map(x=>x.contador).filter(Boolean));
+  const todos=REGISTROS.map(x=>x.contador).concat(DEVO_PT.map(x=>x.contador)).filter(Boolean);
+  MAPA_NOMBRES=construirMapaNombres(todos);
   const unicos=[...new Set(Object.keys(MAPA_NOMBRES).map(k=>MAPA_NOMBRES[k]))].sort();
   const dl=document.getElementById('listaContadores');
   if(dl) dl.innerHTML=unicos.map(u=>'<option value="'+u+'">').join('');
@@ -953,16 +1013,26 @@ function pintarCanal(selId, boxId){
 
 // ====== Pestañas ======
 function showTab(t){
-  const ids={carga:'tabCarga',devo:'tabDevo',chof:'tabChof',ver:'tabVer',ind:'tabInd',plan:'tabPlan'};
-  const btns={carga:'tabCargaBtn',devo:'tabDevoBtn',chof:'tabChofBtn',ver:'tabVerBtn',ind:'tabIndBtn',plan:'tabPlanBtn'};
+  const ids={devo:'tabDevo',carga:'tabCarga',chof:'tabChof',ver:'tabVer',ind:'tabInd',plan:'tabPlan'};
+  const btns={devo:'tabDevoBtn',carga:'tabCargaBtn',chof:'tabChofBtn',ver:'tabVerBtn',ind:'tabIndBtn',plan:'tabPlanBtn'};
   Object.keys(ids).forEach(function(k){
     document.getElementById(ids[k]).style.display=(k===t)?'block':'none';
     document.getElementById(btns[k]).classList.toggle('active',k===t);
   });
-  if(t==='ver'){ cargarDatos(); }
+  if(t==='ver'){ setVerModo(VER_MODO); }
   if(t==='chof'){ cargarChoferes(); }
   if(t==='ind'){ cargarDatosInd(); }
   if(t==='plan'){ renderPlan(); }
+}
+
+// Sub-opciones de "Ver registros"
+function setVerModo(m){
+  VER_MODO=m;
+  document.getElementById('verPT').style.display=(m==='pt')?'block':'none';
+  document.getElementById('verEq').style.display=(m==='eq')?'block':'none';
+  document.getElementById('verPTBtn').classList.toggle('active',m==='pt');
+  document.getElementById('verEqBtn').classList.toggle('active',m==='eq');
+  if(m==='pt') cargarDevoPT(); else cargarDatos();
 }
 
 // ====== Guardar conteo de equipos ======
@@ -989,7 +1059,7 @@ async function guardar(){
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
-// ====== Guardar devolución de producto terminado ======
+// ====== Devo PT: carga ======
 function difDevo(){
   const d=n('d_fis')-n('d_cli');
   const box=document.getElementById('d_dif');
@@ -1017,19 +1087,98 @@ async function guardarDevo(){
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
-// ====== Cargar datos ======
+// ====== Devo PT: registros ======
+function canalAASS(r){ return RUTAS_CANAL[r]==='Erizo' ? 'Erizo' : 'AASS'; }
+function estadoPT(x){ return (x.fis_productos||0)===(x.cli_productos||0) ? 'COINCIDE' : 'REVISAR'; }
+async function cargarDevoPT(){
+  const tb=document.getElementById('ptTbody');
+  tb.innerHTML='<tr><td colspan="10" class="vacio">Cargando…</td></tr>';
+  try{
+    const {data,error}=await supa.from('devoluciones_pt').select('*')
+      .order('fecha',{ascending:false}).order('created_at',{ascending:false});
+    if(error) throw error;
+    DEVO_PT=(data||[]).filter(x=>!esAnulado(x));
+    refrescarNombres();
+    renderPT();
+  }catch(e){
+    tb.innerHTML='<tr><td colspan="10" class="vacio">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
+  }
+}
+function filtrarPT(){
+  const d=document.getElementById('pDesde').value, h=document.getElementById('pHasta').value;
+  const r=document.getElementById('pRuta').value.trim().toLowerCase();
+  const c=document.getElementById('pCanal').value, es=document.getElementById('pEstado').value;
+  return DEVO_PT.filter(function(x){
+    if(d&&x.fecha<d) return false;
+    if(h&&x.fecha>h) return false;
+    if(r&&!(x.ruta||'').toLowerCase().includes(r)) return false;
+    if(c&&canalAASS(x.ruta)!==c) return false;
+    if(es&&estadoPT(x)!==es) return false;
+    return true;
+  });
+}
+function renderPT(){
+  const rows=filtrarPT(); const tb=document.getElementById('ptTbody');
+  if(rows.length===0){
+    tb.innerHTML='<tr><td colspan="10" class="vacio">'+(DEVO_PT.length?'Sin registros para los filtros seleccionados.':'Todavía no hay devoluciones de PT cargadas.')+'</td></tr>';
+  } else {
+    tb.innerHTML=rows.map(function(x){
+      const es=estadoPT(x);
+      const canal=canalAASS(x.ruta);
+      return '<tr>'+
+        '<td>'+fmtFecha(x.fecha)+'</td>'+
+        '<td>'+(x.ruta||'')+'</td>'+
+        '<td><span class="canal-tag '+(canal==='Erizo'?'erizo':'otro')+'">'+canal+'</span></td>'+
+        '<td class="left">'+nombreUnificado(x.contador)+'</td>'+
+        '<td>'+(x.turno||'')+'</td>'+
+        '<td>'+x.fis_productos+'</td><td>'+x.cli_productos+'</td>'+celdaDif(x.fis_productos,x.cli_productos)+
+        '<td>'+(es==='COINCIDE'?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>')+'</td>'+
+        '<td class="left">'+(x.observaciones||'')+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+  const fis=rows.reduce((a,x)=>a+(x.fis_productos||0),0);
+  const cli=rows.reduce((a,x)=>a+(x.cli_productos||0),0);
+  const dif=rows.reduce((a,x)=>a+Math.abs((x.fis_productos||0)-(x.cli_productos||0)),0);
+  const rev=rows.filter(x=>estadoPT(x)==='REVISAR').length;
+  document.getElementById('ptKpis').innerHTML=
+    kpi(rows.length,'Conteos')+kpi(fis.toLocaleString('es-AR'),'Productos físicos')+
+    kpi(cli.toLocaleString('es-AR'),'Declarado cliente')+kpi(dif.toLocaleString('es-AR'),'Productos con diferencia')+
+    kpi(rev,'En REVISAR');
+}
+function exportarPT(){
+  const rows=filtrarPT();
+  if(rows.length===0){ alert('No hay registros para exportar.'); return; }
+  const data=rows.map(function(x){
+    return {
+      'Fecha':fmtFecha(x.fecha),'Ruta':x.ruta,'Canal':canalAASS(x.ruta),'Contador':nombreUnificado(x.contador),
+      'Turno':x.turno||'','Hoja':x.hoja||'',
+      'Productos físico':x.fis_productos,'Productos cliente':x.cli_productos,'Diferencia':x.fis_productos-x.cli_productos,
+      'Estado':estadoPT(x),'Observaciones':x.observaciones||''
+    };
+  });
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Devo PT');
+  XLSX.writeFile(wb,'Devoluciones_PT_Tablada.xlsx');
+}
+
+// ====== Cargar datos (equipos) ======
 async function traerRegistros(){
   const {data,error}=await supa.from('control_erizos').select('*')
     .order('fecha',{ascending:false}).order('created_at',{ascending:false});
   if(error) throw error;
   REGISTROS=data||[];
   refrescarNombres();
+  const totalActivos=REGISTROS.filter(x=>!esAnulado(x)).length;
+  const totalAnu=REGISTROS.filter(esAnulado).length;
+  document.getElementById('conteoTotal').textContent=totalActivos+' conteos de equipos'+(totalAnu?(' · '+totalAnu+' anulados'):'');
 }
 async function cargarDatos(){
   try{
     CHOF_CACHE={clave:'', filas:[]};
     await traerRegistros();
-    if(document.getElementById('tabVer').style.display!=='none') render();
+    if(document.getElementById('tabVer').style.display!=='none' && VER_MODO==='eq') render();
     if(document.getElementById('tabInd').style.display!=='none') renderIndicadores();
   }catch(e){
     document.getElementById('tbody').innerHTML='<tr><td colspan="20" class="left">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
@@ -1045,7 +1194,7 @@ async function cargarDatosInd(){
   }
 }
 
-// ====== Filtro + render (Ver registros) ======
+// ====== Filtro + render (Ver registros equipos) ======
 function filtrar(){
   const d=document.getElementById('fDesde').value, h=document.getElementById('fHasta').value;
   const r=document.getElementById('fRuta').value.trim().toLowerCase();
@@ -1113,18 +1262,13 @@ function render(){
     kpi(activos.length,'Conteos activos')+kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas')+
     kpi(totHdr.toLocaleString('es-AR'),'Bandejas HDR')+kpi(totDollysFis.toLocaleString('es-AR'),'Dollys físicos')+
     kpi(revisar,'En REVISAR');
-  const totalActivos=REGISTROS.filter(x=>!esAnulado(x)).length;
-  const totalAnu=REGISTROS.filter(esAnulado).length;
-  document.getElementById('conteoTotal').textContent=totalActivos+' activos'+(totalAnu?(' · '+totalAnu+' anulados'):'');
 }
 function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
 
 /* ==========================================================
    CHOFERES DEL DÍA (Driv.in) · Erizo o AASS
    ========================================================== */
-// En esta pestaña todo lo que no es Erizo se agrupa como AASS
-function canalChofer(r){ return RUTAS_CANAL[r]==='Erizo' ? 'Erizo' : 'AASS'; }
-// Canal detallado (para los filtros de Indicadores)
+function canalChofer(r){ return canalAASS(r); }
 function canalDetalle(r){ return RUTAS_CANAL[r] || 'AASS'; }
 
 async function cargarChoferes(){
@@ -1142,7 +1286,6 @@ async function cargarChoferes(){
     tb.innerHTML='<tr><td colspan="4" class="vacio">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
   }
 }
-
 function controlesDelDia(f){
   const mapa={};
   REGISTROS.forEach(function(x){
@@ -1154,7 +1297,6 @@ function controlesDelDia(f){
   });
   return mapa;
 }
-
 function filtrarChoferes(){
   const c=document.getElementById('cCanal').value;
   const b=sinAcentos(document.getElementById('cBuscar').value.trim().toLowerCase());
@@ -1172,19 +1314,15 @@ function filtrarChoferes(){
     return true;
   });
 }
-
 function renderChoferes(){
   const f=document.getElementById('cFecha').value;
   const fd=new Date(f+'T00:00:00');
   document.getElementById('cTitulo').textContent='Choferes que salieron a reparto · '+NOM_DIA[fd.getDay()]+' '+fmtFecha(f);
-
   const ult=CHOFERES.reduce(function(m,x){ return (!m || x.actualizado_at>m)?x.actualizado_at:m; }, null);
   document.getElementById('cActualizado').textContent=ult?('Datos de Driv.in · última actualización: '+fmtStamp(ult)):'';
-
   const ctrl=controlesDelDia(f);
   const rows=filtrarChoferes();
   const tb=document.getElementById('cTbody');
-
   if(CHOFERES.length===0){
     tb.innerHTML='<tr><td colspan="4" class="vacio">No hay choferes registrados para este día.<br>'+
       '<span style="font-size:12px">Si es hoy, puede que Driv.in todavía no tenga la salida cargada: se actualiza cada hora de 04:00 a 15:00.</span></td></tr>';
@@ -1203,20 +1341,15 @@ function renderChoferes(){
       '</tr>';
     }).join('');
   }
-
   const total=CHOFERES.length;
   const erizos=CHOFERES.filter(x=>canalChofer(x.ruta)==='Erizo').length;
   const aass=total-erizos;
   const controladas=CHOFERES.filter(x=>ctrl[String(x.ruta)]).length;
   const pct=total?Math.round(controladas/total*100):0;
   document.getElementById('cKpis').innerHTML=
-    kpi(total,'Rutas totales')+
-    kpi(erizos,'Rutas Erizo')+
-    kpi(aass,'Rutas AASS')+
-    kpi(controladas,'Rutas controladas')+
-    kpi(pct+'%','Controladas sobre totales');
+    kpi(total,'Rutas totales')+kpi(erizos,'Rutas Erizo')+kpi(aass,'Rutas AASS')+
+    kpi(controladas,'Rutas controladas')+kpi(pct+'%','Controladas sobre totales');
 }
-
 function moverDia(delta){
   const inp=document.getElementById('cFecha');
   const d=new Date((inp.value||isoLocal(new Date()))+'T00:00:00');
@@ -1291,7 +1424,6 @@ function indCard(label, valor, sub, clase, pct, claseBarra){
     (pct!==undefined?barra(pct,claseBarra):'')+
   '</div>';
 }
-
 function calcularCumplimientoPlan(desde, hasta, rowsPeriodo){
   if(!desde||!hasta) return null;
   const ini=new Date(desde+'T00:00:00'), fin=new Date(hasta+'T00:00:00');
@@ -1323,16 +1455,13 @@ function calcularCumplimientoPlan(desde, hasta, rowsPeriodo){
   }
   return {dias:dias, totPlan:totPlan, totHecho:totHecho, pct: totPlan?Math.round(totHecho/totPlan*100):0};
 }
-
 function renderIndicadores(){
   const rows=filtrarInd();
   const maestro=rutasDelMaestro();
   const desde=document.getElementById('iDesde').value, hasta=document.getElementById('iHasta').value;
-
   const controladas=[...new Set(rows.map(x=>String(x.ruta)))];
   const faltantes=maestro.filter(r=>controladas.indexOf(r)===-1);
   const pctCob=maestro.length?Math.round(controladas.length/maestro.length*100):0;
-
   const conHdr=rows.filter(x=>!hdrPendiente(x));
   const pendientes=rows.filter(hdrPendiente);
   const coinciden=conHdr.filter(x=>estado(x)==='COINCIDE').length;
@@ -1341,7 +1470,6 @@ function renderIndicadores(){
   const totDifDoll=conHdr.reduce((a,x)=>a+difDollys(x),0);
   const conDifBand=conHdr.filter(x=>difBandejas(x)>0).length;
   const conDifDoll=conHdr.filter(x=>difDollys(x)>0).length;
-
   const rowsPlan=REGISTROS.filter(function(x){
     if(esAnulado(x)) return false;
     if(desde&&x.fecha<desde) return false;
@@ -1531,7 +1659,6 @@ async function traerChoferesRango(desde, hasta){
   CHOF_CACHE={clave:clave, filas:todas};
   return todas;
 }
-
 async function renderChoferesInd(){
   const desde=document.getElementById('iDesde').value, hasta=document.getElementById('iHasta').value;
   const c=document.getElementById('iCanal').value.toLowerCase();
@@ -1541,13 +1668,11 @@ async function renderChoferesInd(){
   try{ salidas=await traerChoferesRango(desde,hasta); }
   catch(e){ aviso.innerHTML='<div class="alert-box rojo">❌ No se pudieron cargar los choferes: '+(e.message||e)+'</div>'; return; }
   aviso.innerHTML='';
-
   salidas=salidas.filter(function(s){
     if(!s.chofer) return false;
     if(c && canalDetalle(s.ruta).toLowerCase().indexOf(c)===-1) return false;
     return true;
   });
-
   const conteos={};
   REGISTROS.forEach(function(x){
     if(esAnulado(x)) return;
@@ -1555,7 +1680,6 @@ async function renderChoferesInd(){
     const k=x.fecha+'|'+String(x.ruta);
     (conteos[k]=conteos[k]||[]).push(x);
   });
-
   const porChofer={};
   salidas.forEach(function(s){
     const nom=tituloNombre(s.chofer);
@@ -1576,7 +1700,6 @@ async function renderChoferesInd(){
       });
     }
   });
-
   const lista=Object.keys(porChofer).map(k=>porChofer[k]);
   const total=lista.length;
   const controlados=lista.filter(p=>p.controles>0);
@@ -1585,7 +1708,6 @@ async function renderChoferesInd(){
     .sort((a,b)=>(b.conDif/b.conHdr)-(a.conDif/a.conHdr) || (b.band+b.doll)-(a.band+a.doll));
   const sinDif=controlados.filter(p=>p.conHdr>0 && p.conDif===0).length;
   const pctCtrl=total?Math.round(controlados.length/total*100):0;
-
   if(total===0){
     document.getElementById('indChofHero').innerHTML='';
     document.getElementById('indChofNunca').innerHTML='<p class="muted">No hay datos de Driv.in para este período.</p>';
@@ -1594,7 +1716,6 @@ async function renderChoferesInd(){
     document.getElementById('indChofResumen').innerHTML='';
     return;
   }
-
   document.getElementById('indChofHero').innerHTML=
     indCard('Choferes que salieron', total, 'Según Driv.in en el período')+
     indCard('Choferes controlados', pctCtrl+'%', controlados.length+' de '+total+' tuvieron al menos un control',
@@ -1602,12 +1723,10 @@ async function renderChoferesInd(){
     indCard('Nunca controlados', nunca.length, 'Sin ningún control en el período', nunca.length?'rojo':'verde')+
     indCard('Diferencias recurrentes', recurr.length, 'Diferencia en la mitad o más de sus controles', recurr.length?'naranja':'verde')+
     indCard('Siempre coinciden', sinDif, 'Controlados y sin ninguna diferencia', 'verde');
-
   const cajaN=document.getElementById('indChofNunca');
   cajaN.innerHTML=nunca.length
     ? '<div class="rutas-falt">'+nunca.map(p=>'<span class="rf">'+p.nombre+' ('+Object.keys(p.dias).length+')</span>').join('')+'</div>'
     : '<div class="rutas-falt"><span class="rf ok">✅ Todos los choferes tuvieron al menos un control</span></div>';
-
   const cajaD=document.getElementById('indChofDif');
   if(recurr.length===0){
     cajaD.innerHTML='<p class="muted">✅ Ningún chofer con diferencias recurrentes.</p>';
@@ -1621,7 +1740,6 @@ async function renderChoferesInd(){
     });
     cajaD.innerHTML=h+'</tbody></table>';
   }
-
   document.getElementById('indChofResumen').innerHTML='<span class="sum-pill naranja">'+total+' choferes</span>';
   const orden=lista.slice().sort((a,b)=>b.controles-a.controles || Object.keys(b.dias).length-Object.keys(a.dias).length);
   document.getElementById('indChofTabla').innerHTML=orden.map(function(p){
@@ -1703,7 +1821,6 @@ async function guardarEdicion(){
     setTimeout(()=>cerrarModal('modalEditar'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
-
 function abrirHdr(id){
   const x=regById(id); if(!x) return;
   document.getElementById('hdr_id').value=x.id;
@@ -1740,7 +1857,6 @@ async function guardarHdr(){
     setTimeout(()=>cerrarModal('modalHdr'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
-
 function abrirAnular(id){
   const x=regById(id); if(!x) return;
   document.getElementById('an_id').value=x.id;
@@ -1766,7 +1882,6 @@ async function anularRegistro(){
     setTimeout(()=>cerrarModal('modalAnular'),900);
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo anular: '+(e.message||e); }
 }
-
 function abrirReactivar(id){
   const x=regById(id); if(!x) return;
   document.getElementById('re_id').value=x.id;
@@ -1794,7 +1909,7 @@ async function reactivarRegistro(){
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo reactivar: '+(e.message||e); }
 }
 
-// ====== Exportar Excel ======
+// ====== Exportar Excel equipos ======
 function exportar(){
   const rows=filtrar();
   if(rows.length===0){ alert('No hay registros para exportar.'); return; }
@@ -1814,8 +1929,8 @@ function exportar(){
   });
   const ws=XLSX.utils.json_to_sheet(data);
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Vuelta Reparto');
-  XLSX.writeFile(wb,'Control_Vuelta_Reparto_Tablada.xlsx');
+  XLSX.utils.book_append_sheet(wb,ws,'Devo Equipos');
+  XLSX.writeFile(wb,'Devoluciones_Equipos_Tablada.xlsx');
 }
 
 // ====== PLAN DE TRABAJO ERIZO ======
@@ -1860,7 +1975,6 @@ function renderPlan(){
   const hoy=new Date(); const kHoy=JS_DAY_TO_K[hoy.getDay()];
   const diaNombre=NOM_DIA[hoy.getDay()];
   const fechaTxt=('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
-
   const est=document.getElementById('planEstadoTxt');
   if(hayAjusteManual()){
     const cfg=anclaVigente();
@@ -1868,7 +1982,6 @@ function renderPlan(){
   } else {
     est.innerHTML='🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario.';
   }
-
   if(!kHoy){
     cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
       '<div class="badge">Semana '+w+'</div></div><p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
