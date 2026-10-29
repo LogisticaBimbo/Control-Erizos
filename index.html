@@ -837,12 +837,12 @@ const DIAS = [{k:'L',n:'Lunes'},{k:'M',n:'Martes'},{k:'X',n:'Miércoles'},{k:'J'
 const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 const NOM_DIA = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
-// Rubros de equipos, para mostrar las diferencias discriminadas
+// Rubros de equipos
 const RUBROS_EQ = [
-  {k:'vacias', n:'Bandejas vacías', c:'Vacías'},
-  {k:'devoluciones', n:'Bandejas devoluciones', c:'Devol.'},
-  {k:'rechazo', n:'Bandejas rechazo', c:'Rechazo'},
-  {k:'dollys', n:'Dollys', c:'Dollys'}
+  {k:'vacias', n:'Bandejas vacías', c:'Vacías', x:'Vacíos', gc:'FF2F6DBF', hc:'FFDCE8F8'},
+  {k:'devoluciones', n:'Bandejas devoluciones', c:'Devol.', x:'Devoluciones', gc:'FF1B7A37', hc:'FFDDF0E2'},
+  {k:'rechazo', n:'Bandejas rechazo', c:'Rechazo', x:'Rechazo', gc:'FFB26A00', hc:'FFFFF1DC'},
+  {k:'dollys', n:'Dollys', c:'Dollys', x:'Dollys', gc:'FF5A6B7D', hc:'FFE6E9EE'}
 ];
 
 let REGISTROS = [];
@@ -872,13 +872,11 @@ function celdaDif(fis, hdr){
 function esAnulado(x){ return (x.estado||'ACTIVO')==='ANULADO'; }
 function estado(x){
   if(esAnulado(x)) return 'ANULADO';
-  const c=RUBROS_EQ.every(r=>x['fis_'+r.k]===x['hdr_'+r.k]);
-  return c?'COINCIDE':'REVISAR';
+  return RUBROS_EQ.every(r=>x['fis_'+r.k]===x['hdr_'+r.k])?'COINCIDE':'REVISAR';
 }
 function canalReg(x){ return x.canal || canalDe(x.ruta); }
 function hdrPendiente(x){
-  const suma=RUBROS_EQ.reduce((a,r)=>a+(x['hdr_'+r.k]||0),0);
-  return suma===0 && !x.fecha_hdr;
+  return RUBROS_EQ.reduce((a,r)=>a+(x['hdr_'+r.k]||0),0)===0 && !x.fecha_hdr;
 }
 function difRubro(x,k){ return Math.abs((x['fis_'+k]||0)-(x['hdr_'+k]||0)); }
 function difTotal(x){ return RUBROS_EQ.reduce((a,r)=>a+difRubro(x,r.k),0); }
@@ -1152,7 +1150,11 @@ async function excelConFormato(o){
       const cell=tr.getCell(k+1);
       const letra=ws.getColumn(k+1).letter;
       if(k===0) cell.value='TOTAL';
-      else if(c.total) cell.value={formula:'SUBTOTAL(9,'+letra+'5:'+letra+ultima+')'};
+      else if(c.total){
+        // Se guarda también el resultado, así el total se ve aunque Excel abra en "Vista protegida"
+        const suma=o.filas.reduce((a,f)=>a+(Number(f[k])||0),0);
+        cell.value={formula:'SUBTOTAL(9,'+letra+'5:'+letra+ultima+')', result:suma};
+      }
       cell.font={bold:true,size:10,color:{argb:XL.blanco}};
       cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:XL.azul}};
       cell.alignment={horizontal:'center',vertical:'middle'};
@@ -1179,19 +1181,25 @@ async function conBoton(id, fn){
   if(b){ b.disabled=true; b.textContent='⏳ Generando…'; }
   try{ await fn(); } finally { if(b){ b.disabled=false; b.textContent=txt; } }
 }
+
+// ---- Excel Devo Equipos: agrupado por rubro (Conteo · Declarado · Diferencia) ----
 async function exportar(){
   const rows=filtrar();
   if(rows.length===0){ alert('No hay registros para exportar.'); return; }
   await conBoton('btnExpEq', async function(){
     const chof=await mapaChoferesPara(rows);
-    const G='Datos generales', H='Equipos declarados (HDR)', F='Conteo físico', D='Diferencias (Físico − HDR)', R='Resultado', T='Trazabilidad';
-    const cG='FF003E7E', cH='FF2F6DBF', cF='FF1B7A37', cD='FF5A6B7D', cR='FFB26A00', cT='FF7A8595';
-    const hH='FFDCE8F8', hF='FFDDF0E2', hD='FFE6E9EE', hR='FFFFF1DC', hT='FFECEFF3';
-    const bloque=(g,gc,hc,tipo)=>RUBROS_EQ.map(r=>({h:r.n,w:12,g:g,gc:gc,hc:hc,tipo:tipo,total:1}));
-    const cols=[
+    const G='Datos generales', R='Resultado', T='Trazabilidad';
+    const cG='FF003E7E', cR='FF7A4A00', cT='FF7A8595', hR='FFFFF1DC', hT='FFECEFF3';
+    let cols=[
       {h:'Fecha',w:11,g:G,gc:cG,tipo:'fecha'},{h:'Ruta',w:8,g:G,gc:cG},{h:'Canal',w:24,g:G,gc:cG,al:'left'},
       {h:'Chofer',w:24,g:G,gc:cG,al:'left'},{h:'Contador',w:20,g:G,gc:cG,al:'left'},{h:'Turno',w:13,g:G,gc:cG},{h:'Hoja',w:8,g:G,gc:cG}
-    ].concat(bloque(H,cH,hH,'num'), bloque(F,cF,hF,'num'), bloque(D,cD,hD,'dif'), [
+    ];
+    RUBROS_EQ.forEach(function(r){
+      cols.push({h:'Conteo',w:10,g:r.x,gc:r.gc,hc:r.hc,tipo:'num',total:1});
+      cols.push({h:'Declarado',w:11,g:r.x,gc:r.gc,hc:r.hc,tipo:'num',total:1});
+      cols.push({h:'Diferencia',w:11,g:r.x,gc:r.gc,hc:r.hc,tipo:'dif',total:1});
+    });
+    cols=cols.concat([
       {h:'Estado',w:12,g:R,gc:cR,hc:hR,tipo:'estado'},{h:'Observaciones',w:32,g:R,gc:cR,hc:hR,al:'left'},
       {h:'Modificado por',w:18,g:T,gc:cT,hc:hT,al:'left'},{h:'Motivo modificación',w:28,g:T,gc:cT,hc:hT,al:'left'},
       {h:'Fecha modificación',w:16,g:T,gc:cT,hc:hT},{h:'HDR completada por',w:18,g:T,gc:cT,hc:hT,al:'left'},
@@ -1199,16 +1207,14 @@ async function exportar(){
       {h:'Motivo anulación',w:24,g:T,gc:cT,hc:hT,al:'left'},{h:'Fecha anulación',w:16,g:T,gc:cT,hc:hT}
     ]);
     const ord=rows.slice().sort((a,b)=>(a.fecha<b.fecha?-1:a.fecha>b.fecha?1:String(a.ruta).localeCompare(String(b.ruta))));
-    const filas=ord.map(x=>[
-      xlFecha(x.fecha), x.ruta, canalReg(x), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador),
-      x.turno||'', x.hoja||''
-    ].concat(
-      RUBROS_EQ.map(r=>x['hdr_'+r.k]), RUBROS_EQ.map(r=>x['fis_'+r.k]), RUBROS_EQ.map(r=>x['fis_'+r.k]-x['hdr_'+r.k]),
-      [estado(x), x.observaciones||'',
-       x.modificado_por||'', x.motivo_modificacion||'', x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
-       x.hdr_por||'', x.fecha_hdr?fmtStamp(x.fecha_hdr):'',
-       x.anulado_por||'', x.motivo_anulacion||'', x.fecha_anulacion?fmtStamp(x.fecha_anulacion):'']
-    ));
+    const filas=ord.map(function(x){
+      let f=[xlFecha(x.fecha), x.ruta, canalReg(x), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador), x.turno||'', x.hoja||''];
+      RUBROS_EQ.forEach(r=>{ f.push(x['fis_'+r.k], x['hdr_'+r.k], x['fis_'+r.k]-x['hdr_'+r.k]); });
+      return f.concat([estado(x), x.observaciones||'',
+        x.modificado_por||'', x.motivo_modificacion||'', x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
+        x.hdr_por||'', x.fecha_hdr?fmtStamp(x.fecha_hdr):'',
+        x.anulado_por||'', x.motivo_anulacion||'', x.fecha_anulacion?fmtStamp(x.fecha_anulacion):'']);
+    });
     await excelConFormato({
       archivo:'Control_Devo_Equipos_Tablada_'+isoLocal(new Date())+'.xlsx', hoja:'Devo Equipos',
       titulo:'PLANILLA CONTROL VUELTA DE REPARTO · DEVOLUCIÓN DE EQUIPOS · LA TABLADA',
@@ -1321,7 +1327,6 @@ function render(){
         '<td class="left">'+(x.observaciones||'')+'</td></tr>';
     }).join('');
   }
-  // KPIs discriminados por rubro (físico / HDR)
   const activos=rows.filter(x=>!esAnulado(x));
   const sum=(campo)=>activos.reduce((a,x)=>a+(x[campo]||0),0);
   const revisar=activos.filter(x=>estado(x)==='REVISAR').length;
@@ -1523,7 +1528,6 @@ function renderIndicadores(){
     indCard('Rutas sin controlar', faltantes.length, 'Pendientes en el período', faltantes.length?'rojo':'verde')+
     indCard('Exactitud HDR', pctExac+'%', coinciden+' de '+conHdr.length+' conteos coinciden', colorPct(pctExac,90,70), pctExac, colorPct(pctExac,90,70));
 
-  // Diferencias discriminadas por rubro
   document.getElementById('indHeroDif').innerHTML=RUBROS_EQ.map(function(r){
     const tot=conHdr.reduce((a,x)=>a+difRubro(x,r.k),0);
     const cnt=conHdr.filter(x=>difRubro(x,r.k)>0).length;
@@ -1597,7 +1601,6 @@ function renderIndicadores(){
         '<div class="rank-bar">'+barra(p.n/maxN*100)+'</div><div class="rank-val">'+p.n+'</div></div>';
     }).join('');
 
-  // Top rutas con diferencias, discriminado por rubro
   const porRuta={};
   conHdr.forEach(function(x){
     const k=String(x.ruta);
