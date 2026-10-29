@@ -92,16 +92,12 @@
   .table-wrap{overflow:auto;max-height:62vh;border-radius:10px;border:1px solid #eef1f4}
   .muted{color:#889;font-size:13px}
   .grp{border-left:3px solid #0066b3;padding-left:10px;margin:8px 0}
-
-  /* ===== CHOFERES DEL DIA ===== */
   .ctrl-si{background:#e6f4ea;color:#1b7a37;font-weight:700;font-size:12px;padding:3px 10px;border-radius:14px}
   .ctrl-no{color:#b0b8c2;font-size:12px}
   .chofer-nom{font-weight:600;color:#26384a}
   .ruta-num{font-weight:800;color:#003e7e}
   .vacio{text-align:center;padding:28px 16px;color:#7a8595;font-size:14px}
-
-  /* ===== INDICADORES ===== */
-  .ind-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-bottom:18px}
+  .ind-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
   .ind-card{background:#fff;border-radius:13px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:4px solid #0066b3}
   .ind-card.verde{border-top-color:#1b7a37}
   .ind-card.naranja{border-top-color:#e08a1e}
@@ -169,8 +165,6 @@
   .plan-dia-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
   .plan-dia-fecha{font-size:13px;font-weight:700;color:#334}
   .plan-dia-pct{font-size:12px;font-weight:800}
-
-  /* ===== Modal ===== */
   .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,20,50,.55);z-index:500;
     align-items:flex-start;justify-content:center;padding:24px;overflow:auto}
   .modal-bg.show{display:flex}
@@ -186,8 +180,6 @@
   .modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:16px 22px;border-top:1px solid #eef1f4;flex-wrap:wrap}
   .trace{background:#fffaf0;border:1px solid #f2d9a8;border-radius:8px;padding:8px 12px;font-size:12px;color:#8a6a20;margin-top:10px}
   .warn-box{background:#fdecea;border:1px solid #f0c8c2;border-radius:9px;padding:12px 14px;font-size:13px;color:#a3382a;margin-bottom:14px}
-
-  /* ===== Plan de Trabajo Erizo ===== */
   .hoy-card{background:linear-gradient(135deg,#003e7e,#0066b3);color:#fff;border-radius:14px;
     padding:22px 24px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,60,120,.25)}
   .hoy-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -226,8 +218,6 @@
   .leyenda{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:#556}
   .leyenda span{display:inline-flex;align-items:center;gap:6px}
   .sw{width:16px;height:16px;border-radius:4px;display:inline-block}
-
-  /* ===== RESPONSIVO CELULAR ===== */
   @media (max-width: 900px){ .sem-grid{grid-template-columns:1fr} }
   @media (max-width: 640px){
     header{padding:14px 16px}
@@ -299,10 +289,7 @@
       <form id="formDevo" onsubmit="return false;">
         <div class="section-title">Datos generales</div>
         <div class="grid">
-          <div>
-            <label>Fecha *</label>
-            <input type="date" id="d_fecha" required>
-          </div>
+          <div><label>Fecha *</label><input type="date" id="d_fecha" required></div>
           <div>
             <label>Ruta entregadora *</label>
             <select id="d_ruta" required onchange="pintarCanal('d_ruta','d_canalBadge')">
@@ -324,28 +311,19 @@
               <option>Turno día</option>
             </select>
           </div>
-          <div>
-            <label>N° de hoja</label>
-            <input type="text" id="d_hoja" placeholder="Opcional">
-          </div>
+          <div><label>N° de hoja</label><input type="text" id="d_hoja" placeholder="Opcional"></div>
         </div>
-
         <div class="section-title">Conteo físico</div>
         <div class="grid">
           <div><label>Cantidad productos</label><input type="number" id="d_fis" min="0" value="0" oninput="difDevo()"></div>
         </div>
-
         <div class="section-title">Declarado por el cliente</div>
         <div class="grid">
           <div><label>Cantidad productos</label><input type="number" id="d_cli" min="0" value="0" oninput="difDevo()"></div>
         </div>
         <div id="d_dif" class="dif-live">Diferencia: 0</div>
-
         <div class="section-title">Observaciones</div>
-        <div>
-          <textarea id="d_obs" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea>
-        </div>
-
+        <div><textarea id="d_obs" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea></div>
         <button class="btn" onclick="guardarDevo()">💾 Guardar devolución</button>
         <div id="d_msg" class="msg"></div>
       </form>
@@ -359,10 +337,7 @@
       <form id="form" onsubmit="return false;">
         <div class="section-title">Datos generales</div>
         <div class="grid">
-          <div>
-            <label>Fecha *</label>
-            <input type="date" id="fecha" required>
-          </div>
+          <div><label>Fecha *</label><input type="date" id="fecha" required></div>
           <div>
             <label>Ruta entregadora *</label>
             <select id="ruta" required onchange="mostrarCanal()">
@@ -385,12 +360,8 @@
               <option>Turno día</option>
             </select>
           </div>
-          <div>
-            <label>N° de hoja</label>
-            <input type="text" id="hoja" placeholder="Opcional">
-          </div>
+          <div><label>N° de hoja</label><input type="text" id="hoja" placeholder="Opcional"></div>
         </div>
-
         <div class="section-title">Conteo físico</div>
         <div class="grid">
           <div><label>Bandejas vacías</label><input type="number" id="fis_vacias" min="0" value="0"></div>
@@ -398,7 +369,6 @@
           <div><label>Bandejas rechazo</label><input type="number" id="fis_rechazo" min="0" value="0"></div>
           <div><label>Dollys</label><input type="number" id="fis_dollys" min="0" value="0"></div>
         </div>
-
         <div class="section-title">Declarado HDR <span class="muted" style="font-weight:400;text-transform:none">(podés dejarlo en 0 y completarlo después con “Completar HDR”)</span></div>
         <div class="grid">
           <div><label>Bandejas vacías</label><input type="number" id="hdr_vacias" min="0" value="0"></div>
@@ -406,12 +376,8 @@
           <div><label>Bandejas rechazo</label><input type="number" id="hdr_rechazo" min="0" value="0"></div>
           <div><label>Dollys</label><input type="number" id="hdr_dollys" min="0" value="0"></div>
         </div>
-
         <div class="section-title">Observaciones</div>
-        <div>
-          <textarea id="observaciones" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea>
-        </div>
-
+        <div><textarea id="observaciones" rows="2" placeholder="Aclaraciones del conteo (opcional)"></textarea></div>
         <button class="btn" onclick="guardar()">💾 Guardar conteo</button>
         <div id="msg" class="msg"></div>
       </form>
@@ -446,17 +412,13 @@
         <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportarChoferes()">⬇️ Excel</button></div>
       </div>
     </div>
-
     <div class="kpis" id="cKpis"></div>
-
     <div class="card">
       <h2 id="cTitulo">Choferes que salieron a reparto</h2>
       <p class="muted" id="cActualizado" style="margin:-6px 0 12px"></p>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr><th>Ruta</th><th>Canal</th><th>Chofer</th><th>Control del día</th></tr>
-          </thead>
+          <thead><tr><th>Ruta</th><th>Canal</th><th>Chofer</th><th>Control del día</th></tr></thead>
           <tbody id="cTbody"></tbody>
         </table>
       </div>
@@ -470,7 +432,6 @@
       <button id="verEqBtn" onclick="setVerModo('eq')">📝 Devo Equipos</button>
     </div>
 
-    <!-- ---- Registros Devo PT ---- -->
     <div id="verPT">
       <div class="kpis" id="ptKpis"></div>
       <div class="card">
@@ -513,7 +474,6 @@
       </div>
     </div>
 
-    <!-- ---- Registros Devo Equipos ---- -->
     <div id="verEq" style="display:none">
       <div class="kpis" id="kpis"></div>
       <div class="card">
@@ -596,20 +556,18 @@
 
     <div id="indAlertas"></div>
     <div class="ind-hero" id="indHero"></div>
+    <div class="ind-hero" id="indHeroDif"></div>
 
     <p class="nota">
       <b>¿Qué significa cada indicador?</b><br>
       <b>Cumplimiento del plan:</b> de las rutas Erizo que el cronograma mandaba controlar cada día, cuántas se controlaron realmente.<br>
       <b>Cobertura de rutas:</b> cuántas rutas distintas se controlaron al menos una vez, sobre el total de rutas del maestro.<br>
       <b>Exactitud HDR:</b> de los conteos que ya tienen la HDR cargada, el porcentaje en el que <b>el conteo físico coincide exactamente con lo declarado</b> en los cuatro rubros (vacías, devoluciones, rechazo y dollys). Si hay aunque sea una unidad de diferencia, ese conteo cuenta como REVISAR. Los conteos con la HDR todavía sin cargar no se toman en cuenta.<br>
-      <b>Bandejas / Dollys con diferencia:</b> la suma de todas las diferencias entre lo contado y lo declarado, sin importar si faltó o sobró.
+      <b>Diferencias por rubro (bandejas vacías, devoluciones, rechazo y dollys):</b> la suma de todas las diferencias entre lo contado y lo declarado en cada rubro, sin importar si faltó o sobró.
     </p>
 
     <details class="desplegable" id="detPlan">
-      <summary>
-        📋 Cumplimiento del Plan de Trabajo Erizo
-        <span id="planResumen"></span>
-      </summary>
+      <summary>📋 Cumplimiento del Plan de Trabajo Erizo <span id="planResumen"></span></summary>
       <div class="desp-body">
         <p class="muted" style="margin:0 0 12px">Compara las rutas <b>planificadas</b> por el cronograma rotativo contra las que <b>realmente se controlaron</b> ese día.</p>
         <div id="indPlan"></div>
@@ -637,7 +595,7 @@
       </div>
       <div class="card">
         <h2>⚠️ Top rutas con más diferencias</h2>
-        <p class="muted" style="margin:0 0 10px">Suma de diferencias absolutas (bandejas + dollys).</p>
+        <p class="muted" style="margin:0 0 10px">Diferencias absolutas por rubro: bandejas vacías, devoluciones, rechazo y dollys.</p>
         <div id="indTopDif"></div>
       </div>
     </div>
@@ -671,7 +629,7 @@
           <table class="ind-tabla">
             <thead><tr>
               <th>Chofer</th><th>Rutas</th><th>Días que salió</th><th>Controles</th><th>% controlado</th>
-              <th>Con diferencia</th><th>Bandejas dif.</th><th>Dollys dif.</th><th>Último control</th>
+              <th>Con diferencia</th><th>Vacías dif.</th><th>Devol. dif.</th><th>Rechazo dif.</th><th>Dollys dif.</th><th>Último control</th>
             </tr></thead>
             <tbody id="indChofTabla"></tbody>
           </table>
@@ -721,13 +679,10 @@
   </div>
 </div>
 
-<!-- ================= MODAL EDITAR ================= -->
+<!-- ================= MODALES ================= -->
 <div class="modal-bg" id="modalEditar">
   <div class="modal">
-    <div class="modal-head">
-      <h3>✏️ Editar registro</h3>
-      <span class="x" onclick="cerrarModal('modalEditar')">&times;</span>
-    </div>
+    <div class="modal-head"><h3>✏️ Editar registro</h3><span class="x" onclick="cerrarModal('modalEditar')">&times;</span></div>
     <div class="modal-body">
       <div class="modal-info" id="edInfo"></div>
       <input type="hidden" id="ed_id">
@@ -780,13 +735,9 @@
   </div>
 </div>
 
-<!-- ================= MODAL COMPLETAR HDR ================= -->
 <div class="modal-bg" id="modalHdr">
   <div class="modal">
-    <div class="modal-head verde">
-      <h3>📥 Completar HDR</h3>
-      <span class="x" onclick="cerrarModal('modalHdr')">&times;</span>
-    </div>
+    <div class="modal-head verde"><h3>📥 Completar HDR</h3><span class="x" onclick="cerrarModal('modalHdr')">&times;</span></div>
     <div class="modal-body">
       <div class="modal-info" id="hdrInfo"></div>
       <input type="hidden" id="hdr_id">
@@ -809,17 +760,11 @@
   </div>
 </div>
 
-<!-- ================= MODAL ANULAR ================= -->
 <div class="modal-bg" id="modalAnular">
   <div class="modal">
-    <div class="modal-head rojo">
-      <h3>🗑️ Anular registro</h3>
-      <span class="x" onclick="cerrarModal('modalAnular')">&times;</span>
-    </div>
+    <div class="modal-head rojo"><h3>🗑️ Anular registro</h3><span class="x" onclick="cerrarModal('modalAnular')">&times;</span></div>
     <div class="modal-body">
-      <div class="warn-box">
-        El registro <b>no se borra</b>: queda guardado y tachado para poder auditarlo. Dejará de contar en los totales.
-      </div>
+      <div class="warn-box">El registro <b>no se borra</b>: queda guardado y tachado para poder auditarlo. Dejará de contar en los totales.</div>
       <div class="modal-info" id="anInfo"></div>
       <input type="hidden" id="an_id">
       <div class="section-title" style="color:#c0392b;border-color:#f0c8c2">Trazabilidad (obligatorio)</div>
@@ -836,13 +781,9 @@
   </div>
 </div>
 
-<!-- ================= MODAL REACTIVAR ================= -->
 <div class="modal-bg" id="modalReactivar">
   <div class="modal">
-    <div class="modal-head verde">
-      <h3>♻️ Reactivar registro</h3>
-      <span class="x" onclick="cerrarModal('modalReactivar')">&times;</span>
-    </div>
+    <div class="modal-head verde"><h3>♻️ Reactivar registro</h3><span class="x" onclick="cerrarModal('modalReactivar')">&times;</span></div>
     <div class="modal-body">
       <div class="modal-info" id="reInfo"></div>
       <input type="hidden" id="re_id">
@@ -857,12 +798,10 @@
 </div>
 
 <script>
-// ====== Conexión Supabase ======
 const SUPABASE_URL = 'https://chdteugdydnftkysgfmo.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_yrrkBwZ_N6m1WEKID0AqTg_pZLPFwRX';
 const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ====== Rutas entregadoras y su CANAL ======
 const RUTAS_CANAL = {
   '116':'Erizo','117':'Erizo','126':'Erizo','127':'Erizo','128':'Erizo','129':'Erizo',
   '130':'Erizo','131':'Erizo','154':'Erizo','157':'Erizo','158':'Erizo','159':'Erizo',
@@ -884,7 +823,6 @@ const RUTAS_CANAL = {
 function canalDe(r){ return RUTAS_CANAL[r] || 'Canal desconocido'; }
 function esErizoCanal(canal){ return (canal || '') === 'Erizo'; }
 
-// ====== PLAN DE TRABAJO ERIZO ======
 const PLAN = {
   1: {'04-06':{L:[126,127],M:[128,129],X:[205,411],J:[206,287],V:[188,324],S:[130,131]},
       '06-08':{L:[286,116,117],M:[154,157,158],X:[266,263,264],J:[207,189],V:[159],S:[]}},
@@ -899,31 +837,32 @@ const DIAS = [{k:'L',n:'Lunes'},{k:'M',n:'Martes'},{k:'X',n:'Miércoles'},{k:'J'
 const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 const NOM_DIA = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
+// Rubros de equipos, para mostrar las diferencias discriminadas
+const RUBROS_EQ = [
+  {k:'vacias', n:'Bandejas vacías', c:'Vacías'},
+  {k:'devoluciones', n:'Bandejas devoluciones', c:'Devol.'},
+  {k:'rechazo', n:'Bandejas rechazo', c:'Rechazo'},
+  {k:'dollys', n:'Dollys', c:'Dollys'}
+];
+
 let REGISTROS = [];
 let DEVO_PT = [];
 let MAPA_NOMBRES = {};
 let CHOFERES = [];
 let VER_MODO = 'pt';
 
-// ====== Utilidades ======
 function n(id){ return parseInt(document.getElementById(id).value) || 0; }
 function v(id){ return document.getElementById(id).value.trim(); }
 function fmtFecha(f){ if(!f) return ''; const p=f.split('-'); return p.length===3?(p[2]+'/'+p[1]+'/'+p[0]):f; }
-function isoLocal(d){
-  return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
-}
+function isoLocal(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 function ahoraTxt(){
   const d=new Date();
-  const dd=('0'+d.getDate()).slice(-2), mm=('0'+(d.getMonth()+1)).slice(-2);
-  const hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
-  return dd+'/'+mm+'/'+d.getFullYear()+' '+hh+':'+mi;
+  return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
 }
 function fmtStamp(iso){
   if(!iso) return '';
   const d=new Date(iso);
-  const dd=('0'+d.getDate()).slice(-2), mm=('0'+(d.getMonth()+1)).slice(-2);
-  const hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
-  return dd+'/'+mm+'/'+d.getFullYear()+' '+hh+':'+mi;
+  return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
 }
 function celdaDif(fis, hdr){
   const d=fis-hdr;
@@ -933,30 +872,24 @@ function celdaDif(fis, hdr){
 function esAnulado(x){ return (x.estado||'ACTIVO')==='ANULADO'; }
 function estado(x){
   if(esAnulado(x)) return 'ANULADO';
-  const c=(x.fis_vacias===x.hdr_vacias)&&(x.fis_devoluciones===x.hdr_devoluciones)&&
-          (x.fis_rechazo===x.hdr_rechazo)&&(x.fis_dollys===x.hdr_dollys);
+  const c=RUBROS_EQ.every(r=>x['fis_'+r.k]===x['hdr_'+r.k]);
   return c?'COINCIDE':'REVISAR';
 }
 function canalReg(x){ return x.canal || canalDe(x.ruta); }
 function hdrPendiente(x){
-  const suma=(x.hdr_vacias||0)+(x.hdr_devoluciones||0)+(x.hdr_rechazo||0)+(x.hdr_dollys||0);
+  const suma=RUBROS_EQ.reduce((a,r)=>a+(x['hdr_'+r.k]||0),0);
   return suma===0 && !x.fecha_hdr;
 }
-function difBandejas(x){
-  return Math.abs(x.fis_vacias-x.hdr_vacias)+Math.abs(x.fis_devoluciones-x.hdr_devoluciones)+
-         Math.abs(x.fis_rechazo-x.hdr_rechazo);
-}
-function difDollys(x){ return Math.abs(x.fis_dollys-x.hdr_dollys); }
+function difRubro(x,k){ return Math.abs((x['fis_'+k]||0)-(x['hdr_'+k]||0)); }
+function difTotal(x){ return RUBROS_EQ.reduce((a,r)=>a+difRubro(x,r.k),0); }
+function fmtN(v){ return (v||0).toLocaleString('es-AR'); }
 
-/* ===== Unificación de nombres ===== */
 function sinAcentos(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 function tokensNombre(nombre){
-  return sinAcentos(nombre).toLowerCase().replace(/[^a-z0-9\s]/g,' ')
-    .split(/\s+/).filter(t=>t.length>1).sort();
+  return sinAcentos(nombre).toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(t=>t.length>1).sort();
 }
 function tituloNombre(s){
-  return String(s||'').trim().toLowerCase().split(/\s+/)
-    .map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+  return String(s||'').trim().toLowerCase().split(/\s+/).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
 }
 function construirMapaNombres(lista){
   const grupos={};
@@ -974,8 +907,7 @@ function construirMapaNombres(lista){
       const otra=claves[i];
       if(otra===k) continue;
       if(grupos[otra].tokens.length<=grupos[k].tokens.length) continue;
-      const esSub=grupos[k].tokens.every(t=>grupos[otra].tokens.indexOf(t)!==-1);
-      if(esSub){ padre=otra; break; }
+      if(grupos[k].tokens.every(t=>grupos[otra].tokens.indexOf(t)!==-1)){ padre=otra; break; }
     }
     destino[k]=padre;
   });
@@ -1000,7 +932,6 @@ function refrescarNombres(){
   if(dl) dl.innerHTML=unicos.map(u=>'<option value="'+u+'">').join('');
 }
 
-// ====== Mostrar canal ======
 function mostrarCanal(){ pintarCanal('ruta','canalBadge'); }
 function edMostrarCanal(){ pintarCanal('ed_ruta','ed_canalBadge'); }
 function pintarCanal(selId, boxId){
@@ -1013,7 +944,6 @@ function pintarCanal(selId, boxId){
   else { box.className='canal-badge '+(esErizoCanal(canal)?'erizo':'otro'); box.textContent=(esErizoCanal(canal)?'🦔 ':'🚚 ')+canal; }
 }
 
-// ====== Pestañas ======
 function showTab(t){
   const ids={devo:'tabDevo',carga:'tabCarga',chof:'tabChof',ver:'tabVer',ind:'tabInd',plan:'tabPlan'};
   const btns={devo:'tabDevoBtn',carga:'tabCargaBtn',chof:'tabChofBtn',ver:'tabVerBtn',ind:'tabIndBtn',plan:'tabPlanBtn'};
@@ -1035,17 +965,15 @@ function setVerModo(m){
   if(m==='pt') cargarDevoPT(); else cargarDatos();
 }
 
-// ====== Guardar conteo de equipos ======
 async function guardar(){
   const msg=document.getElementById('msg'); msg.className='msg';
   if(!v('fecha')||!v('ruta')||!v('contador')){ msg.className='msg err'; msg.textContent='⚠️ Completá Fecha, Ruta y Contador.'; return; }
   const registro={
     fecha:v('fecha'), ruta:v('ruta'), canal:canalDe(v('ruta')), contador:nombreUnificado(v('contador')),
     turno:v('turno')||null, hoja:v('hoja')||null, estado:'ACTIVO',
-    fis_vacias:n('fis_vacias'), fis_devoluciones:n('fis_devoluciones'), fis_rechazo:n('fis_rechazo'), fis_dollys:n('fis_dollys'),
-    hdr_vacias:n('hdr_vacias'), hdr_devoluciones:n('hdr_devoluciones'), hdr_rechazo:n('hdr_rechazo'), hdr_dollys:n('hdr_dollys'),
     observaciones:v('observaciones')||null
   };
+  RUBROS_EQ.forEach(r=>{ registro['fis_'+r.k]=n('fis_'+r.k); registro['hdr_'+r.k]=n('hdr_'+r.k); });
   try{
     const {error}=await supa.from('control_erizos').insert(registro);
     if(error) throw error;
@@ -1053,13 +981,12 @@ async function guardar(){
     document.getElementById('form').reset();
     document.getElementById('canalBadge').style.display='none';
     document.getElementById('fecha').value=isoLocal(new Date());
-    ['fis_vacias','fis_devoluciones','fis_rechazo','fis_dollys','hdr_vacias','hdr_devoluciones','hdr_rechazo','hdr_dollys']
-      .forEach(id=>document.getElementById(id).value=0);
+    RUBROS_EQ.forEach(r=>{ document.getElementById('fis_'+r.k).value=0; document.getElementById('hdr_'+r.k).value=0; });
     traerRegistros();
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
 
-// ====== Devo PT: carga ======
+/* ===== DEVO PT ===== */
 function difDevo(){
   const d=n('d_fis')-n('d_cli');
   const box=document.getElementById('d_dif');
@@ -1072,8 +999,7 @@ async function guardarDevo(){
   const registro={
     fecha:v('d_fecha'), ruta:v('d_ruta'), canal:canalDe(v('d_ruta')), contador:nombreUnificado(v('d_contador')),
     turno:v('d_turno')||null, hoja:v('d_hoja')||null, estado:'ACTIVO',
-    fis_productos:n('d_fis'), cli_productos:n('d_cli'),
-    observaciones:v('d_obs')||null
+    fis_productos:n('d_fis'), cli_productos:n('d_cli'), observaciones:v('d_obs')||null
   };
   try{
     const {error}=await supa.from('devoluciones_pt').insert(registro);
@@ -1086,8 +1012,6 @@ async function guardarDevo(){
     difDevo();
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo guardar: '+(e.message||e); }
 }
-
-// ====== Devo PT: registros ======
 function canalAASS(r){ return RUTAS_CANAL[r]==='Erizo' ? 'Erizo' : 'AASS'; }
 function estadoPT(x){ return (x.fis_productos||0)===(x.cli_productos||0) ? 'COINCIDE' : 'REVISAR'; }
 async function cargarDevoPT(){
@@ -1123,18 +1047,13 @@ function renderPT(){
     tb.innerHTML='<tr><td colspan="10" class="vacio">'+(DEVO_PT.length?'Sin registros para los filtros seleccionados.':'Todavía no hay devoluciones de PT cargadas.')+'</td></tr>';
   } else {
     tb.innerHTML=rows.map(function(x){
-      const es=estadoPT(x);
-      const canal=canalAASS(x.ruta);
-      return '<tr>'+
-        '<td>'+fmtFecha(x.fecha)+'</td>'+
-        '<td>'+(x.ruta||'')+'</td>'+
+      const es=estadoPT(x); const canal=canalAASS(x.ruta);
+      return '<tr><td>'+fmtFecha(x.fecha)+'</td><td>'+(x.ruta||'')+'</td>'+
         '<td><span class="canal-tag '+(canal==='Erizo'?'erizo':'otro')+'">'+canal+'</span></td>'+
-        '<td class="left">'+nombreUnificado(x.contador)+'</td>'+
-        '<td>'+(x.turno||'')+'</td>'+
+        '<td class="left">'+nombreUnificado(x.contador)+'</td><td>'+(x.turno||'')+'</td>'+
         '<td>'+x.fis_productos+'</td><td>'+x.cli_productos+'</td>'+celdaDif(x.fis_productos,x.cli_productos)+
         '<td>'+(es==='COINCIDE'?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>')+'</td>'+
-        '<td class="left">'+(x.observaciones||'')+'</td>'+
-      '</tr>';
+        '<td class="left">'+(x.observaciones||'')+'</td></tr>';
     }).join('');
   }
   const fis=rows.reduce((a,x)=>a+(x.fis_productos||0),0);
@@ -1142,14 +1061,11 @@ function renderPT(){
   const dif=rows.reduce((a,x)=>a+Math.abs((x.fis_productos||0)-(x.cli_productos||0)),0);
   const rev=rows.filter(x=>estadoPT(x)==='REVISAR').length;
   document.getElementById('ptKpis').innerHTML=
-    kpi(rows.length,'Conteos')+kpi(fis.toLocaleString('es-AR'),'Productos físicos')+
-    kpi(cli.toLocaleString('es-AR'),'Declarado cliente')+kpi(dif.toLocaleString('es-AR'),'Productos con diferencia')+
-    kpi(rev,'En REVISAR');
+    kpi(rows.length,'Conteos')+kpi(fmtN(fis),'Productos físicos')+kpi(fmtN(cli),'Declarado cliente')+
+    kpi(fmtN(dif),'Productos con diferencia')+kpi(rev,'En REVISAR');
 }
 
-/* ==========================================================
-   EXPORTACIÓN A EXCEL CON FORMATO (ExcelJS)
-   ========================================================== */
+/* ===== EXCEL CON FORMATO ===== */
 const XL = {
   azul:'FF003E7E', azulClaro:'FFDCE6F2', blanco:'FFFFFFFF', texto:'FF1F2D3D', gris:'FF6B7785',
   borde:'FFC9D3DF', bordeSuave:'FFE3E8EE', cebra:'FFF6F8FB',
@@ -1158,8 +1074,6 @@ const XL = {
 };
 function xlBorde(c){ const s={style:'thin',color:{argb:c||XL.borde}}; return {top:s,left:s,bottom:s,right:s}; }
 function xlFecha(iso){ if(!iso) return null; const p=iso.split('-'); return new Date(Date.UTC(+p[0],+p[1]-1,+p[2])); }
-
-// Trae el chofer de Driv.in para cada fecha + ruta del listado
 async function mapaChoferesPara(rows){
   if(!rows.length) return {};
   const fechas=rows.map(x=>x.fecha).filter(Boolean).sort();
@@ -1169,48 +1083,28 @@ async function mapaChoferesPara(rows){
   lista.forEach(function(s){ if(s.chofer) m[s.fecha+'|'+String(s.ruta)]=tituloNombre(s.chofer); });
   return m;
 }
-
-/*
-  o = { archivo, hoja, titulo, subtitulo,
-        cols:[{h, w, g, gc, hc, tipo:'txt'|'num'|'dif'|'fecha'|'estado', al, total}],
-        filas:[[...valores]] }
-*/
 async function excelConFormato(o){
-  if(typeof ExcelJS==='undefined'){
-    alert('No se pudo cargar el generador de Excel. Revisá la conexión a internet y probá de nuevo.');
-    return;
-  }
+  if(typeof ExcelJS==='undefined'){ alert('No se pudo cargar el generador de Excel. Revisá la conexión a internet y probá de nuevo.'); return; }
   const wb=new ExcelJS.Workbook();
   wb.creator='Control Vuelta Reparto · La Tablada';
   const ws=wb.addWorksheet(o.hoja,{views:[{state:'frozen',xSplit:2,ySplit:4,showGridLines:false}]});
   const nC=o.cols.length;
   ws.columns=o.cols.map(c=>({width:c.w||12}));
-
-  // Fila 1 · título
   ws.mergeCells(1,1,1,nC);
   const t=ws.getCell(1,1);
-  t.value=o.titulo;
-  t.font={bold:true,size:16,color:{argb:XL.azul},underline:true};
-  t.alignment={horizontal:'center',vertical:'middle'};
-  ws.getRow(1).height=32;
-
-  // Fila 2 · subtítulo
+  t.value=o.titulo; t.font={bold:true,size:16,color:{argb:XL.azul},underline:true};
+  t.alignment={horizontal:'center',vertical:'middle'}; ws.getRow(1).height=32;
   ws.mergeCells(2,1,2,nC);
   const s=ws.getCell(2,1);
-  s.value=o.subtitulo;
-  s.font={italic:true,size:10,color:{argb:XL.gris}};
-  s.alignment={horizontal:'center',vertical:'middle'};
-  ws.getRow(2).height=18;
-
-  // Fila 3 · grupos de columnas
+  s.value=o.subtitulo; s.font={italic:true,size:10,color:{argb:XL.gris}};
+  s.alignment={horizontal:'center',vertical:'middle'}; ws.getRow(2).height=18;
   let i=0;
   while(i<nC){
     const g=o.cols[i].g||''; let j=i;
     while(j+1<nC && (o.cols[j+1].g||'')===g) j++;
     if(j>i) ws.mergeCells(3,i+1,3,j+1);
     const c=ws.getCell(3,i+1);
-    c.value=g;
-    c.font={bold:true,size:11,color:{argb:XL.blanco}};
+    c.value=g; c.font={bold:true,size:11,color:{argb:XL.blanco}};
     c.alignment={horizontal:'center',vertical:'middle'};
     for(let k=i;k<=j;k++){
       const cc=ws.getCell(3,k+1);
@@ -1220,23 +1114,17 @@ async function excelConFormato(o){
     i=j+1;
   }
   ws.getRow(3).height=22;
-
-  // Fila 4 · encabezados
   const hr=ws.getRow(4);
   o.cols.forEach(function(c,k){
     const cell=hr.getCell(k+1);
-    cell.value=c.h;
-    cell.font={bold:true,size:10,color:{argb:XL.texto}};
+    cell.value=c.h; cell.font={bold:true,size:10,color:{argb:XL.texto}};
     cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:c.hc||XL.azulClaro}};
     cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
     cell.border=xlBorde();
   });
   hr.height=34;
-
-  // Datos
   o.filas.forEach(function(f,ri){
-    const row=ws.getRow(5+ri);
-    row.height=18;
+    const row=ws.getRow(5+ri); row.height=18;
     f.forEach(function(val,k){
       const c=o.cols[k]; const cell=row.getCell(k+1);
       cell.value=(val===undefined||val==='')?null:val;
@@ -1248,23 +1136,18 @@ async function excelConFormato(o){
       if(c.tipo==='num') cell.numFmt='#,##0';
       if(c.tipo==='dif'){
         cell.numFmt='+#,##0;-#,##0;0';
-        if(val){ cell.font={size:10,bold:true,color:{argb:XL.rojo}};
-                 cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:XL.rojoFondo}}; }
+        if(val){ cell.font={size:10,bold:true,color:{argb:XL.rojo}}; cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:XL.rojoFondo}}; }
         else cell.font={size:10,color:{argb:XL.difCero}};
       }
       if(c.tipo==='estado'){
         const est={COINCIDE:[XL.verde,XL.verdeFondo],REVISAR:[XL.naranja,XL.naranjaFondo],ANULADO:[XL.rojo,XL.rojoFondo]}[val];
-        if(est){ cell.font={size:10,bold:true,color:{argb:est[0]}};
-                 cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:est[1]}}; }
+        if(est){ cell.font={size:10,bold:true,color:{argb:est[0]}}; cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:est[1]}}; }
       }
     });
   });
-
-  // Fila de totales
   const ultima=4+o.filas.length;
   if(o.filas.length && o.cols.some(c=>c.total)){
-    const tr=ws.getRow(ultima+1);
-    tr.height=20;
+    const tr=ws.getRow(ultima+1); tr.height=20;
     o.cols.forEach(function(c,k){
       const cell=tr.getCell(k+1);
       const letra=ws.getColumn(k+1).letter;
@@ -1278,10 +1161,8 @@ async function excelConFormato(o){
       if(c.tipo==='dif') cell.numFmt='+#,##0;-#,##0;0';
     });
   }
-
   ws.autoFilter={from:{row:4,column:1},to:{row:Math.max(4,ultima),column:nC}};
   ws.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,paperSize:9};
-
   const buf=await wb.xlsx.writeBuffer();
   const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
   const a=document.createElement('a');
@@ -1291,16 +1172,13 @@ async function excelConFormato(o){
 }
 function subtituloExcel(rows, desde, hasta, etiqueta){
   const f=rows.map(x=>x.fecha).filter(Boolean).sort();
-  const d=desde||f[0], h=hasta||f[f.length-1];
-  return 'Período: '+fmtFecha(d)+' al '+fmtFecha(h)+'  ·  '+rows.length+' '+etiqueta+'  ·  Descargado el '+ahoraTxt();
+  return 'Período: '+fmtFecha(desde||f[0])+' al '+fmtFecha(hasta||f[f.length-1])+'  ·  '+rows.length+' '+etiqueta+'  ·  Descargado el '+ahoraTxt();
 }
 async function conBoton(id, fn){
   const b=document.getElementById(id); const txt=b?b.textContent:'';
   if(b){ b.disabled=true; b.textContent='⏳ Generando…'; }
   try{ await fn(); } finally { if(b){ b.disabled=false; b.textContent=txt; } }
 }
-
-// ---- Excel Devo Equipos ----
 async function exportar(){
   const rows=filtrar();
   if(rows.length===0){ alert('No hay registros para exportar.'); return; }
@@ -1309,62 +1187,36 @@ async function exportar(){
     const G='Datos generales', H='Equipos declarados (HDR)', F='Conteo físico', D='Diferencias (Físico − HDR)', R='Resultado', T='Trazabilidad';
     const cG='FF003E7E', cH='FF2F6DBF', cF='FF1B7A37', cD='FF5A6B7D', cR='FFB26A00', cT='FF7A8595';
     const hH='FFDCE8F8', hF='FFDDF0E2', hD='FFE6E9EE', hR='FFFFF1DC', hT='FFECEFF3';
+    const bloque=(g,gc,hc,tipo)=>RUBROS_EQ.map(r=>({h:r.n,w:12,g:g,gc:gc,hc:hc,tipo:tipo,total:1}));
     const cols=[
-      {h:'Fecha',w:11,g:G,gc:cG,tipo:'fecha'},
-      {h:'Ruta',w:8,g:G,gc:cG},
-      {h:'Canal',w:24,g:G,gc:cG,al:'left'},
-      {h:'Chofer',w:24,g:G,gc:cG,al:'left'},
-      {h:'Contador',w:20,g:G,gc:cG,al:'left'},
-      {h:'Turno',w:13,g:G,gc:cG},
-      {h:'Hoja',w:8,g:G,gc:cG},
-      {h:'Bandejas vacías',w:11,g:H,gc:cH,hc:hH,tipo:'num',total:1},
-      {h:'Devoluciones',w:11,g:H,gc:cH,hc:hH,tipo:'num',total:1},
-      {h:'Rechazo',w:10,g:H,gc:cH,hc:hH,tipo:'num',total:1},
-      {h:'Dollys',w:9,g:H,gc:cH,hc:hH,tipo:'num',total:1},
-      {h:'Bandejas vacías',w:11,g:F,gc:cF,hc:hF,tipo:'num',total:1},
-      {h:'Devoluciones',w:11,g:F,gc:cF,hc:hF,tipo:'num',total:1},
-      {h:'Rechazo',w:10,g:F,gc:cF,hc:hF,tipo:'num',total:1},
-      {h:'Dollys',w:9,g:F,gc:cF,hc:hF,tipo:'num',total:1},
-      {h:'Bandejas vacías',w:11,g:D,gc:cD,hc:hD,tipo:'dif',total:1},
-      {h:'Devoluciones',w:11,g:D,gc:cD,hc:hD,tipo:'dif',total:1},
-      {h:'Rechazo',w:10,g:D,gc:cD,hc:hD,tipo:'dif',total:1},
-      {h:'Dollys',w:9,g:D,gc:cD,hc:hD,tipo:'dif',total:1},
-      {h:'Estado',w:12,g:R,gc:cR,hc:hR,tipo:'estado'},
-      {h:'Observaciones',w:32,g:R,gc:cR,hc:hR,al:'left'},
-      {h:'Modificado por',w:18,g:T,gc:cT,hc:hT,al:'left'},
-      {h:'Motivo modificación',w:28,g:T,gc:cT,hc:hT,al:'left'},
-      {h:'Fecha modificación',w:16,g:T,gc:cT,hc:hT},
-      {h:'HDR completada por',w:18,g:T,gc:cT,hc:hT,al:'left'},
-      {h:'Fecha HDR',w:16,g:T,gc:cT,hc:hT},
-      {h:'Anulado por',w:16,g:T,gc:cT,hc:hT,al:'left'},
-      {h:'Motivo anulación',w:24,g:T,gc:cT,hc:hT,al:'left'},
-      {h:'Fecha anulación',w:16,g:T,gc:cT,hc:hT}
-    ];
+      {h:'Fecha',w:11,g:G,gc:cG,tipo:'fecha'},{h:'Ruta',w:8,g:G,gc:cG},{h:'Canal',w:24,g:G,gc:cG,al:'left'},
+      {h:'Chofer',w:24,g:G,gc:cG,al:'left'},{h:'Contador',w:20,g:G,gc:cG,al:'left'},{h:'Turno',w:13,g:G,gc:cG},{h:'Hoja',w:8,g:G,gc:cG}
+    ].concat(bloque(H,cH,hH,'num'), bloque(F,cF,hF,'num'), bloque(D,cD,hD,'dif'), [
+      {h:'Estado',w:12,g:R,gc:cR,hc:hR,tipo:'estado'},{h:'Observaciones',w:32,g:R,gc:cR,hc:hR,al:'left'},
+      {h:'Modificado por',w:18,g:T,gc:cT,hc:hT,al:'left'},{h:'Motivo modificación',w:28,g:T,gc:cT,hc:hT,al:'left'},
+      {h:'Fecha modificación',w:16,g:T,gc:cT,hc:hT},{h:'HDR completada por',w:18,g:T,gc:cT,hc:hT,al:'left'},
+      {h:'Fecha HDR',w:16,g:T,gc:cT,hc:hT},{h:'Anulado por',w:16,g:T,gc:cT,hc:hT,al:'left'},
+      {h:'Motivo anulación',w:24,g:T,gc:cT,hc:hT,al:'left'},{h:'Fecha anulación',w:16,g:T,gc:cT,hc:hT}
+    ]);
     const ord=rows.slice().sort((a,b)=>(a.fecha<b.fecha?-1:a.fecha>b.fecha?1:String(a.ruta).localeCompare(String(b.ruta))));
-    const filas=ord.map(function(x){
-      return [
-        xlFecha(x.fecha), x.ruta, canalReg(x), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador),
-        x.turno||'', x.hoja||'',
-        x.hdr_vacias, x.hdr_devoluciones, x.hdr_rechazo, x.hdr_dollys,
-        x.fis_vacias, x.fis_devoluciones, x.fis_rechazo, x.fis_dollys,
-        x.fis_vacias-x.hdr_vacias, x.fis_devoluciones-x.hdr_devoluciones, x.fis_rechazo-x.hdr_rechazo, x.fis_dollys-x.hdr_dollys,
-        estado(x), x.observaciones||'',
-        x.modificado_por||'', x.motivo_modificacion||'', x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
-        x.hdr_por||'', x.fecha_hdr?fmtStamp(x.fecha_hdr):'',
-        x.anulado_por||'', x.motivo_anulacion||'', x.fecha_anulacion?fmtStamp(x.fecha_anulacion):''
-      ];
-    });
+    const filas=ord.map(x=>[
+      xlFecha(x.fecha), x.ruta, canalReg(x), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador),
+      x.turno||'', x.hoja||''
+    ].concat(
+      RUBROS_EQ.map(r=>x['hdr_'+r.k]), RUBROS_EQ.map(r=>x['fis_'+r.k]), RUBROS_EQ.map(r=>x['fis_'+r.k]-x['hdr_'+r.k]),
+      [estado(x), x.observaciones||'',
+       x.modificado_por||'', x.motivo_modificacion||'', x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
+       x.hdr_por||'', x.fecha_hdr?fmtStamp(x.fecha_hdr):'',
+       x.anulado_por||'', x.motivo_anulacion||'', x.fecha_anulacion?fmtStamp(x.fecha_anulacion):'']
+    ));
     await excelConFormato({
-      archivo:'Control_Devo_Equipos_Tablada_'+isoLocal(new Date())+'.xlsx',
-      hoja:'Devo Equipos',
+      archivo:'Control_Devo_Equipos_Tablada_'+isoLocal(new Date())+'.xlsx', hoja:'Devo Equipos',
       titulo:'PLANILLA CONTROL VUELTA DE REPARTO · DEVOLUCIÓN DE EQUIPOS · LA TABLADA',
       subtitulo:subtituloExcel(ord, document.getElementById('fDesde').value, document.getElementById('fHasta').value, 'registros'),
       cols:cols, filas:filas
     });
   });
 }
-
-// ---- Excel Devo PT ----
 async function exportarPT(){
   const rows=filtrarPT();
   if(rows.length===0){ alert('No hay registros para exportar.'); return; }
@@ -1372,13 +1224,9 @@ async function exportarPT(){
     const chof=await mapaChoferesPara(rows);
     const G='Datos generales', C='Declarado cliente', F='Conteo físico', D='Diferencia', R='Resultado';
     const cols=[
-      {h:'Fecha',w:11,g:G,gc:'FF003E7E',tipo:'fecha'},
-      {h:'Ruta',w:8,g:G,gc:'FF003E7E'},
-      {h:'Canal',w:10,g:G,gc:'FF003E7E'},
-      {h:'Chofer',w:24,g:G,gc:'FF003E7E',al:'left'},
-      {h:'Contador',w:20,g:G,gc:'FF003E7E',al:'left'},
-      {h:'Turno',w:13,g:G,gc:'FF003E7E'},
-      {h:'Hoja',w:8,g:G,gc:'FF003E7E'},
+      {h:'Fecha',w:11,g:G,gc:'FF003E7E',tipo:'fecha'},{h:'Ruta',w:8,g:G,gc:'FF003E7E'},{h:'Canal',w:10,g:G,gc:'FF003E7E'},
+      {h:'Chofer',w:24,g:G,gc:'FF003E7E',al:'left'},{h:'Contador',w:20,g:G,gc:'FF003E7E',al:'left'},
+      {h:'Turno',w:13,g:G,gc:'FF003E7E'},{h:'Hoja',w:8,g:G,gc:'FF003E7E'},
       {h:'Cantidad productos',w:14,g:C,gc:'FF2F6DBF',hc:'FFDCE8F8',tipo:'num',total:1},
       {h:'Cantidad productos',w:14,g:F,gc:'FF1B7A37',hc:'FFDDF0E2',tipo:'num',total:1},
       {h:'Físico − Cliente',w:14,g:D,gc:'FF5A6B7D',hc:'FFE6E9EE',tipo:'dif',total:1},
@@ -1386,17 +1234,12 @@ async function exportarPT(){
       {h:'Observaciones',w:34,g:R,gc:'FFB26A00',hc:'FFFFF1DC',al:'left'}
     ];
     const ord=rows.slice().sort((a,b)=>(a.fecha<b.fecha?-1:a.fecha>b.fecha?1:String(a.ruta).localeCompare(String(b.ruta))));
-    const filas=ord.map(function(x){
-      return [
-        xlFecha(x.fecha), x.ruta, canalAASS(x.ruta), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador),
-        x.turno||'', x.hoja||'',
-        x.cli_productos, x.fis_productos, (x.fis_productos||0)-(x.cli_productos||0),
-        estadoPT(x), x.observaciones||''
-      ];
-    });
+    const filas=ord.map(x=>[
+      xlFecha(x.fecha), x.ruta, canalAASS(x.ruta), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador),
+      x.turno||'', x.hoja||'', x.cli_productos, x.fis_productos, (x.fis_productos||0)-(x.cli_productos||0), estadoPT(x), x.observaciones||''
+    ]);
     await excelConFormato({
-      archivo:'Control_Devo_PT_Tablada_'+isoLocal(new Date())+'.xlsx',
-      hoja:'Devo PT',
+      archivo:'Control_Devo_PT_Tablada_'+isoLocal(new Date())+'.xlsx', hoja:'Devo PT',
       titulo:'PLANILLA CONTROL VUELTA DE REPARTO · DEVOLUCIÓN DE PRODUCTO TERMINADO · LA TABLADA',
       subtitulo:subtituloExcel(ord, document.getElementById('pDesde').value, document.getElementById('pHasta').value, 'registros'),
       cols:cols, filas:filas
@@ -1404,7 +1247,7 @@ async function exportarPT(){
   });
 }
 
-// ====== Cargar datos (equipos) ======
+/* ===== DEVO EQUIPOS ===== */
 async function traerRegistros(){
   const {data,error}=await supa.from('control_erizos').select('*')
     .order('fecha',{ascending:false}).order('created_at',{ascending:false});
@@ -1434,8 +1277,6 @@ async function cargarDatosInd(){
     document.getElementById('indHero').innerHTML='<div class="alert-box rojo">❌ Error al cargar: '+(e.message||e)+'</div>';
   }
 }
-
-// ====== Filtro + render (Ver registros equipos) ======
 function filtrar(){
   const d=document.getElementById('fDesde').value, h=document.getElementById('fHasta').value;
   const r=document.getElementById('fRuta').value.trim().toLowerCase();
@@ -1457,61 +1298,43 @@ function render(){
     tb.innerHTML='<tr><td colspan="20" class="left muted">Sin registros para los filtros seleccionados.</td></tr>';
   } else {
     tb.innerHTML=rows.map(function(x){
-      const anu=esAnulado(x);
-      const es=estado(x);
-      let badge;
-      if(anu) badge='<span class="est anu">ANULADO</span>';
-      else badge=(es==='COINCIDE')?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>';
+      const anu=esAnulado(x); const es=estado(x);
+      const badge=anu?'<span class="est anu">ANULADO</span>':(es==='COINCIDE'?'<span class="est coin">COINCIDE</span>':'<span class="est rev">REVISAR</span>');
       const canal=canalReg(x);
-      const canalTag='<span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span>';
       let mini='';
-      if(x.fecha_modificacion){ mini+='<span class="mini">✏️ '+(x.modificado_por||'')+' · '+fmtStamp(x.fecha_modificacion)+'</span>'; }
-      if(x.fecha_hdr){ mini+='<span class="mini">📥 '+(x.hdr_por||'')+' · '+fmtStamp(x.fecha_hdr)+'</span>'; }
-      if(x.fecha_anulacion){ mini+='<span class="mini anu">🗑️ '+(x.anulado_por||'')+' · '+fmtStamp(x.fecha_anulacion)+(x.motivo_anulacion?(' · '+x.motivo_anulacion):'')+'</span>'; }
-      let acc;
-      if(anu){
-        acc='<div class="acc-btns"><button class="icon-btn react" title="Reactivar" onclick="abrirReactivar('+x.id+')">♻️ Reactivar</button></div>'+mini;
-      } else {
-        acc='<div class="acc-btns">'+
+      if(x.fecha_modificacion) mini+='<span class="mini">✏️ '+(x.modificado_por||'')+' · '+fmtStamp(x.fecha_modificacion)+'</span>';
+      if(x.fecha_hdr) mini+='<span class="mini">📥 '+(x.hdr_por||'')+' · '+fmtStamp(x.fecha_hdr)+'</span>';
+      if(x.fecha_anulacion) mini+='<span class="mini anu">🗑️ '+(x.anulado_por||'')+' · '+fmtStamp(x.fecha_anulacion)+(x.motivo_anulacion?(' · '+x.motivo_anulacion):'')+'</span>';
+      const acc=anu
+        ? '<div class="acc-btns"><button class="icon-btn react" title="Reactivar" onclick="abrirReactivar('+x.id+')">♻️ Reactivar</button></div>'+mini
+        : '<div class="acc-btns">'+
           '<button class="icon-btn edit" title="Editar registro" onclick="abrirEditar('+x.id+')">✏️</button>'+
           '<button class="icon-btn hdr" title="Completar HDR" onclick="abrirHdr('+x.id+')">📥</button>'+
-          '<button class="icon-btn del" title="Anular registro" onclick="abrirAnular('+x.id+')">🗑️</button>'+
-          '</div>'+mini;
-      }
+          '<button class="icon-btn del" title="Anular registro" onclick="abrirAnular('+x.id+')">🗑️</button></div>'+mini;
       return '<tr class="'+(anu?'anulado':'')+'">'+
         '<td class="no-strike acc-cell">'+acc+'</td>'+
-        '<td>'+fmtFecha(x.fecha)+'</td>'+
-        '<td>'+(x.ruta||'')+'</td>'+
-        '<td class="no-strike">'+canalTag+'</td>'+
-        '<td class="left">'+nombreUnificado(x.contador)+'</td>'+
-        '<td>'+(x.turno||'')+'</td>'+
-        '<td>'+x.fis_vacias+'</td><td>'+x.hdr_vacias+'</td>'+celdaDif(x.fis_vacias,x.hdr_vacias)+
-        '<td>'+x.fis_devoluciones+'</td><td>'+x.hdr_devoluciones+'</td>'+celdaDif(x.fis_devoluciones,x.hdr_devoluciones)+
-        '<td>'+x.fis_rechazo+'</td><td>'+x.hdr_rechazo+'</td>'+celdaDif(x.fis_rechazo,x.hdr_rechazo)+
-        '<td>'+x.fis_dollys+'</td><td>'+x.hdr_dollys+'</td>'+celdaDif(x.fis_dollys,x.hdr_dollys)+
+        '<td>'+fmtFecha(x.fecha)+'</td><td>'+(x.ruta||'')+'</td>'+
+        '<td class="no-strike"><span class="canal-tag '+(esErizoCanal(canal)?'erizo':'otro')+'">'+canal+'</span></td>'+
+        '<td class="left">'+nombreUnificado(x.contador)+'</td><td>'+(x.turno||'')+'</td>'+
+        RUBROS_EQ.map(r=>'<td>'+x['fis_'+r.k]+'</td><td>'+x['hdr_'+r.k]+'</td>'+celdaDif(x['fis_'+r.k],x['hdr_'+r.k])).join('')+
         '<td class="no-strike">'+badge+'</td>'+
-        '<td class="left">'+(x.observaciones||'')+'</td>'+
-      '</tr>';
+        '<td class="left">'+(x.observaciones||'')+'</td></tr>';
     }).join('');
   }
+  // KPIs discriminados por rubro (físico / HDR)
   const activos=rows.filter(x=>!esAnulado(x));
-  const totFis=activos.reduce((a,x)=>a+x.fis_vacias+x.fis_devoluciones+x.fis_rechazo,0);
-  const totHdr=activos.reduce((a,x)=>a+x.hdr_vacias+x.hdr_devoluciones+x.hdr_rechazo,0);
-  const totDollysFis=activos.reduce((a,x)=>a+x.fis_dollys,0);
+  const sum=(campo)=>activos.reduce((a,x)=>a+(x[campo]||0),0);
   const revisar=activos.filter(x=>estado(x)==='REVISAR').length;
   document.getElementById('kpis').innerHTML=
-    kpi(activos.length,'Conteos activos')+kpi(totFis.toLocaleString('es-AR'),'Bandejas físicas')+
-    kpi(totHdr.toLocaleString('es-AR'),'Bandejas HDR')+kpi(totDollysFis.toLocaleString('es-AR'),'Dollys físicos')+
+    kpi(activos.length,'Conteos activos')+
+    RUBROS_EQ.map(r=>kpi(fmtN(sum('fis_'+r.k))+' / '+fmtN(sum('hdr_'+r.k)), r.n+' · físico / HDR')).join('')+
     kpi(revisar,'En REVISAR');
 }
 function kpi(nv,lb){ return '<div class="kpi"><div class="n">'+nv+'</div><div class="l">'+lb+'</div></div>'; }
 
-/* ==========================================================
-   CHOFERES DEL DÍA (Driv.in) · Erizo o AASS
-   ========================================================== */
+/* ===== CHOFERES DEL DÍA ===== */
 function canalChofer(r){ return canalAASS(r); }
 function canalDetalle(r){ return RUTAS_CANAL[r] || 'AASS'; }
-
 async function cargarChoferes(){
   const f=document.getElementById('cFecha').value;
   const tb=document.getElementById('cTbody');
@@ -1531,8 +1354,7 @@ function controlesDelDia(f){
   const mapa={};
   REGISTROS.forEach(function(x){
     if(esAnulado(x) || x.fecha!==f) return;
-    const k=String(x.ruta);
-    const nom=nombreUnificado(x.contador);
+    const k=String(x.ruta); const nom=nombreUnificado(x.contador);
     (mapa[k]=mapa[k]||[]);
     if(mapa[k].indexOf(nom)===-1) mapa[k].push(nom);
   });
@@ -1548,10 +1370,7 @@ function filtrarChoferes(){
     const controlada=!!ctrl[String(x.ruta)];
     if(ctrlFiltro==='si' && !controlada) return false;
     if(ctrlFiltro==='no' && controlada) return false;
-    if(b){
-      const texto=sinAcentos((x.ruta+' '+(x.chofer||'')).toLowerCase());
-      if(texto.indexOf(b)===-1) return false;
-    }
+    if(b && sinAcentos((x.ruta+' '+(x.chofer||'')).toLowerCase()).indexOf(b)===-1) return false;
     return true;
   });
 }
@@ -1559,7 +1378,7 @@ function renderChoferes(){
   const f=document.getElementById('cFecha').value;
   const fd=new Date(f+'T00:00:00');
   document.getElementById('cTitulo').textContent='Choferes que salieron a reparto · '+NOM_DIA[fd.getDay()]+' '+fmtFecha(f);
-  const ult=CHOFERES.reduce(function(m,x){ return (!m || x.actualizado_at>m)?x.actualizado_at:m; }, null);
+  const ult=CHOFERES.reduce((m,x)=>(!m || x.actualizado_at>m)?x.actualizado_at:m, null);
   document.getElementById('cActualizado').textContent=ult?('Datos de Driv.in · última actualización: '+fmtStamp(ult)):'';
   const ctrl=controlesDelDia(f);
   const rows=filtrarChoferes();
@@ -1571,24 +1390,19 @@ function renderChoferes(){
     tb.innerHTML='<tr><td colspan="4" class="vacio">Ninguna ruta coincide con los filtros.</td></tr>';
   } else {
     tb.innerHTML=rows.map(function(x){
-      const canal=canalChofer(x.ruta);
-      const quien=ctrl[String(x.ruta)];
-      const celdaCtrl=quien?'<span class="ctrl-si">✅ '+quien.join(', ')+'</span>':'<span class="ctrl-no">— Sin control</span>';
-      return '<tr>'+
-        '<td><span class="ruta-num">'+x.ruta+'</span></td>'+
+      const canal=canalChofer(x.ruta); const quien=ctrl[String(x.ruta)];
+      return '<tr><td><span class="ruta-num">'+x.ruta+'</span></td>'+
         '<td><span class="canal-tag '+(canal==='Erizo'?'erizo':'otro')+'">'+canal+'</span></td>'+
         '<td class="left"><span class="chofer-nom">'+(x.chofer||'—')+'</span></td>'+
-        '<td>'+celdaCtrl+'</td>'+
-      '</tr>';
+        '<td>'+(quien?'<span class="ctrl-si">✅ '+quien.join(', ')+'</span>':'<span class="ctrl-no">— Sin control</span>')+'</td></tr>';
     }).join('');
   }
   const total=CHOFERES.length;
   const erizos=CHOFERES.filter(x=>canalChofer(x.ruta)==='Erizo').length;
-  const aass=total-erizos;
   const controladas=CHOFERES.filter(x=>ctrl[String(x.ruta)]).length;
   const pct=total?Math.round(controladas/total*100):0;
   document.getElementById('cKpis').innerHTML=
-    kpi(total,'Rutas totales')+kpi(erizos,'Rutas Erizo')+kpi(aass,'Rutas AASS')+
+    kpi(total,'Rutas totales')+kpi(erizos,'Rutas Erizo')+kpi(total-erizos,'Rutas AASS')+
     kpi(controladas,'Rutas controladas')+kpi(pct+'%','Controladas sobre totales');
 }
 function moverDia(delta){
@@ -1598,33 +1412,25 @@ function moverDia(delta){
   inp.value=isoLocal(d);
   cargarChoferes();
 }
-function irHoy(){
-  document.getElementById('cFecha').value=isoLocal(new Date());
-  cargarChoferes();
-}
+function irHoy(){ document.getElementById('cFecha').value=isoLocal(new Date()); cargarChoferes(); }
 function exportarChoferes(){
   const rows=filtrarChoferes();
   if(rows.length===0){ alert('No hay choferes para exportar.'); return; }
   const f=document.getElementById('cFecha').value;
   const ctrl=controlesDelDia(f);
-  const data=rows.map(function(x){
-    return {
-      'Fecha':fmtFecha(f),'Ruta':x.ruta,'Canal':canalChofer(x.ruta),'Chofer':x.chofer||'',
-      'Controlada':ctrl[String(x.ruta)]?'Sí':'No','Controlada por':(ctrl[String(x.ruta)]||[]).join(', ')
-    };
-  });
+  const data=rows.map(x=>({
+    'Fecha':fmtFecha(f),'Ruta':x.ruta,'Canal':canalChofer(x.ruta),'Chofer':x.chofer||'',
+    'Controlada':ctrl[String(x.ruta)]?'Sí':'No','Controlada por':(ctrl[String(x.ruta)]||[]).join(', ')
+  }));
   const ws=XLSX.utils.json_to_sheet(data);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Choferes');
   XLSX.writeFile(wb,'Choferes_Tablada_'+f+'.xlsx');
 }
 
-/* ==========================================================
-   INDICADORES
-   ========================================================== */
+/* ===== INDICADORES ===== */
 function periodoMes(){
-  const h=new Date();
-  const ini=new Date(h.getFullYear(),h.getMonth(),1);
+  const h=new Date(); const ini=new Date(h.getFullYear(),h.getMonth(),1);
   document.getElementById('iDesde').value=isoLocal(ini);
   document.getElementById('iHasta').value=isoLocal(h);
   renderIndicadores();
@@ -1648,23 +1454,18 @@ function filtrarInd(){
 }
 function rutasDelMaestro(){
   const c=document.getElementById('iCanal').value;
-  return Object.keys(RUTAS_CANAL).filter(function(r){
-    if(!c) return true;
-    return RUTAS_CANAL[r].toLowerCase().includes(c.toLowerCase());
-  });
+  return Object.keys(RUTAS_CANAL).filter(r=>!c || RUTAS_CANAL[r].toLowerCase().includes(c.toLowerCase()));
 }
 function barra(pct, clase){
   const p=Math.max(0,Math.min(100,pct));
   return '<div class="bar-track"><div class="bar-fill '+(clase||'')+'" style="width:'+p+'%"></div></div>';
 }
 function indCard(label, valor, sub, clase, pct, claseBarra){
-  return '<div class="ind-card '+(clase||'')+'">'+
-    '<div class="ic-l">'+label+'</div>'+
-    '<div class="ic-n">'+valor+'</div>'+
-    '<div class="ic-s">'+(sub||'')+'</div>'+
-    (pct!==undefined?barra(pct,claseBarra):'')+
-  '</div>';
+  return '<div class="ind-card '+(clase||'')+'"><div class="ic-l">'+label+'</div><div class="ic-n">'+valor+'</div>'+
+    '<div class="ic-s">'+(sub||'')+'</div>'+(pct!==undefined?barra(pct,claseBarra):'')+'</div>';
 }
+function colorPct(p,a,b){ return p>=a?'verde':(p>=b?'naranja':'rojo'); }
+function celdaDifInd(v){ return '<td style="'+(v?'color:#c0392b;font-weight:700':'color:#c8ced6')+'">'+fmtN(v)+'</td>'; }
 function calcularCumplimientoPlan(desde, hasta, rowsPeriodo){
   if(!desde||!hasta) return null;
   const ini=new Date(desde+'T00:00:00'), fin=new Date(hasta+'T00:00:00');
@@ -1689,7 +1490,7 @@ function calcularCumplimientoPlan(desde, hasta, rowsPeriodo){
         const fuera=[...new Set(hechas.filter(r=>plan.indexOf(r)===-1))];
         totPlan+=plan.length; totHecho+=cumplidas.length;
         dias.push({iso:iso, semana:w, plan:plan, cumplidas:cumplidas, faltan:faltan, fuera:fuera,
-                   pct:plan.length?Math.round(cumplidas.length/plan.length*100):0});
+                   pct:Math.round(cumplidas.length/plan.length*100)});
       }
     }
     cur.setDate(cur.getDate()+1);
@@ -1707,80 +1508,48 @@ function renderIndicadores(){
   const pendientes=rows.filter(hdrPendiente);
   const coinciden=conHdr.filter(x=>estado(x)==='COINCIDE').length;
   const pctExac=conHdr.length?Math.round(coinciden/conHdr.length*100):0;
-  const totDifBand=conHdr.reduce((a,x)=>a+difBandejas(x),0);
-  const totDifDoll=conHdr.reduce((a,x)=>a+difDollys(x),0);
-  const conDifBand=conHdr.filter(x=>difBandejas(x)>0).length;
-  const conDifDoll=conHdr.filter(x=>difDollys(x)>0).length;
-  const rowsPlan=REGISTROS.filter(function(x){
-    if(esAnulado(x)) return false;
-    if(desde&&x.fecha<desde) return false;
-    if(hasta&&x.fecha>hasta) return false;
-    return true;
-  });
+  const rowsPlan=REGISTROS.filter(x=>!esAnulado(x) && (!desde||x.fecha>=desde) && (!hasta||x.fecha<=hasta));
   const cum=calcularCumplimientoPlan(desde,hasta,rowsPlan);
 
   let alertas='';
-  if(pendientes.length>0){
-    alertas+='<div class="alert-box">⏳ Hay <b>'+pendientes.length+' conteo(s) con la HDR sin cargar</b>. '+
-      'No se incluyen en el cálculo de diferencias para no distorsionar los números. Completalos con el botón 📥 en Ver registros.</div>';
-  }
-  if(faltantes.length>0){
-    alertas+='<div class="alert-box rojo">🚨 Quedan <b>'+faltantes.length+' ruta(s) sin controlar</b> en el período seleccionado.</div>';
-  }
+  if(pendientes.length>0) alertas+='<div class="alert-box">⏳ Hay <b>'+pendientes.length+' conteo(s) con la HDR sin cargar</b>. No se incluyen en el cálculo de diferencias para no distorsionar los números. Completalos con el botón 📥 en Ver registros.</div>';
+  if(faltantes.length>0) alertas+='<div class="alert-box rojo">🚨 Quedan <b>'+faltantes.length+' ruta(s) sin controlar</b> en el período seleccionado.</div>';
   document.getElementById('indAlertas').innerHTML=alertas;
 
+  const cp=cum?cum.pct:0;
   document.getElementById('indHero').innerHTML=
-    indCard('Cumplimiento del plan', (cum?cum.pct:0)+'%',
-            cum?(cum.totHecho+' de '+cum.totPlan+' rutas planificadas'):'Sin período',
-            cum&&cum.pct>=80?'verde':(cum&&cum.pct>=50?'naranja':'rojo'),
-            cum?cum.pct:0, cum&&cum.pct>=80?'verde':(cum&&cum.pct>=50?'naranja':'rojo'))+
-    indCard('Cobertura de rutas', pctCob+'%', controladas.length+' de '+maestro.length+' rutas controladas',
-            pctCob>=80?'verde':(pctCob>=50?'naranja':'rojo'), pctCob, pctCob>=80?'verde':(pctCob>=50?'naranja':'rojo'))+
+    indCard('Cumplimiento del plan', cp+'%', cum?(cum.totHecho+' de '+cum.totPlan+' rutas planificadas'):'Sin período', colorPct(cp,80,50), cp, colorPct(cp,80,50))+
+    indCard('Cobertura de rutas', pctCob+'%', controladas.length+' de '+maestro.length+' rutas controladas', colorPct(pctCob,80,50), pctCob, colorPct(pctCob,80,50))+
     indCard('Rutas sin controlar', faltantes.length, 'Pendientes en el período', faltantes.length?'rojo':'verde')+
-    indCard('Exactitud HDR', pctExac+'%', coinciden+' de '+conHdr.length+' conteos coinciden',
-            pctExac>=90?'verde':(pctExac>=70?'naranja':'rojo'), pctExac, pctExac>=90?'verde':(pctExac>=70?'naranja':'rojo'))+
-    indCard('Bandejas con diferencia', totDifBand.toLocaleString('es-AR'), 'En '+conDifBand+' conteo(s)', totDifBand?'naranja':'verde')+
-    indCard('Dollys con diferencia', totDifDoll.toLocaleString('es-AR'), 'En '+conDifDoll+' conteo(s)', totDifDoll?'naranja':'verde');
+    indCard('Exactitud HDR', pctExac+'%', coinciden+' de '+conHdr.length+' conteos coinciden', colorPct(pctExac,90,70), pctExac, colorPct(pctExac,90,70));
 
-  const resum=document.getElementById('planResumen');
-  if(cum){
-    const cls=cum.pct>=80?'verde':(cum.pct>=50?'naranja':'rojo');
-    resum.innerHTML='<span class="sum-pill '+cls+'">'+cum.pct+'% · '+cum.totHecho+'/'+cum.totPlan+' rutas</span>';
-  } else { resum.innerHTML=''; }
+  // Diferencias discriminadas por rubro
+  document.getElementById('indHeroDif').innerHTML=RUBROS_EQ.map(function(r){
+    const tot=conHdr.reduce((a,x)=>a+difRubro(x,r.k),0);
+    const cnt=conHdr.filter(x=>difRubro(x,r.k)>0).length;
+    return indCard(r.n+' con diferencia', fmtN(tot), 'En '+cnt+' conteo(s)', tot?'naranja':'verde');
+  }).join('');
 
+  document.getElementById('planResumen').innerHTML=cum?'<span class="sum-pill '+colorPct(cum.pct,80,50)+'">'+cum.pct+'% · '+cum.totHecho+'/'+cum.totPlan+' rutas</span>':'';
   const cajaP=document.getElementById('indPlan');
   if(!cum || cum.dias.length===0){
     cajaP.innerHTML='<p class="muted">Elegí un período para ver el cumplimiento del plan.</p>';
   } else {
     let hp='<div style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px">'+
-      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Planificadas</div>'+
-      '<div style="font-size:22px;font-weight:800;color:#003e7e">'+cum.totPlan+'</div></div>'+
-      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Controladas</div>'+
-      '<div style="font-size:22px;font-weight:800;color:#1b7a37">'+cum.totHecho+'</div></div>'+
-      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Sin hacer</div>'+
-      '<div style="font-size:22px;font-weight:800;color:#c0392b">'+(cum.totPlan-cum.totHecho)+'</div></div>'+
-      '<div style="flex:1;min-width:180px;align-self:center">'+barra(cum.pct, cum.pct>=80?'verde':(cum.pct>=50?'naranja':'rojo'))+'</div>'+
-      '</div>';
+      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Planificadas</div><div style="font-size:22px;font-weight:800;color:#003e7e">'+cum.totPlan+'</div></div>'+
+      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Controladas</div><div style="font-size:22px;font-weight:800;color:#1b7a37">'+cum.totHecho+'</div></div>'+
+      '<div><div class="muted" style="font-size:11px;text-transform:uppercase;font-weight:700">Sin hacer</div><div style="font-size:22px;font-weight:800;color:#c0392b">'+(cum.totPlan-cum.totHecho)+'</div></div>'+
+      '<div style="flex:1;min-width:180px;align-self:center">'+barra(cum.pct, colorPct(cum.pct,80,50))+'</div></div>';
     cum.dias.slice().reverse().forEach(function(d){
       const fd=new Date(d.iso+'T00:00:00');
-      const cls=d.faltan.length===0?'ok':'falta';
       const col=d.pct>=80?'#1b7a37':(d.pct>=50?'#c8780f':'#c0392b');
-      hp+='<div class="plan-dia '+cls+'">'+
-        '<div class="plan-dia-top">'+
-          '<div class="plan-dia-fecha">'+NOM_DIA[fd.getDay()]+' '+fmtFecha(d.iso)+
-            ' <span class="muted" style="font-weight:400">· Semana '+d.semana+' del plan</span></div>'+
-          '<div class="plan-dia-pct" style="color:'+col+'">'+d.cumplidas.length+'/'+d.plan.length+' · '+d.pct+'%</div>'+
-        '</div>';
-      if(d.faltan.length>0){
-        hp+='<div class="muted" style="font-size:11.5px;margin-bottom:4px">No se controlaron:</div>'+
-            '<div class="rutas-falt">'+d.faltan.map(r=>'<span class="rf">'+r+'</span>').join('')+'</div>';
-      } else {
-        hp+='<div class="rutas-falt"><span class="rf ok">✅ Plan cumplido</span></div>';
-      }
-      if(d.fuera.length>0){
-        hp+='<div class="muted" style="font-size:11.5px;margin:7px 0 4px">Erizos controlados fuera del plan de ese día:</div>'+
-            '<div class="rutas-falt">'+d.fuera.map(r=>'<span class="rf plan">'+r+'</span>').join('')+'</div>';
-      }
+      hp+='<div class="plan-dia '+(d.faltan.length===0?'ok':'falta')+'"><div class="plan-dia-top">'+
+        '<div class="plan-dia-fecha">'+NOM_DIA[fd.getDay()]+' '+fmtFecha(d.iso)+' <span class="muted" style="font-weight:400">· Semana '+d.semana+' del plan</span></div>'+
+        '<div class="plan-dia-pct" style="color:'+col+'">'+d.cumplidas.length+'/'+d.plan.length+' · '+d.pct+'%</div></div>';
+      hp+=d.faltan.length>0
+        ? '<div class="muted" style="font-size:11.5px;margin-bottom:4px">No se controlaron:</div><div class="rutas-falt">'+d.faltan.map(r=>'<span class="rf">'+r+'</span>').join('')+'</div>'
+        : '<div class="rutas-falt"><span class="rf ok">✅ Plan cumplido</span></div>';
+      if(d.fuera.length>0) hp+='<div class="muted" style="font-size:11.5px;margin:7px 0 4px">Erizos controlados fuera del plan de ese día:</div><div class="rutas-falt">'+d.fuera.map(r=>'<span class="rf plan">'+r+'</span>').join('')+'</div>';
       hp+='</div>';
     });
     cajaP.innerHTML=hp;
@@ -1791,34 +1560,25 @@ function renderIndicadores(){
     cajaF.innerHTML='<div class="rutas-falt"><span class="rf ok">✅ Todas las rutas fueron controladas</span></div>';
   } else {
     const porCanal={};
-    faltantes.forEach(function(r){ const c=RUTAS_CANAL[r]; (porCanal[c]=porCanal[c]||[]).push(r); });
-    let h='';
-    Object.keys(porCanal).sort().forEach(function(c){
-      h+='<div style="margin-bottom:12px"><div class="muted" style="font-weight:700;margin-bottom:5px">'+c+
-         ' <span style="font-weight:400">('+porCanal[c].length+')</span></div><div class="rutas-falt">'+
-         porCanal[c].sort().map(r=>'<span class="rf">'+r+'</span>').join('')+'</div></div>';
-    });
-    cajaF.innerHTML=h;
+    faltantes.forEach(r=>{ const c=RUTAS_CANAL[r]; (porCanal[c]=porCanal[c]||[]).push(r); });
+    cajaF.innerHTML=Object.keys(porCanal).sort().map(c=>
+      '<div style="margin-bottom:12px"><div class="muted" style="font-weight:700;margin-bottom:5px">'+c+' <span style="font-weight:400">('+porCanal[c].length+')</span></div>'+
+      '<div class="rutas-falt">'+porCanal[c].sort().map(r=>'<span class="rf">'+r+'</span>').join('')+'</div></div>').join('');
   }
 
-  const canales=['Erizo','Autoservicio','Mayorista','QSR','Tradicional','Cripa'];
   let hc='<table class="ind-tabla"><thead><tr><th>Canal</th><th>Controladas</th><th>Total</th><th>%</th></tr></thead><tbody>';
-  canales.forEach(function(c){
+  ['Erizo','Autoservicio','Mayorista','QSR','Tradicional','Cripa'].forEach(function(c){
     const tot=Object.keys(RUTAS_CANAL).filter(r=>RUTAS_CANAL[r].toLowerCase().includes(c.toLowerCase())).sort();
     if(tot.length===0) return;
     const ctrl=tot.filter(r=>controladas.indexOf(r)!==-1);
     const sinCtrl=tot.filter(r=>controladas.indexOf(r)===-1);
     const p=Math.round(ctrl.length/tot.length*100);
     const color=p>=80?'#1b7a37':(p>=50?'#c8780f':'#c0392b');
-    let tip='<b>'+tot.length+' ruta(s) de '+c+'</b>';
-    tip+='✅ Controladas: '+(ctrl.length?ctrl.join(', '):'ninguna')+'<br>';
-    tip+='🚨 Sin controlar: '+(sinCtrl.length?sinCtrl.join(', '):'ninguna');
+    const tip='<b>'+tot.length+' ruta(s) de '+c+'</b>✅ Controladas: '+(ctrl.length?ctrl.join(', '):'ninguna')+'<br>🚨 Sin controlar: '+(sinCtrl.length?sinCtrl.join(', '):'ninguna');
     hc+='<tr><td class="left"><span class="canal-nombre"><b>'+c+'</b><span class="tip">'+tip+'</span></span></td>'+
-        '<td>'+ctrl.length+'</td><td>'+tot.length+'</td>'+
-        '<td style="color:'+color+';font-weight:800">'+p+'%</td></tr>';
+        '<td>'+ctrl.length+'</td><td>'+tot.length+'</td><td style="color:'+color+';font-weight:800">'+p+'%</td></tr>';
   });
-  hc+='</tbody></table>';
-  document.getElementById('indCanal').innerHTML=hc;
+  document.getElementById('indCanal').innerHTML=hc+'</tbody></table>';
 
   const porPersona={};
   rows.forEach(function(x){
@@ -1827,63 +1587,44 @@ function renderIndicadores(){
     porPersona[k].n++;
     if(!hdrPendiente(x)){ porPersona[k].conHdr++; if(estado(x)==='COINCIDE') porPersona[k].coin++; }
   });
-  const rank=Object.keys(porPersona).map(k=>({nombre:k, n:porPersona[k].n, coin:porPersona[k].coin, conHdr:porPersona[k].conHdr}))
-    .sort((a,b)=>b.n-a.n);
+  const rank=Object.keys(porPersona).map(k=>({nombre:k, n:porPersona[k].n, coin:porPersona[k].coin, conHdr:porPersona[k].conHdr})).sort((a,b)=>b.n-a.n);
   const maxN=rank.length?rank[0].n:1;
-  const cajaR=document.getElementById('indRanking');
-  if(rank.length===0){ cajaR.innerHTML='<p class="muted">Sin conteos en el período.</p>'; }
-  else{
-    cajaR.innerHTML=rank.map(function(p,i){
+  document.getElementById('indRanking').innerHTML=rank.length===0?'<p class="muted">Sin conteos en el período.</p>':
+    rank.map(function(p,i){
       const exac=p.conHdr?Math.round(p.coin/p.conHdr*100):null;
-      return '<div class="rank-row">'+
-        '<div class="rank-pos'+(i===0?' top':'')+'">'+(i+1)+'</div>'+
+      return '<div class="rank-row"><div class="rank-pos'+(i===0?' top':'')+'">'+(i+1)+'</div>'+
         '<div class="rank-name">'+p.nombre+(exac!==null?(' <span class="muted" style="font-weight:400">· '+exac+'% exactitud</span>'):'')+'</div>'+
-        '<div class="rank-bar">'+barra(p.n/maxN*100)+'</div>'+
-        '<div class="rank-val">'+p.n+'</div>'+
-      '</div>';
+        '<div class="rank-bar">'+barra(p.n/maxN*100)+'</div><div class="rank-val">'+p.n+'</div></div>';
     }).join('');
-  }
 
+  // Top rutas con diferencias, discriminado por rubro
   const porRuta={};
   conHdr.forEach(function(x){
     const k=String(x.ruta);
-    if(!porRuta[k]) porRuta[k]={band:0, doll:0, n:0};
-    porRuta[k].band+=difBandejas(x); porRuta[k].doll+=difDollys(x); porRuta[k].n++;
+    if(!porRuta[k]){ porRuta[k]={n:0}; RUBROS_EQ.forEach(r=>porRuta[k][r.k]=0); }
+    RUBROS_EQ.forEach(r=>porRuta[k][r.k]+=difRubro(x,r.k));
+    porRuta[k].n++;
   });
-  const topDif=Object.keys(porRuta).map(k=>({ruta:k, band:porRuta[k].band, doll:porRuta[k].doll, n:porRuta[k].n,
-      total:porRuta[k].band+porRuta[k].doll})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,8);
-  const cajaD=document.getElementById('indTopDif');
-  if(topDif.length===0){
-    cajaD.innerHTML='<p class="muted">✅ Sin diferencias registradas en el período.</p>';
-  } else {
-    let hd='<table class="ind-tabla"><thead><tr><th>Ruta</th><th>Canal</th><th>Bandejas</th><th>Dollys</th><th>Conteos</th></tr></thead><tbody>';
-    topDif.forEach(function(r){
-      hd+='<tr><td><b>'+r.ruta+'</b></td><td class="left" style="font-size:11px">'+canalDe(r.ruta)+'</td>'+
-          '<td style="color:#c0392b;font-weight:700">'+r.band.toLocaleString('es-AR')+'</td>'+
-          '<td style="color:#c0392b;font-weight:700">'+r.doll+'</td><td>'+r.n+'</td></tr>';
-    });
-    hd+='</tbody></table>';
-    cajaD.innerHTML=hd;
-  }
+  const topDif=Object.keys(porRuta).map(function(k){
+    const o=Object.assign({ruta:k},porRuta[k]);
+    o.total=RUBROS_EQ.reduce((a,r)=>a+o[r.k],0);
+    return o;
+  }).filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,8);
+  document.getElementById('indTopDif').innerHTML=topDif.length===0?'<p class="muted">✅ Sin diferencias registradas en el período.</p>':
+    '<div class="table-wrap" style="max-height:none"><table class="ind-tabla"><thead><tr><th>Ruta</th>'+RUBROS_EQ.map(r=>'<th>'+r.c+'</th>').join('')+'<th>Conteos</th></tr></thead><tbody>'+
+    topDif.map(r=>'<tr><td><b>'+r.ruta+'</b><span class="mini">'+canalDe(r.ruta)+'</span></td>'+RUBROS_EQ.map(rb=>celdaDifInd(r[rb.k])).join('')+'<td>'+r.n+'</td></tr>').join('')+
+    '</tbody></table></div>';
 
   const porDia={};
-  rows.forEach(function(x){ porDia[x.fecha]=(porDia[x.fecha]||0)+1; });
+  rows.forEach(x=>{ porDia[x.fecha]=(porDia[x.fecha]||0)+1; });
   const dias=Object.keys(porDia).sort();
   const maxD=dias.length?Math.max.apply(null,dias.map(d=>porDia[d])):1;
-  const cajaDias=document.getElementById('indDias');
-  if(dias.length===0){ cajaDias.innerHTML='<p class="muted">Sin conteos en el período.</p>'; }
-  else{
-    cajaDias.innerHTML=dias.map(function(d){
-      return '<div class="dia-row"><div class="dia-lbl">'+fmtFecha(d)+'</div>'+
-        '<div class="dia-bar">'+barra(porDia[d]/maxD*100)+'</div>'+
-        '<div class="dia-val">'+porDia[d]+'</div></div>';
-    }).join('');
-  }
+  document.getElementById('indDias').innerHTML=dias.length===0?'<p class="muted">Sin conteos en el período.</p>':
+    dias.map(d=>'<div class="dia-row"><div class="dia-lbl">'+fmtFecha(d)+'</div><div class="dia-bar">'+barra(porDia[d]/maxD*100)+'</div><div class="dia-val">'+porDia[d]+'</div></div>').join('');
 
   renderChoferesInd();
 }
 
-/* ---- Indicadores de choferes (Driv.in x conteos) ---- */
 let CHOF_CACHE={clave:'', filas:[]};
 async function traerChoferesRango(desde, hasta){
   const clave=desde+'|'+hasta;
@@ -1909,25 +1650,22 @@ async function renderChoferesInd(){
   try{ salidas=await traerChoferesRango(desde,hasta); }
   catch(e){ aviso.innerHTML='<div class="alert-box rojo">❌ No se pudieron cargar los choferes: '+(e.message||e)+'</div>'; return; }
   aviso.innerHTML='';
-  salidas=salidas.filter(function(s){
-    if(!s.chofer) return false;
-    if(c && canalDetalle(s.ruta).toLowerCase().indexOf(c)===-1) return false;
-    return true;
-  });
+  salidas=salidas.filter(s=>s.chofer && (!c || canalDetalle(s.ruta).toLowerCase().indexOf(c)!==-1));
   const conteos={};
   REGISTROS.forEach(function(x){
-    if(esAnulado(x)) return;
-    if(x.fecha<desde||x.fecha>hasta) return;
+    if(esAnulado(x) || x.fecha<desde || x.fecha>hasta) return;
     const k=x.fecha+'|'+String(x.ruta);
     (conteos[k]=conteos[k]||[]).push(x);
   });
   const porChofer={};
   salidas.forEach(function(s){
     const nom=tituloNombre(s.chofer);
-    if(!porChofer[nom]) porChofer[nom]={nombre:nom, rutas:{}, dias:{}, controles:0, conHdr:0, conDif:0, band:0, doll:0, ultimo:null};
+    if(!porChofer[nom]){
+      porChofer[nom]={nombre:nom, rutas:{}, dias:{}, controles:0, conHdr:0, conDif:0, ultimo:null, dif:{}};
+      RUBROS_EQ.forEach(r=>porChofer[nom].dif[r.k]=0);
+    }
     const p=porChofer[nom];
-    p.rutas[String(s.ruta)]=1;
-    p.dias[s.fecha]=1;
+    p.rutas[String(s.ruta)]=1; p.dias[s.fecha]=1;
     const lista=conteos[s.fecha+'|'+String(s.ruta)];
     if(lista && lista.length){
       p.controles++;
@@ -1935,18 +1673,18 @@ async function renderChoferesInd(){
       lista.forEach(function(x){
         if(hdrPendiente(x)) return;
         p.conHdr++;
-        const db=difBandejas(x), dd=difDollys(x);
-        if(db>0||dd>0) p.conDif++;
-        p.band+=db; p.doll+=dd;
+        if(difTotal(x)>0) p.conDif++;
+        RUBROS_EQ.forEach(r=>p.dif[r.k]+=difRubro(x,r.k));
       });
     }
   });
   const lista=Object.keys(porChofer).map(k=>porChofer[k]);
   const total=lista.length;
+  const totDif=p=>RUBROS_EQ.reduce((a,r)=>a+p.dif[r.k],0);
   const controlados=lista.filter(p=>p.controles>0);
   const nunca=lista.filter(p=>p.controles===0).sort((a,b)=>Object.keys(b.dias).length-Object.keys(a.dias).length);
   const recurr=lista.filter(p=>p.conHdr>=2 && p.conDif/p.conHdr>=0.5)
-    .sort((a,b)=>(b.conDif/b.conHdr)-(a.conDif/a.conHdr) || (b.band+b.doll)-(a.band+a.doll));
+    .sort((a,b)=>(b.conDif/b.conHdr)-(a.conDif/a.conHdr) || totDif(b)-totDif(a));
   const sinDif=controlados.filter(p=>p.conHdr>0 && p.conDif===0).length;
   const pctCtrl=total?Math.round(controlados.length/total*100):0;
   if(total===0){
@@ -1959,49 +1697,38 @@ async function renderChoferesInd(){
   }
   document.getElementById('indChofHero').innerHTML=
     indCard('Choferes que salieron', total, 'Según Driv.in en el período')+
-    indCard('Choferes controlados', pctCtrl+'%', controlados.length+' de '+total+' tuvieron al menos un control',
-            pctCtrl>=80?'verde':(pctCtrl>=50?'naranja':'rojo'), pctCtrl, pctCtrl>=80?'verde':(pctCtrl>=50?'naranja':'rojo'))+
+    indCard('Choferes controlados', pctCtrl+'%', controlados.length+' de '+total+' tuvieron al menos un control', colorPct(pctCtrl,80,50), pctCtrl, colorPct(pctCtrl,80,50))+
     indCard('Nunca controlados', nunca.length, 'Sin ningún control en el período', nunca.length?'rojo':'verde')+
     indCard('Diferencias recurrentes', recurr.length, 'Diferencia en la mitad o más de sus controles', recurr.length?'naranja':'verde')+
     indCard('Siempre coinciden', sinDif, 'Controlados y sin ninguna diferencia', 'verde');
-  const cajaN=document.getElementById('indChofNunca');
-  cajaN.innerHTML=nunca.length
+  document.getElementById('indChofNunca').innerHTML=nunca.length
     ? '<div class="rutas-falt">'+nunca.map(p=>'<span class="rf">'+p.nombre+' ('+Object.keys(p.dias).length+')</span>').join('')+'</div>'
     : '<div class="rutas-falt"><span class="rf ok">✅ Todos los choferes tuvieron al menos un control</span></div>';
-  const cajaD=document.getElementById('indChofDif');
-  if(recurr.length===0){
-    cajaD.innerHTML='<p class="muted">✅ Ningún chofer con diferencias recurrentes.</p>';
-  } else {
-    let h='<table class="ind-tabla"><thead><tr><th>Chofer</th><th>Con dif.</th><th>%</th><th>Bandejas</th><th>Dollys</th></tr></thead><tbody>';
-    recurr.forEach(function(p){
+  document.getElementById('indChofDif').innerHTML=recurr.length===0?'<p class="muted">✅ Ningún chofer con diferencias recurrentes.</p>':
+    '<div class="table-wrap" style="max-height:none"><table class="ind-tabla"><thead><tr><th>Chofer</th><th>Con dif.</th><th>%</th>'+RUBROS_EQ.map(r=>'<th>'+r.c+'</th>').join('')+'</tr></thead><tbody>'+
+    recurr.map(function(p){
       const pc=Math.round(p.conDif/p.conHdr*100);
-      h+='<tr><td class="left"><b>'+p.nombre+'</b></td><td>'+p.conDif+' de '+p.conHdr+'</td>'+
-         '<td style="color:'+(pc===100?'#c0392b':'#c8780f')+';font-weight:800">'+pc+'%</td>'+
-         '<td>'+p.band.toLocaleString('es-AR')+'</td><td>'+p.doll+'</td></tr>';
-    });
-    cajaD.innerHTML=h+'</tbody></table>';
-  }
+      return '<tr><td class="left"><b>'+p.nombre+'</b></td><td>'+p.conDif+' de '+p.conHdr+'</td>'+
+        '<td style="color:'+(pc===100?'#c0392b':'#c8780f')+';font-weight:800">'+pc+'%</td>'+
+        RUBROS_EQ.map(r=>celdaDifInd(p.dif[r.k])).join('')+'</tr>';
+    }).join('')+'</tbody></table></div>';
   document.getElementById('indChofResumen').innerHTML='<span class="sum-pill naranja">'+total+' choferes</span>';
   const orden=lista.slice().sort((a,b)=>b.controles-a.controles || Object.keys(b.dias).length-Object.keys(a.dias).length);
   document.getElementById('indChofTabla').innerHTML=orden.map(function(p){
     const dias=Object.keys(p.dias).length;
     const pc=dias?Math.round(p.controles/dias*100):0;
     const col=pc>=80?'#1b7a37':(pc>=50?'#c8780f':'#c0392b');
-    return '<tr><td class="left"><b>'+p.nombre+'</b></td>'+
-      '<td>'+Object.keys(p.rutas).sort().join(', ')+'</td>'+
-      '<td>'+dias+'</td><td>'+p.controles+'</td>'+
-      '<td style="color:'+col+';font-weight:800">'+pc+'%</td>'+
+    return '<tr><td class="left"><b>'+p.nombre+'</b></td><td>'+Object.keys(p.rutas).sort().join(', ')+'</td>'+
+      '<td>'+dias+'</td><td>'+p.controles+'</td><td style="color:'+col+';font-weight:800">'+pc+'%</td>'+
       '<td>'+(p.conHdr?(p.conDif+' de '+p.conHdr):'—')+'</td>'+
-      '<td>'+(p.conHdr?p.band.toLocaleString('es-AR'):'—')+'</td>'+
-      '<td>'+(p.conHdr?p.doll:'—')+'</td>'+
+      RUBROS_EQ.map(r=>p.conHdr?celdaDifInd(p.dif[r.k]):'<td>—</td>').join('')+
       '<td>'+(p.ultimo?fmtFecha(p.ultimo):'Nunca')+'</td></tr>';
   }).join('');
 }
 
-// ====== Modales ======
+/* ===== MODALES ===== */
 function cerrarModal(id){ document.getElementById(id).classList.remove('show'); }
 function regById(id){ return REGISTROS.find(x=>x.id===id); }
-
 function abrirEditar(id){
   const x=regById(id); if(!x) return;
   document.getElementById('ed_id').value=x.id;
@@ -2010,14 +1737,7 @@ function abrirEditar(id){
   edMostrarCanal();
   document.getElementById('ed_contador').value=nombreUnificado(x.contador);
   document.getElementById('ed_turno').value=x.turno||'';
-  document.getElementById('ed_fis_vacias').value=x.fis_vacias;
-  document.getElementById('ed_fis_devoluciones').value=x.fis_devoluciones;
-  document.getElementById('ed_fis_rechazo').value=x.fis_rechazo;
-  document.getElementById('ed_fis_dollys').value=x.fis_dollys;
-  document.getElementById('ed_hdr_vacias').value=x.hdr_vacias;
-  document.getElementById('ed_hdr_devoluciones').value=x.hdr_devoluciones;
-  document.getElementById('ed_hdr_rechazo').value=x.hdr_rechazo;
-  document.getElementById('ed_hdr_dollys').value=x.hdr_dollys;
+  RUBROS_EQ.forEach(r=>{ document.getElementById('ed_fis_'+r.k).value=x['fis_'+r.k]; document.getElementById('ed_hdr_'+r.k).value=x['hdr_'+r.k]; });
   document.getElementById('ed_observaciones').value=x.observaciones||'';
   document.getElementById('ed_modificado_por').value='';
   document.getElementById('ed_motivo').value='';
@@ -2026,9 +1746,8 @@ function abrirEditar(id){
   const tz=document.getElementById('ed_traza');
   if(x.fecha_modificacion){
     tz.style.display='block';
-    tz.innerHTML='Última modificación: <b>'+(x.modificado_por||'—')+'</b> el '+fmtStamp(x.fecha_modificacion)+
-      (x.motivo_modificacion?(' · Motivo: '+x.motivo_modificacion):'');
-  } else { tz.style.display='none'; }
+    tz.innerHTML='Última modificación: <b>'+(x.modificado_por||'—')+'</b> el '+fmtStamp(x.fecha_modificacion)+(x.motivo_modificacion?(' · Motivo: '+x.motivo_modificacion):'');
+  } else tz.style.display='none';
   document.getElementById('modalEditar').classList.add('show');
 }
 async function guardarEdicion(){
@@ -2038,24 +1757,15 @@ async function guardarEdicion(){
   const ruta=document.getElementById('ed_ruta').value;
   if(!quien||!motivo){ msg.className='msg err'; msg.textContent='⚠️ Completá quién modifica y el motivo.'; return; }
   const cambios={
-    fecha:document.getElementById('ed_fecha').value,
-    ruta:ruta, canal:canalDe(ruta),
+    fecha:document.getElementById('ed_fecha').value, ruta:ruta, canal:canalDe(ruta),
     contador:nombreUnificado(document.getElementById('ed_contador').value.trim()),
     turno:document.getElementById('ed_turno').value||null,
-    fis_vacias:parseInt(document.getElementById('ed_fis_vacias').value)||0,
-    fis_devoluciones:parseInt(document.getElementById('ed_fis_devoluciones').value)||0,
-    fis_rechazo:parseInt(document.getElementById('ed_fis_rechazo').value)||0,
-    fis_dollys:parseInt(document.getElementById('ed_fis_dollys').value)||0,
-    hdr_vacias:parseInt(document.getElementById('ed_hdr_vacias').value)||0,
-    hdr_devoluciones:parseInt(document.getElementById('ed_hdr_devoluciones').value)||0,
-    hdr_rechazo:parseInt(document.getElementById('ed_hdr_rechazo').value)||0,
-    hdr_dollys:parseInt(document.getElementById('ed_hdr_dollys').value)||0,
     observaciones:document.getElementById('ed_observaciones').value.trim()||null,
     modificado_por:nombreUnificado(quien), motivo_modificacion:motivo, fecha_modificacion:new Date().toISOString()
   };
+  RUBROS_EQ.forEach(r=>{ cambios['fis_'+r.k]=n('ed_fis_'+r.k); cambios['hdr_'+r.k]=n('ed_hdr_'+r.k); });
   try{
-    const id=parseInt(document.getElementById('ed_id').value);
-    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    const {error}=await supa.from('control_erizos').update(cambios).eq('id',parseInt(document.getElementById('ed_id').value));
     if(error) throw error;
     msg.className='msg ok'; msg.textContent='✅ Cambios guardados por '+nombreUnificado(quien)+' · '+ahoraTxt();
     await cargarDatos();
@@ -2065,33 +1775,24 @@ async function guardarEdicion(){
 function abrirHdr(id){
   const x=regById(id); if(!x) return;
   document.getElementById('hdr_id').value=x.id;
-  document.getElementById('hd_hdr_vacias').value=x.hdr_vacias;
-  document.getElementById('hd_hdr_devoluciones').value=x.hdr_devoluciones;
-  document.getElementById('hd_hdr_rechazo').value=x.hdr_rechazo;
-  document.getElementById('hd_hdr_dollys').value=x.hdr_dollys;
+  RUBROS_EQ.forEach(r=>document.getElementById('hd_hdr_'+r.k).value=x['hdr_'+r.k]);
   document.getElementById('hd_por').value='';
   document.getElementById('hdrMsg').className='msg';
   document.getElementById('hdrInfo').innerHTML='Registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b><br>'+
     'Físico: vacías '+x.fis_vacias+' · devol '+x.fis_devoluciones+' · rechazo '+x.fis_rechazo+' · dollys '+x.fis_dollys;
   const tz=document.getElementById('hd_traza');
   if(x.fecha_hdr){ tz.style.display='block'; tz.innerHTML='HDR completada por <b>'+(x.hdr_por||'—')+'</b> el '+fmtStamp(x.fecha_hdr); }
-  else { tz.style.display='none'; }
+  else tz.style.display='none';
   document.getElementById('modalHdr').classList.add('show');
 }
 async function guardarHdr(){
   const msg=document.getElementById('hdrMsg'); msg.className='msg';
   const quien=document.getElementById('hd_por').value.trim();
   if(!quien){ msg.className='msg err'; msg.textContent='⚠️ Indicá quién completa la HDR.'; return; }
-  const cambios={
-    hdr_vacias:parseInt(document.getElementById('hd_hdr_vacias').value)||0,
-    hdr_devoluciones:parseInt(document.getElementById('hd_hdr_devoluciones').value)||0,
-    hdr_rechazo:parseInt(document.getElementById('hd_hdr_rechazo').value)||0,
-    hdr_dollys:parseInt(document.getElementById('hd_hdr_dollys').value)||0,
-    hdr_por:nombreUnificado(quien), fecha_hdr:new Date().toISOString()
-  };
+  const cambios={hdr_por:nombreUnificado(quien), fecha_hdr:new Date().toISOString()};
+  RUBROS_EQ.forEach(r=>cambios['hdr_'+r.k]=n('hd_hdr_'+r.k));
   try{
-    const id=parseInt(document.getElementById('hdr_id').value);
-    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    const {error}=await supa.from('control_erizos').update(cambios).eq('id',parseInt(document.getElementById('hdr_id').value));
     if(error) throw error;
     msg.className='msg ok'; msg.textContent='✅ HDR completada por '+nombreUnificado(quien)+' · '+ahoraTxt();
     await cargarDatos();
@@ -2104,8 +1805,7 @@ function abrirAnular(id){
   document.getElementById('an_por').value='';
   document.getElementById('an_motivo').value='';
   document.getElementById('anMsg').className='msg';
-  document.getElementById('anInfo').innerHTML='Vas a anular el registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · '+(canalReg(x))+
-    '<br>Cargado por '+nombreUnificado(x.contador);
+  document.getElementById('anInfo').innerHTML='Vas a anular el registro del <b>'+fmtFecha(x.fecha)+'</b> · Ruta <b>'+x.ruta+'</b> · '+canalReg(x)+'<br>Cargado por '+nombreUnificado(x.contador);
   document.getElementById('modalAnular').classList.add('show');
 }
 async function anularRegistro(){
@@ -2113,10 +1813,9 @@ async function anularRegistro(){
   const quien=document.getElementById('an_por').value.trim();
   const motivo=document.getElementById('an_motivo').value.trim();
   if(!quien||!motivo){ msg.className='msg err'; msg.textContent='⚠️ Completá quién anula y el motivo.'; return; }
-  const cambios={ estado:'ANULADO', anulado_por:nombreUnificado(quien), motivo_anulacion:motivo, fecha_anulacion:new Date().toISOString() };
   try{
-    const id=parseInt(document.getElementById('an_id').value);
-    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    const {error}=await supa.from('control_erizos').update({estado:'ANULADO', anulado_por:nombreUnificado(quien), motivo_anulacion:motivo, fecha_anulacion:new Date().toISOString()})
+      .eq('id',parseInt(document.getElementById('an_id').value));
     if(error) throw error;
     msg.className='msg ok'; msg.textContent='✅ Registro anulado por '+nombreUnificado(quien)+' · '+ahoraTxt();
     await cargarDatos();
@@ -2138,11 +1837,10 @@ async function reactivarRegistro(){
   if(!quien){ msg.className='msg err'; msg.textContent='⚠️ Indicá quién reactiva.'; return; }
   const x=regById(parseInt(document.getElementById('re_id').value));
   const nota='Reactivado por '+nombreUnificado(quien)+' el '+ahoraTxt()+(x&&x.motivo_anulacion?(' (había sido anulado: '+x.motivo_anulacion+')'):'');
-  const cambios={ estado:'ACTIVO', anulado_por:null, motivo_anulacion:null, fecha_anulacion:null,
-    modificado_por:nombreUnificado(quien), motivo_modificacion:nota, fecha_modificacion:new Date().toISOString() };
   try{
-    const id=parseInt(document.getElementById('re_id').value);
-    const {error}=await supa.from('control_erizos').update(cambios).eq('id',id);
+    const {error}=await supa.from('control_erizos').update({estado:'ACTIVO', anulado_por:null, motivo_anulacion:null, fecha_anulacion:null,
+      modificado_por:nombreUnificado(quien), motivo_modificacion:nota, fecha_modificacion:new Date().toISOString()})
+      .eq('id',parseInt(document.getElementById('re_id').value));
     if(error) throw error;
     msg.className='msg ok'; msg.textContent='✅ Registro reactivado por '+nombreUnificado(quien);
     await cargarDatos();
@@ -2150,10 +1848,10 @@ async function reactivarRegistro(){
   }catch(e){ msg.className='msg err'; msg.textContent='❌ No se pudo reactivar: '+(e.message||e); }
 }
 
-// ====== PLAN DE TRABAJO ERIZO ======
+/* ===== PLAN DE TRABAJO ERIZO ===== */
 function lunesDe(fecha){
   const d=new Date(fecha.getFullYear(),fecha.getMonth(),fecha.getDate());
-  const dow=d.getDay(); const delta=(dow===0)?-6:(1-dow); d.setDate(d.getDate()+delta); return d;
+  const dow=d.getDay(); d.setDate(d.getDate()+((dow===0)?-6:(1-dow))); return d;
 }
 function semanasEntre(a,b){ return Math.round((b-a)/(7*24*60*60*1000)); }
 const ANCHOR_POR_DEFECTO={ mondayISO:'2026-09-07', week:1 };
@@ -2161,9 +1859,7 @@ function anclaVigente(){ return JSON.parse(localStorage.getItem('erizos_plan_anc
 function hayAjusteManual(){ return !!localStorage.getItem('erizos_plan_anchor'); }
 function semanaDeFecha(fecha){
   const cfg=anclaVigente();
-  const anchorMonday=new Date(cfg.mondayISO+'T00:00:00');
-  const m=lunesDe(fecha);
-  const diff=semanasEntre(anchorMonday,m);
+  const diff=semanasEntre(new Date(cfg.mondayISO+'T00:00:00'),lunesDe(fecha));
   return ((cfg.week-1+diff)%4+4)%4+1;
 }
 function semanaActual(){ return semanaDeFecha(new Date()); }
@@ -2171,12 +1867,11 @@ function toggleAjuste(ev){
   if(ev) ev.preventDefault();
   const box=document.getElementById('ajusteBox');
   box.style.display=(box.style.display==='none')?'block':'none';
-  if(box.style.display==='block'){ document.getElementById('selSemana').value=semanaActual(); }
+  if(box.style.display==='block') document.getElementById('selSemana').value=semanaActual();
 }
 function ajustarSemana(){
   const w=parseInt(document.getElementById('selSemana').value);
-  const monday=lunesDe(new Date()); const iso=isoLocal(monday);
-  localStorage.setItem('erizos_plan_anchor',JSON.stringify({mondayISO:iso,week:w}));
+  localStorage.setItem('erizos_plan_anchor',JSON.stringify({mondayISO:isoLocal(lunesDe(new Date())),week:w}));
   renderPlan();
   if(document.getElementById('tabInd').style.display!=='none') renderIndicadores();
 }
@@ -2185,48 +1880,39 @@ function resetRotacion(){
   renderPlan();
   if(document.getElementById('tabInd').style.display!=='none') renderIndicadores();
 }
-function chips(arr){ if(!arr||arr.length===0) return '<span class="muted">—</span>';
-  return '<div class="rutas-chips">'+arr.map(r=>'<span class="chip">'+r+'</span>').join('')+'</div>'; }
+function chips(arr){ return (!arr||arr.length===0)?'<span class="muted">—</span>':'<div class="rutas-chips">'+arr.map(r=>'<span class="chip">'+r+'</span>').join('')+'</div>'; }
 function renderPlan(){
   const cont=document.getElementById('hoyCard'); const w=semanaActual();
   const hoy=new Date(); const kHoy=JS_DAY_TO_K[hoy.getDay()];
-  const diaNombre=NOM_DIA[hoy.getDay()];
   const fechaTxt=('0'+hoy.getDate()).slice(-2)+'/'+('0'+(hoy.getMonth()+1)).slice(-2)+'/'+hoy.getFullYear();
   const est=document.getElementById('planEstadoTxt');
   if(hayAjusteManual()){
     const cfg=anclaVigente();
     est.innerHTML='⚙️ <b>Semana fijada a mano:</b> la semana del '+fmtFecha(cfg.mondayISO)+' quedó marcada como Semana '+cfg.week+'.';
-  } else {
-    est.innerHTML='🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario.';
-  }
+  } else est.innerHTML='🔁 <b>Rotación automática.</b> La página calcula sola qué semana del cronograma Erizo es hoy, según el calendario.';
   if(!kHoy){
-    cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
-      '<div class="badge">Semana '+w+'</div></div><p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
+    cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+NOM_DIA[hoy.getDay()]+' '+fechaTxt+'</div><div class="badge">Semana '+w+'</div></div><p style="margin:12px 0 0;opacity:.9">Hoy es domingo, no hay control de erizos programado. 😴</p></div>';
   } else {
-    const t1=PLAN[w]['04-06'][kHoy], t2=PLAN[w]['06-08'][kHoy];
-    cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+diaNombre+' '+fechaTxt+'</div>'+
+    cont.innerHTML='<div class="hoy-card"><div class="hoy-top"><div class="dia">'+NOM_DIA[hoy.getDay()]+' '+fechaTxt+'</div>'+
       '<div class="badge">🔁 Semana '+w+' del cronograma</div></div><div class="turnos-hoy">'+
-      '<div class="turno-box t1"><div class="th">🟠 Primer turno · 04:00–06:00</div>'+chips(t1)+'</div>'+
-      '<div class="turno-box t2"><div class="th">🔵 Segundo turno · 06:00–08:00</div>'+chips(t2)+'</div></div></div>';
+      '<div class="turno-box t1"><div class="th">🟠 Primer turno · 04:00–06:00</div>'+chips(PLAN[w]['04-06'][kHoy])+'</div>'+
+      '<div class="turno-box t2"><div class="th">🔵 Segundo turno · 06:00–08:00</div>'+chips(PLAN[w]['06-08'][kHoy])+'</div></div></div>';
   }
   let html='';
   for(let s=1;s<=4;s++){
     const esActual=(w===s);
-    html+='<div class="sem-card'+(esActual?' actual':'')+'"><div class="sem-head"><span>Semana '+s+'</span>'+
-      (esActual?'<span class="tag">ESTA SEMANA</span>':'')+'</div><div class="plan-scroll"><table class="plan"><thead><tr><th>Turno</th>';
-    DIAS.forEach(d=>{ html+='<th>'+d.n.toUpperCase()+'</th>'; });
-    html+='</tr></thead><tbody><tr class="t1"><td class="turno">04–06</td>';
-    DIAS.forEach(d=>{ const hc=(esActual&&d.k===kHoy)?'hoy-col':''; const arr=PLAN[s]['04-06'][d.k];
-      html+='<td class="'+hc+'">'+(arr&&arr.length?arr.join('<br>'):'—')+'</td>'; });
-    html+='</tr><tr class="t2"><td class="turno">06–08</td>';
-    DIAS.forEach(d=>{ const hc=(esActual&&d.k===kHoy)?'hoy-col':''; const arr=PLAN[s]['06-08'][d.k];
-      html+='<td class="'+hc+'">'+(arr&&arr.length?arr.join('<br>'):'—')+'</td>'; });
-    html+='</tr></tbody></table></div></div>';
+    html+='<div class="sem-card'+(esActual?' actual':'')+'"><div class="sem-head"><span>Semana '+s+'</span>'+(esActual?'<span class="tag">ESTA SEMANA</span>':'')+
+      '</div><div class="plan-scroll"><table class="plan"><thead><tr><th>Turno</th>'+DIAS.map(d=>'<th>'+d.n.toUpperCase()+'</th>').join('')+'</tr></thead><tbody>';
+    [['04-06','t1','04–06'],['06-08','t2','06–08']].forEach(function(t){
+      html+='<tr class="'+t[1]+'"><td class="turno">'+t[2]+'</td>';
+      DIAS.forEach(d=>{ const arr=PLAN[s][t[0]][d.k]; html+='<td class="'+((esActual&&d.k===kHoy)?'hoy-col':'')+'">'+(arr&&arr.length?arr.join('<br>'):'—')+'</td>'; });
+      html+='</tr>';
+    });
+    html+='</tbody></table></div></div>';
   }
   document.getElementById('semGrid').innerHTML=html;
 }
 
-// ====== Init ======
 function llenarSelectorRutas(sel){
   const gE=document.createElement('optgroup'); gE.label='🦔 Erizo';
   const gO=document.createElement('optgroup'); gO.label='🚚 Autoservicio / Mayorista / Otros';
@@ -2238,19 +1924,13 @@ function llenarSelectorRutas(sel){
 }
 (function(){
   const cfg=JSON.parse(localStorage.getItem('erizos_plan_anchor')||'null');
-  if(cfg && cfg.mondayISO){
-    const anc=new Date(cfg.mondayISO+'T00:00:00');
-    const estaSemana=lunesDe(new Date());
-    if(semanasEntre(anc,estaSemana)>3){ localStorage.removeItem('erizos_plan_anchor'); }
-  }
+  if(cfg && cfg.mondayISO && semanasEntre(new Date(cfg.mondayISO+'T00:00:00'),lunesDe(new Date()))>3) localStorage.removeItem('erizos_plan_anchor');
   ['ruta','d_ruta'].forEach(function(id){
     const sel=document.getElementById(id);
     sel.innerHTML='<option value="">— Seleccionar —</option>';
     llenarSelectorRutas(sel);
   });
-  const edSel=document.getElementById('ed_ruta');
-  edSel.innerHTML='';
-  llenarSelectorRutas(edSel);
+  const edSel=document.getElementById('ed_ruta'); edSel.innerHTML=''; llenarSelectorRutas(edSel);
   const hoy=isoLocal(new Date());
   document.getElementById('fecha').value=hoy;
   document.getElementById('d_fecha').value=hoy;
