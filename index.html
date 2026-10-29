@@ -95,6 +95,7 @@
   .ctrl-si{background:#e6f4ea;color:#1b7a37;font-weight:700;font-size:12px;padding:3px 10px;border-radius:14px}
   .ctrl-no{color:#b0b8c2;font-size:12px}
   .chofer-nom{font-weight:600;color:#26384a}
+  .transp{font-size:12px;color:#5a6b7d}
   .ruta-num{font-weight:800;color:#003e7e}
   .vacio{text-align:center;padding:28px 16px;color:#7a8595;font-size:14px}
   .ind-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
@@ -408,7 +409,7 @@
             <option value="no">— Sin controlar</option>
           </select>
         </div>
-        <div><label>Buscar</label><input type="text" id="cBuscar" placeholder="Ruta o chofer" oninput="renderChoferes()"></div>
+        <div><label>Buscar</label><input type="text" id="cBuscar" placeholder="Ruta, chofer o transporte" oninput="renderChoferes()"></div>
         <div style="flex:0"><button class="btn" style="margin-top:0" onclick="exportarChoferes()">⬇️ Excel</button></div>
       </div>
     </div>
@@ -418,7 +419,7 @@
       <p class="muted" id="cActualizado" style="margin:-6px 0 12px"></p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Ruta</th><th>Canal</th><th>Chofer</th><th>Control del día</th></tr></thead>
+          <thead><tr><th>Ruta</th><th>Canal</th><th>Chofer</th><th>Transporte</th><th>Control del día</th></tr></thead>
           <tbody id="cTbody"></tbody>
         </table>
       </div>
@@ -628,7 +629,7 @@
         <div class="table-wrap">
           <table class="ind-tabla">
             <thead><tr>
-              <th>Chofer</th><th>Rutas</th><th>Días que salió</th><th>Controles</th><th>% controlado</th>
+              <th>Chofer</th><th>Transporte</th><th>Rutas</th><th>Días que salió</th><th>Controles</th><th>% controlado</th>
               <th>Con diferencia</th><th>Vacías dif.</th><th>Devol. dif.</th><th>Rechazo dif.</th><th>Dollys dif.</th><th>Último control</th>
             </tr></thead>
             <tbody id="indChofTabla"></tbody>
@@ -823,6 +824,41 @@ const RUTAS_CANAL = {
 function canalDe(r){ return RUTAS_CANAL[r] || 'Canal desconocido'; }
 function esErizoCanal(canal){ return (canal || '') === 'Erizo'; }
 
+/* ===== NÓMINA CHOFER → EMPRESA DE TRANSPORTE (planilla CHOFERES TABLADA) ===== */
+const NOMINA_TRANSPORTE = [
+  ['Maximiliano Di Felice','DI FELICE MAXIMILIANO LEONEL'],['German Miori','DI FELICE MAXIMILIANO LEONEL'],
+  ['Gonzalo Albornoz','ECOLUB S.A'],['Maximiliano Paganetti','ECOLUB S.A'],['Cristian Rielo','ECOLUB S.A'],
+  ['Mateo Dubs','ECOLUB S.A'],['Luciano Peralta','ECOLUB S.A'],['Blas Sanchez','ECOLUB S.A'],
+  ['Nicolas Donofrio','ECOLUB S.A'],['Valentino Ledwij','ECOLUB S.A'],['Franco Donsella','ECOLUB S.A'],
+  ['Gustavo Martino','ECOLUB S.A'],['Gustavo Benavidez','ECOLUB S.A'],['Luis Cisiliano','ECOLUB S.A'],
+  ['Maximiliano Tibaldi','ECOLUB S.A'],['Luis Mancilla','ECOLUB S.A'],['Kevin Quiroz','ECOLUB S.A'],
+  ['Claudio Firmapaz','ECOLUB S.A'],['Jorge Rodriguez','ECOLUB S.A'],['Gaston Britez','ECOLUB S.A'],
+  ['Matias Tomasino','ECOLUB S.A'],['Victor Gonzalez','ECOLUB S.A'],['De la Vega','ECOLUB S.A'],
+  ['Rodrigo Zelarrayan','ECOLUB S.A'],['Martin Sanchez','ECOLUB S.A'],['Walter Ledwijc','ECOLUB S.A'],
+  ['Hernan Velazquez','ECOLUB S.A'],['Gustavo Acebo','ECOLUB S.A'],['Jose Gonzalez','ECOLUB S.A'],
+  ['Claudio Oliva','ECOLUB S.A'],['Martin Gil','ECOLUB S.A'],['Fernando Claros','ECOLUB S.A'],
+  ['Cristian Casiva','ECOLUB S.A'],['Nicolas Britez','ECOLUB S.A'],['Eduardo Grilo','ECOLUB S.A'],
+  ['Roberto Burgos','ECOLUB S.A'],['Martin Fernandez','ECOLUB S.A'],
+  ['Javier Eggs','EXPRESO SOL DE CUYO SRL'],['Claudio Cuello','EXPRESO SOL DE CUYO SRL'],['Luis Altamirano','EXPRESO SOL DE CUYO SRL'],
+  ['Juan Romero','FARIAS MARCELO DANIEL'],['Gustavo Pinto','FARIAS MARCELO DANIEL'],['Javier Cingolani','FARIAS MARCELO DANIEL'],
+  ['Fernando Dominguez','FARIAS MARCELO DANIEL'],['Lucas Castillo','FARIAS MARCELO DANIEL'],['Nicolas Galarza','FARIAS MARCELO DANIEL'],
+  ['Marcelo Farias','FARIAS MARCELO DANIEL'],['Ariel Farias','FARIAS MARCELO DANIEL'],['Fernando Somma','FARIAS MARCELO DANIEL'],
+  ['Roberto Scarpato','GIMAS SRL'],['Mariano Scarpato','GIMAS SRL'],['Cristian Casiva','GIMAS SRL'],
+  ['Leon Roldan','LOGISTICA Y TRANSPORTE ICEN SRL'],['Sebastian Portillo','LOGISTICA Y TRANSPORTE ICEN SRL'],
+  ['Miguel Vergara','LOGISTICA Y TRANSPORTE ICEN SRL'],['Pablo Fossat','LOGISTICA Y TRANSPORTE ICEN SRL'],
+  ['Ruben Vidal','LOGISTICA Y TRANSPORTE ICEN SRL'],['Matias Coronel','LOGISTICA Y TRANSPORTE ICEN SRL'],
+  ['Carlos Romero','LOGISTICA Y TRANSPORTE ICEN SRL'],['Cristian Galvez','LOGISTICA Y TRANSPORTE ICEN SRL'],
+  ['Walter Avalos','LOGISTICA Y TRANSPORTE ICEN SRL'],['Luis Diaz','LOGISTICA Y TRANSPORTE ICEN SRL'],
+  ['Gabriel Marino','PALACIOS LUIS ALBERTO'],['Walter Aveldaño','PALACIOS LUIS ALBERTO'],
+  ['Andres Migueles','SL INTERNATIONAL CARGO SA'],['Gustavo Medina','SL INTERNATIONAL CARGO SA'],
+  ['Atilio Diaz','SL INTERNATIONAL CARGO SA'],['Marcelo Gonzalez','SL INTERNATIONAL CARGO SA'],
+  ['Juan Orellana','SL INTERNATIONAL CARGO SA'],['Roberto Donadell','SL INTERNATIONAL CARGO SA'],
+  ['Walter Yzaurralde','SL INTERNATIONAL CARGO SA'],['Osvaldo Gareis','SL INTERNATIONAL CARGO SA'],
+  ['Julian Leale','TRANSPORTE DANIEL GUALDESI SRL'],
+  ['Dario Krause','TRANSPORTES CHELO S.R.L.'],['Jorge Fito','TRANSPORTES CHELO S.R.L.'],
+  ['Maximiliano Mendoza','TRANSPORTES CHELO S.R.L.'],['Roberto Burgos','TRANSPORTES CHELO S.R.L.']
+];
+
 const PLAN = {
   1: {'04-06':{L:[126,127],M:[128,129],X:[205,411],J:[206,287],V:[188,324],S:[130,131]},
       '06-08':{L:[286,116,117],M:[154,157,158],X:[266,263,264],J:[207,189],V:[159],S:[]}},
@@ -837,7 +873,6 @@ const DIAS = [{k:'L',n:'Lunes'},{k:'M',n:'Martes'},{k:'X',n:'Miércoles'},{k:'J'
 const JS_DAY_TO_K = {1:'L',2:'M',3:'X',4:'J',5:'V',6:'S',0:null};
 const NOM_DIA = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
-// Rubros de equipos
 const RUBROS_EQ = [
   {k:'vacias', n:'Bandejas vacías', c:'Vacías', x:'Vacíos', gc:'FF2F6DBF', hc:'FFDCE8F8'},
   {k:'devoluciones', n:'Bandejas devoluciones', c:'Devol.', x:'Devoluciones', gc:'FF1B7A37', hc:'FFDDF0E2'},
@@ -889,6 +924,40 @@ function tokensNombre(nombre){
 function tituloNombre(s){
   return String(s||'').trim().toLowerCase().split(/\s+/).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
 }
+
+/* ---- Cruce chofer → transporte ----
+   Compara nombres sin importar mayúsculas, acentos ni el orden nombre/apellido.
+   Si no hay coincidencia exacta, tolera una letra de diferencia por palabra (ej: Dubs / Dubss). */
+function levenshtein(a,b){
+  const m=[]; for(let i=0;i<=a.length;i++) m[i]=[i];
+  for(let j=1;j<=b.length;j++) m[0][j]=j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++)
+    m[i][j]=Math.min(m[i-1][j]+1, m[i][j-1]+1, m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return m[a.length][b.length];
+}
+const IDX_TRANSP={};
+NOMINA_TRANSPORTE.forEach(function(p){
+  const k=tokensNombre(p[0]).join(' ');
+  if(!IDX_TRANSP[k]) IDX_TRANSP[k]=[];
+  if(IDX_TRANSP[k].indexOf(p[1])===-1) IDX_TRANSP[k].push(p[1]);
+});
+const CACHE_TRANSP={};
+function transporteDe(chofer){
+  if(!chofer) return '';
+  if(CACHE_TRANSP[chofer]!==undefined) return CACHE_TRANSP[chofer];
+  const t=tokensNombre(chofer); const k=t.join(' ');
+  let res='Sin dato';
+  if(IDX_TRANSP[k]) res=IDX_TRANSP[k].join(' / ');
+  else {
+    for(const kk in IDX_TRANSP){
+      const t2=kk.split(' ');
+      if(t2.length===t.length && t2.every((x,i)=>levenshtein(x,t[i])<=1)){ res=IDX_TRANSP[kk].join(' / '); break; }
+    }
+  }
+  CACHE_TRANSP[chofer]=res;
+  return res;
+}
+
 function construirMapaNombres(lista){
   const grupos={};
   lista.forEach(function(raw){
@@ -1151,7 +1220,6 @@ async function excelConFormato(o){
       const letra=ws.getColumn(k+1).letter;
       if(k===0) cell.value='TOTAL';
       else if(c.total){
-        // Se guarda también el resultado, así el total se ve aunque Excel abra en "Vista protegida"
         const suma=o.filas.reduce((a,f)=>a+(Number(f[k])||0),0);
         cell.value={formula:'SUBTOTAL(9,'+letra+'5:'+letra+ultima+')', result:suma};
       }
@@ -1182,7 +1250,6 @@ async function conBoton(id, fn){
   try{ await fn(); } finally { if(b){ b.disabled=false; b.textContent=txt; } }
 }
 
-// ---- Excel Devo Equipos: agrupado por rubro (Conteo · Declarado · Diferencia) ----
 async function exportar(){
   const rows=filtrar();
   if(rows.length===0){ alert('No hay registros para exportar.'); return; }
@@ -1192,7 +1259,8 @@ async function exportar(){
     const cG='FF003E7E', cR='FF7A4A00', cT='FF7A8595', hR='FFFFF1DC', hT='FFECEFF3';
     let cols=[
       {h:'Fecha',w:11,g:G,gc:cG,tipo:'fecha'},{h:'Ruta',w:8,g:G,gc:cG},{h:'Canal',w:24,g:G,gc:cG,al:'left'},
-      {h:'Chofer',w:24,g:G,gc:cG,al:'left'},{h:'Contador',w:20,g:G,gc:cG,al:'left'},{h:'Turno',w:13,g:G,gc:cG},{h:'Hoja',w:8,g:G,gc:cG}
+      {h:'Chofer',w:24,g:G,gc:cG,al:'left'},{h:'Transporte',w:30,g:G,gc:cG,al:'left'},
+      {h:'Contador',w:20,g:G,gc:cG,al:'left'},{h:'Turno',w:13,g:G,gc:cG},{h:'Hoja',w:8,g:G,gc:cG}
     ];
     RUBROS_EQ.forEach(function(r){
       cols.push({h:'Conteo',w:10,g:r.x,gc:r.gc,hc:r.hc,tipo:'num',total:1});
@@ -1208,7 +1276,8 @@ async function exportar(){
     ]);
     const ord=rows.slice().sort((a,b)=>(a.fecha<b.fecha?-1:a.fecha>b.fecha?1:String(a.ruta).localeCompare(String(b.ruta))));
     const filas=ord.map(function(x){
-      let f=[xlFecha(x.fecha), x.ruta, canalReg(x), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador), x.turno||'', x.hoja||''];
+      const ch=chof[x.fecha+'|'+String(x.ruta)];
+      let f=[xlFecha(x.fecha), x.ruta, canalReg(x), ch||'Sin dato', ch?transporteDe(ch):'Sin dato', nombreUnificado(x.contador), x.turno||'', x.hoja||''];
       RUBROS_EQ.forEach(r=>{ f.push(x['fis_'+r.k], x['hdr_'+r.k], x['fis_'+r.k]-x['hdr_'+r.k]); });
       return f.concat([estado(x), x.observaciones||'',
         x.modificado_por||'', x.motivo_modificacion||'', x.fecha_modificacion?fmtStamp(x.fecha_modificacion):'',
@@ -1231,7 +1300,8 @@ async function exportarPT(){
     const G='Datos generales', C='Declarado cliente', F='Conteo físico', D='Diferencia', R='Resultado';
     const cols=[
       {h:'Fecha',w:11,g:G,gc:'FF003E7E',tipo:'fecha'},{h:'Ruta',w:8,g:G,gc:'FF003E7E'},{h:'Canal',w:10,g:G,gc:'FF003E7E'},
-      {h:'Chofer',w:24,g:G,gc:'FF003E7E',al:'left'},{h:'Contador',w:20,g:G,gc:'FF003E7E',al:'left'},
+      {h:'Chofer',w:24,g:G,gc:'FF003E7E',al:'left'},{h:'Transporte',w:30,g:G,gc:'FF003E7E',al:'left'},
+      {h:'Contador',w:20,g:G,gc:'FF003E7E',al:'left'},
       {h:'Turno',w:13,g:G,gc:'FF003E7E'},{h:'Hoja',w:8,g:G,gc:'FF003E7E'},
       {h:'Cantidad productos',w:14,g:C,gc:'FF2F6DBF',hc:'FFDCE8F8',tipo:'num',total:1},
       {h:'Cantidad productos',w:14,g:F,gc:'FF1B7A37',hc:'FFDDF0E2',tipo:'num',total:1},
@@ -1240,10 +1310,11 @@ async function exportarPT(){
       {h:'Observaciones',w:34,g:R,gc:'FFB26A00',hc:'FFFFF1DC',al:'left'}
     ];
     const ord=rows.slice().sort((a,b)=>(a.fecha<b.fecha?-1:a.fecha>b.fecha?1:String(a.ruta).localeCompare(String(b.ruta))));
-    const filas=ord.map(x=>[
-      xlFecha(x.fecha), x.ruta, canalAASS(x.ruta), chof[x.fecha+'|'+String(x.ruta)]||'Sin dato', nombreUnificado(x.contador),
-      x.turno||'', x.hoja||'', x.cli_productos, x.fis_productos, (x.fis_productos||0)-(x.cli_productos||0), estadoPT(x), x.observaciones||''
-    ]);
+    const filas=ord.map(function(x){
+      const ch=chof[x.fecha+'|'+String(x.ruta)];
+      return [xlFecha(x.fecha), x.ruta, canalAASS(x.ruta), ch||'Sin dato', ch?transporteDe(ch):'Sin dato', nombreUnificado(x.contador),
+        x.turno||'', x.hoja||'', x.cli_productos, x.fis_productos, (x.fis_productos||0)-(x.cli_productos||0), estadoPT(x), x.observaciones||''];
+    });
     await excelConFormato({
       archivo:'Control_Devo_PT_Tablada_'+isoLocal(new Date())+'.xlsx', hoja:'Devo PT',
       titulo:'PLANILLA CONTROL VUELTA DE REPARTO · DEVOLUCIÓN DE PRODUCTO TERMINADO · LA TABLADA',
@@ -1343,7 +1414,7 @@ function canalDetalle(r){ return RUTAS_CANAL[r] || 'AASS'; }
 async function cargarChoferes(){
   const f=document.getElementById('cFecha').value;
   const tb=document.getElementById('cTbody');
-  tb.innerHTML='<tr><td colspan="4" class="vacio">Cargando…</td></tr>';
+  tb.innerHTML='<tr><td colspan="5" class="vacio">Cargando…</td></tr>';
   try{
     const {data,error}=await supa.from('choferes_reparto')
       .select('fecha,ruta,chofer,actualizado_at').eq('fecha',f).order('ruta',{ascending:true});
@@ -1352,7 +1423,7 @@ async function cargarChoferes(){
     if(REGISTROS.length===0){ try{ await traerRegistros(); }catch(e){} }
     renderChoferes();
   }catch(e){
-    tb.innerHTML='<tr><td colspan="4" class="vacio">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
+    tb.innerHTML='<tr><td colspan="5" class="vacio">❌ Error al cargar: '+(e.message||e)+'</td></tr>';
   }
 }
 function controlesDelDia(f){
@@ -1375,7 +1446,7 @@ function filtrarChoferes(){
     const controlada=!!ctrl[String(x.ruta)];
     if(ctrlFiltro==='si' && !controlada) return false;
     if(ctrlFiltro==='no' && controlada) return false;
-    if(b && sinAcentos((x.ruta+' '+(x.chofer||'')).toLowerCase()).indexOf(b)===-1) return false;
+    if(b && sinAcentos((x.ruta+' '+(x.chofer||'')+' '+transporteDe(x.chofer)).toLowerCase()).indexOf(b)===-1) return false;
     return true;
   });
 }
@@ -1389,16 +1460,17 @@ function renderChoferes(){
   const rows=filtrarChoferes();
   const tb=document.getElementById('cTbody');
   if(CHOFERES.length===0){
-    tb.innerHTML='<tr><td colspan="4" class="vacio">No hay choferes registrados para este día.<br>'+
+    tb.innerHTML='<tr><td colspan="5" class="vacio">No hay choferes registrados para este día.<br>'+
       '<span style="font-size:12px">Si es hoy, puede que Driv.in todavía no tenga la salida cargada: se actualiza cada hora de 04:00 a 15:00.</span></td></tr>';
   } else if(rows.length===0){
-    tb.innerHTML='<tr><td colspan="4" class="vacio">Ninguna ruta coincide con los filtros.</td></tr>';
+    tb.innerHTML='<tr><td colspan="5" class="vacio">Ninguna ruta coincide con los filtros.</td></tr>';
   } else {
     tb.innerHTML=rows.map(function(x){
       const canal=canalChofer(x.ruta); const quien=ctrl[String(x.ruta)];
       return '<tr><td><span class="ruta-num">'+x.ruta+'</span></td>'+
         '<td><span class="canal-tag '+(canal==='Erizo'?'erizo':'otro')+'">'+canal+'</span></td>'+
         '<td class="left"><span class="chofer-nom">'+(x.chofer||'—')+'</span></td>'+
+        '<td class="left"><span class="transp">'+(x.chofer?transporteDe(x.chofer):'—')+'</span></td>'+
         '<td>'+(quien?'<span class="ctrl-si">✅ '+quien.join(', ')+'</span>':'<span class="ctrl-no">— Sin control</span>')+'</td></tr>';
     }).join('');
   }
@@ -1425,6 +1497,7 @@ function exportarChoferes(){
   const ctrl=controlesDelDia(f);
   const data=rows.map(x=>({
     'Fecha':fmtFecha(f),'Ruta':x.ruta,'Canal':canalChofer(x.ruta),'Chofer':x.chofer||'',
+    'Transporte':x.chofer?transporteDe(x.chofer):'',
     'Controlada':ctrl[String(x.ruta)]?'Sí':'No','Controlada por':(ctrl[String(x.ruta)]||[]).join(', ')
   }));
   const ws=XLSX.utils.json_to_sheet(data);
@@ -1711,7 +1784,7 @@ async function renderChoferesInd(){
     '<div class="table-wrap" style="max-height:none"><table class="ind-tabla"><thead><tr><th>Chofer</th><th>Con dif.</th><th>%</th>'+RUBROS_EQ.map(r=>'<th>'+r.c+'</th>').join('')+'</tr></thead><tbody>'+
     recurr.map(function(p){
       const pc=Math.round(p.conDif/p.conHdr*100);
-      return '<tr><td class="left"><b>'+p.nombre+'</b></td><td>'+p.conDif+' de '+p.conHdr+'</td>'+
+      return '<tr><td class="left"><b>'+p.nombre+'</b><span class="mini">'+transporteDe(p.nombre)+'</span></td><td>'+p.conDif+' de '+p.conHdr+'</td>'+
         '<td style="color:'+(pc===100?'#c0392b':'#c8780f')+';font-weight:800">'+pc+'%</td>'+
         RUBROS_EQ.map(r=>celdaDifInd(p.dif[r.k])).join('')+'</tr>';
     }).join('')+'</tbody></table></div>';
@@ -1721,7 +1794,7 @@ async function renderChoferesInd(){
     const dias=Object.keys(p.dias).length;
     const pc=dias?Math.round(p.controles/dias*100):0;
     const col=pc>=80?'#1b7a37':(pc>=50?'#c8780f':'#c0392b');
-    return '<tr><td class="left"><b>'+p.nombre+'</b></td><td>'+Object.keys(p.rutas).sort().join(', ')+'</td>'+
+    return '<tr><td class="left"><b>'+p.nombre+'</b></td><td class="left">'+transporteDe(p.nombre)+'</td><td>'+Object.keys(p.rutas).sort().join(', ')+'</td>'+
       '<td>'+dias+'</td><td>'+p.controles+'</td><td style="color:'+col+';font-weight:800">'+pc+'%</td>'+
       '<td>'+(p.conHdr?(p.conDif+' de '+p.conHdr):'—')+'</td>'+
       RUBROS_EQ.map(r=>p.conHdr?celdaDifInd(p.dif[r.k]):'<td>—</td>').join('')+
